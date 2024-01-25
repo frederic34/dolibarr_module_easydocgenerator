@@ -22,9 +22,9 @@
  */
 
 /**
- *	\file       htdocs/core/modules/commande/doc/doc_generic_order_odt.modules.php
+ *	\file       htdocs/core/modules/commande/doc/doc_easydoc_order_html.modules.php
  *	\ingroup    commande
- *	\brief      File of class to build ODT documents for third parties
+ *	\brief      File of class to build PDF documents for orders
  */
 
 require_once DOL_DOCUMENT_ROOT . '/core/modules/commande/modules_commande.php';
@@ -36,7 +36,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/doc.lib.php';
 
 
 /**
- *	Class to build documents using ODF templates generator
+ *	Class to build documents using HTML templates
  */
 class doc_easydoc_order_html extends ModelePDFCommandes
 {
