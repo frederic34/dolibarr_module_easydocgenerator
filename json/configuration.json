@@ -1,0 +1,38 @@
+{
+    "numero": 500000,
+    "version": "1.0.0",
+    "rights_class": "easydocgenerator",
+    "family": "other",
+    "picto": "easydocgenerator@easydocgenerator",
+    "description": "EasydocgeneratorDescription",
+    "descriptionlong": "EasydocgeneratorDescription",
+    "module_position": "90",
+    "editor_name": "Net Logic",
+    "editor_url": "https://www.netlogic.fr",
+    "hidden": false,
+    "depends": [],
+    "dirs": ["/easydocgenerator/temp"],
+    "module_parts": {
+        "triggers": 0,
+        "login": 0,
+        "substitutions": 0,
+        "menus": 0,
+        "tpl": 0,
+        "barcode": 0,
+        "models": 1,
+        "printing": 0,
+        "theme": 0,
+        "css": [],
+        "js": [],
+        "hooks": {
+            "data": [],
+            "entity": 0
+        },
+        "moduleforexternal": 0,
+        "extrafields": []
+    },
+    "right_class": "easydocgenerator",
+    "tabs": [],
+    "dictionaries": [],
+    "boxes": []
+}
