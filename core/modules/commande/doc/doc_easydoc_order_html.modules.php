@@ -106,7 +106,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		global $conf, $langs;
 
 		// Load translation files required by the page
-		$langs->loadLangs(array("errors", "companies"));
+		$langs->loadLangs(array("errors", "companies", "easydocgenerator@easydocgenerator"));
 
 		$form = new Form($this->db);
 
@@ -120,7 +120,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 
 		// List of directories area
 		$text .= '<tr><td>';
-		$texttitle = $langs->trans("ListOfDirectories");
+		$texttitle = $langs->trans("ListOfDirectoriesForHtmlTemplates");
 		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim($conf->global->COMMANDE_ADDON_EASYDOC_HTML_PATH)));
 		$listoffiles = array();
 		foreach ($listofdir as $key => $tmpdir) {
@@ -133,13 +133,13 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			if (!is_dir($tmpdir)) {
 				$texttitle .= img_warning($langs->trans("ErrorDirNotFound", $tmpdir), 0);
 			} else {
-				$tmpfiles = dol_dir_list($tmpdir, 'files', 0, '\.(ods|odt)');
+				$tmpfiles = dol_dir_list($tmpdir, 'files', 0, '\.(htm|html)');
 				if (count($tmpfiles)) {
 					$listoffiles = array_merge($listoffiles, $tmpfiles);
 				}
 			}
 		}
-		$texthelp = $langs->trans("ListOfDirectoriesForModelGenODT");
+		$texthelp = $langs->trans("ListOfDirectoriesForModelGenHTML");
 		$texthelp .= '<br><br><span class="opacitymedium">' . $langs->trans("ExampleOfDirectoriesForModelGen") . '</span>';
 		// Add list of substitution keys
 		$texthelp .= '<br>' . $langs->trans("FollowingSubstitutionKeysCanBeUsed") . '<br>';
@@ -157,7 +157,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		// Scan directories
 		$nbofiles = count($listoffiles);
 		if (getDolGlobalString('COMMANDE_ADDON_EASYDOC_HTML_PATH')) {
-			$text .= $langs->trans("NumberOfModelFilesFound") . ': <b>';
+			$text .= $langs->trans("NumberOfModelHTMLFilesFound") . ': <b>';
 			//$text.=$nbofiles?'<a id="a_'.get_class($this).'" href="#">':'';
 			$text .= count($listoffiles);
 			//$text.=$nbofiles?'</a>':'';
@@ -179,7 +179,8 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$maxfilesizearray = getMaxFileSizeArray();
 		$maxmin = $maxfilesizearray['maxmin'];
 		if ($maxmin > 0) {
-			$text .= '<input type="hidden" name="MAX_FILE_SIZE" value="' . ($maxmin * 1024) . '">';	// MAX_FILE_SIZE must precede the field type=file
+			// MAX_FILE_SIZE must precede the field type=file
+			$text .= '<input type="hidden" name="MAX_FILE_SIZE" value="' . ($maxmin * 1024) . '">';
 		}
 		$text .= ' <input type="file" name="uploadfile">';
 		$text .= '<input type="hidden" value="COMMANDE_ADDON_EASYDOC_HTML_PATH" name="keyforuploaddir">';
@@ -218,6 +219,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		}
 		// For backward compatibility with FPDF, force output charset to ISO, because FPDF expect text to be encoded in ISO
 		if (getDolGlobalInt('MAIN_USE_FPDF')) {
+			// test it to crash...
 			$outputlangs->charset_output = 'ISO-8859-1';
 		}
 
@@ -502,9 +504,11 @@ mpdf-->
 		$mpdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
 		$mpdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
 		$mpdf->SetWatermarkText(getDolGlobalString('COMMANDE_DRAFT_WATERMARK'));
+
 		$mpdf->showWatermarkText = ($object->statut == Commande::STATUS_DRAFT && getDolGlobalString('COMMANDE_DRAFT_WATERMARK'));
 		$mpdf->watermark_font = 'DejaVuSansCondensed';
 		$mpdf->watermarkTextAlpha = 0.1;
+
 		$mpdf->SetDisplayMode('fullpage');
 
 		$mpdf->WriteHTML($html);
