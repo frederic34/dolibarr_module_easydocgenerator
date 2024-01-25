@@ -229,7 +229,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 <html>
 <head>
 <style>
-body {font-family: helvetica;
+body {font-family: sans-serif;
 	font-size: 10pt;
 }
 p {	margin: 0pt; }
