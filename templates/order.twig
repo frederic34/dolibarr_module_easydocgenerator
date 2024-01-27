@@ -16,7 +16,7 @@ td { vertical-align: top; }
 table thead th { background-color: #EEEEEE;
 	text-align: center;
 	border: 0.1mm solid #000000;
-	font-variant: small-caps;
+	font-variant: helvetica;
 }
 .items td.blanktotal {
 	background-color: #EEEEEE;
@@ -39,10 +39,18 @@ table thead th { background-color: #EEEEEE;
 
 <!--mpdf
 <htmlpageheader name="myheader">
-<table width="100%"><tr>
-<td width="50%" style="color:#0000BB; "><span style="font-weight: bold; font-size: 14pt;">' . $mysoc->name . '</span><br />123 Anystreet<br />'.$mysoc->town.'<br />'.$mysoc->zip.'<br /><span style="font-family:dejavusanscondensed;">&#9742;</span> 01777 123 567</td>
-<td width="50%" style="text-align: right;">'.$outputlangs->trans('PdfOrderTitle').'<br /><span style="font-weight: bold; font-size: 12pt;">' . $object->ref . '</span></td>
-</tr></table>
+<table width="100%">
+<tr>
+<td><img src="{{ logo }}" height="80px"/></td>
+<td width="40%" style="color:#0000BB; ">
+	<span style="font-weight: bold; font-size: 14pt;">{{ mysoc.name|e }}</span><br />
+	{{ mysoc.address|e}}<br />
+	{{ mysoc.zip|e}} {{ mysoc.town|e}}<br />
+	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ mysoc.phone|e}}</td>
+<td width="40%" style="text-align: right;">{{ doctitle|e }}<br /><span style="font-weight: bold; font-size: 12pt;">{{ object.ref|e}}</span></td>
+</tr>
+</table>
+
 </htmlpageheader>
 
 <htmlpagefooter name="myfooter">
@@ -55,13 +63,15 @@ Page {PAGENO} of {nb}
 <sethtmlpagefooter name="myfooter" value="on" />
 mpdf-->
 
-<div style="text-align: right">Date: 13th November 2008</div>
+<div style="text-align: right">{{ object.date|e }}</div>
 
-<table width="100%" style="font-family: serif;" cellpadding="10"><tr>
+<table width="100%" style="font-family: serif;" cellpadding="10">
+<tr>
 <td width="45%" style="border: 0.1mm solid #888888; "><span style="font-size: 7pt; color: #555555; font-family: sans;">SOLD TO:</span><br /><br />345 Anotherstreet<br />Little Village<br />Their City<br />CB22 6SO</td>
 <td width="10%">&nbsp;</td>
 <td width="45%" style="border: 0.1mm solid #888888;"><span style="font-size: 7pt; color: #555555; font-family: sans;">SHIP TO:</span><br /><br />345 Anotherstreet<br />Little Village<br />Their City<br />CB22 6SO</td>
-</tr></table>
+</tr>
+</table>
 
 <br />
 
@@ -69,8 +79,8 @@ mpdf-->
 <thead>
 <tr>
 <th width="15%">Ref. No.</th>
-<th width="10%">'.$outputlangs->transnoentities('Qty').'</th>
-<th width="45%">Description</th>
+<th width="10%">{{ qty|e}}</th>
+<th width="45%">{{ description|e }}</th>
 <th width="15%">Unit Price</th>
 <th width="15%">Amount</th>
 </tr>

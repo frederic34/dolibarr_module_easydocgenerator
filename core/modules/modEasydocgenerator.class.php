@@ -2,7 +2,6 @@
 /* Copyright (C) 2004-2018  Laurent Destailleur     <eldy@users.sourceforge.net>
  * Copyright (C) 2018-2019  Nicolas ZABOURI         <info@inovea-conseil.com>
  * Copyright (C) 2019-2020  Frédéric France         <frederic.france@netlogic.fr>
- * Copyright (C) 2023 Prénom SuperAdmin <frederic@francefrederic.onmicrosoft.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +25,8 @@
  *  \ingroup    easydocgenerator
  *  \brief      Description and activation file for module Easydocgenerator
  */
-include_once DOL_DOCUMENT_ROOT.'/core/modules/DolibarrModules.class.php';
+
+include_once DOL_DOCUMENT_ROOT . '/core/modules/DolibarrModules.class.php';
 
 // phpcs:disable
 /**
@@ -90,7 +90,7 @@ class modEasydocgenerator extends DolibarrModules
 		//$this->url_last_version = 'http://www.example.com/versionmodule.txt';
 
 		// Key used in llx_const table to save module status enabled/disabled (where EASYDOCGENERATOR is value of property name of module in uppercase)
-		$this->const_name = 'MAIN_MODULE_'.strtoupper($this->name);
+		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
 
 		// Name of image file used for this module.
 		// If file is in theme/yourtheme/img directory under name object_pictovalue.png, use this->picto='pictovalue'
@@ -122,8 +122,8 @@ class modEasydocgenerator extends DolibarrModules
 		$this->langfiles = ["easydocgenerator@easydocgenerator"];
 
 		// Prerequisites
-		$this->phpmin = [7, 0]; // Minimum version of PHP required by module
-		$this->need_dolibarr_version = [11, -3]; // Minimum version of Dolibarr required by module
+		$this->phpmin = [7, 4]; // Minimum version of PHP required by module
+		$this->need_dolibarr_version = [16, -3]; // Minimum version of Dolibarr required by module
 		$this->need_javascript_ajax = 0;
 
 		// Messages at activation
@@ -134,10 +134,7 @@ class modEasydocgenerator extends DolibarrModules
 
 		// Constants
 		// List of particular constants to add when module is enabled (key, 'chaine', value, desc, visible, 'current' or 'allentities', deleteonunactive)
-		// Example: $this->const=array(1 => array('EASYDOCGENERATOR_MYNEWCONST1', 'chaine', 'myvalue', 'This is a constant to add', 1),
-		//                             2 => array('EASYDOCGENERATOR_MYNEWCONST2', 'chaine', 'myvalue', 'This is another constant to add', 0, 'current', 1)
-		// );
-		$this->const = [];
+		$this->const = $this->configuration['const'];
 
 		// Some keys to add into the overwriting translation tables
 		// $this->overwrite_translation = [
@@ -268,24 +265,24 @@ class modEasydocgenerator extends DolibarrModules
 
 		// Main menu entries to add
 		$this->menu = [];
-		$r = 0;
-		// Add here entries to declare new menus
-		/* BEGIN MODULEBUILDER TOPMENU */
-		$this->menu[$r++] = [
-			'fk_menu'=>'', // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-			'type'=>'top', // This is a Top menu entry
-			'titre'=>'ModuleEasydocgeneratorName',
-			'prefix' => img_picto('', $this->picto, 'class="pictofixedwidth valignmiddle"'),
-			'mainmenu'=>'easydocgenerator',
-			'leftmenu'=>'',
-			'url'=>'/easydocgenerator/easydocgeneratorindex.php',
-			'langs'=>'easydocgenerator@easydocgenerator', // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-			'position'=>1000 + $r,
-			'enabled'=>'isModEnabled("easydocgenerator")', // Define condition to show or hide menu entry. Use 'isModEnabled("easydocgenerator")' if entry must be visible if module is enabled.
-			'perms'=>'1', // Use 'perms'=>'$user->hasRight("easydocgenerator", "myobject", "read")' if you want your menu with a permission rules
-			'target'=>'',
-			'user'=>2, // 0=Menu for internal users, 1=external users, 2=both
-		];
+		// $r = 0;
+		// // Add here entries to declare new menus
+		// /* BEGIN MODULEBUILDER TOPMENU */
+		// $this->menu[$r++] = [
+		// 	'fk_menu'=>'', // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+		// 	'type'=>'top', // This is a Top menu entry
+		// 	'titre'=>'ModuleEasydocgeneratorName',
+		// 	'prefix' => img_picto('', $this->picto, 'class="pictofixedwidth valignmiddle"'),
+		// 	'mainmenu'=>'easydocgenerator',
+		// 	'leftmenu'=>'',
+		// 	'url'=>'/easydocgenerator/easydocgeneratorindex.php',
+		// 	'langs'=>'easydocgenerator@easydocgenerator', // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+		// 	'position'=>1000 + $r,
+		// 	'enabled'=>'isModEnabled("easydocgenerator")', // Define condition to show or hide menu entry. Use 'isModEnabled("easydocgenerator")' if entry must be visible if module is enabled.
+		// 	'perms'=>'1', // Use 'perms'=>'$user->hasRight("easydocgenerator", "myobject", "read")' if you want your menu with a permission rules
+		// 	'target'=>'',
+		// 	'user'=>2, // 0=Menu for internal users, 1=external users, 2=both
+		// ];
 		/* END MODULEBUILDER TOPMENU */
 		/* BEGIN MODULEBUILDER LEFTMENU MYOBJECT */
 		/*$this->menu[$r++]=array(
@@ -457,36 +454,33 @@ class modEasydocgenerator extends DolibarrModules
 
 		// Document templates
 		$moduledir = dol_sanitizeFileName('easydocgenerator');
-		$myTmpObjects = [];
-		$myTmpObjects['MyObject'] = ['includerefgeneration'=>0, 'includedocgeneration'=>0];
+		$modules = [];
+		$modules = [
+			'commande',
+		];
 
-		foreach ($myTmpObjects as $myTmpObjectKey => $myTmpObjectArray) {
-			if ($myTmpObjectKey == 'MyObject') {
-				continue;
-			}
-			if ($myTmpObjectArray['includerefgeneration']) {
-				$src = DOL_DOCUMENT_ROOT.'/install/doctemplates/'.$moduledir.'/template_myobjects.odt';
-				$dirodt = DOL_DATA_ROOT.'/doctemplates/'.$moduledir;
-				$dest = $dirodt.'/template_myobjects.odt';
+		foreach ($modules as $module) {
+			$src = DOL_DOCUMENT_ROOT . '/install/doctemplates/' . $moduledir . '/template_myobjects.twig';
+			$dirtwig = DOL_DATA_ROOT . '/doctemplates/' . $moduledir;
+			$dest = $dirtwig . '/'.$module . '/template_myobjects.twig';
 
-				if (file_exists($src) && !file_exists($dest)) {
-					require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
-					dol_mkdir($dirodt);
-					$result = dol_copy($src, $dest, 0, 0);
-					if ($result < 0) {
-						$langs->load("errors");
-						$this->error = $langs->trans('ErrorFailToCopyFile', $src, $dest);
-						return 0;
-					}
+			if (file_exists($src) && !file_exists($dest)) {
+				require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
+				dol_mkdir($dirtwig);
+				$result = dol_copy($src, $dest, 0, 0);
+				if ($result < 0) {
+					$langs->load("errors");
+					$this->error = $langs->trans('ErrorFailToCopyFile', $src, $dest);
+					return 0;
 				}
-
-				$sql = array_merge($sql, [
-					"DELETE FROM ".MAIN_DB_PREFIX."document_model WHERE nom = 'standard_".strtolower($myTmpObjectKey)."' AND type = '".$this->db->escape(strtolower($myTmpObjectKey))."' AND entity = ".((int) $conf->entity),
-					"INSERT INTO ".MAIN_DB_PREFIX."document_model (nom, type, entity) VALUES('standard_".strtolower($myTmpObjectKey)."', '".$this->db->escape(strtolower($myTmpObjectKey))."', ".((int) $conf->entity).")",
-					"DELETE FROM ".MAIN_DB_PREFIX."document_model WHERE nom = 'generic_".strtolower($myTmpObjectKey)."_odt' AND type = '".$this->db->escape(strtolower($myTmpObjectKey))."' AND entity = ".((int) $conf->entity),
-					"INSERT INTO ".MAIN_DB_PREFIX."document_model (nom, type, entity) VALUES('generic_".strtolower($myTmpObjectKey)."_odt', '".$this->db->escape(strtolower($myTmpObjectKey))."', ".((int) $conf->entity).")"
-				]);
 			}
+
+			$sql = array_merge($sql, [
+				"DELETE FROM " . MAIN_DB_PREFIX . "document_model WHERE nom = 'standard_" . strtolower($myTmpObjectKey) . "' AND type = '" . $this->db->escape(strtolower($myTmpObjectKey)) . "' AND entity = " . ((int) $conf->entity),
+				"INSERT INTO " . MAIN_DB_PREFIX . "document_model (nom, type, entity) VALUES('standard_" . strtolower($myTmpObjectKey) . "', '" . $this->db->escape(strtolower($myTmpObjectKey)) . "', " . ((int) $conf->entity) . ")",
+				"DELETE FROM " . MAIN_DB_PREFIX . "document_model WHERE nom = 'generic_" . strtolower($myTmpObjectKey) . "_twig' AND type = '" . $this->db->escape(strtolower($myTmpObjectKey)) . "' AND entity = " . ((int) $conf->entity),
+				"INSERT INTO " . MAIN_DB_PREFIX . "document_model (nom, type, entity) VALUES('generic_" . strtolower($myTmpObjectKey) . "_twig', '" . $this->db->escape(strtolower($myTmpObjectKey)) . "', " . ((int) $conf->entity) . ")"
+			]);
 		}
 
 		return $this->_init($sql, $options);

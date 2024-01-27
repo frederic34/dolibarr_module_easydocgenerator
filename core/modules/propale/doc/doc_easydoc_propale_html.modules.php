@@ -22,24 +22,23 @@
  */
 
 /**
- *	\file       htdocs/core/modules/commande/doc/doc_easydoc_order_html.modules.php
- *	\ingroup    commande
- *	\brief      File of class to build PDF documents for orders
+ *	\file       htdocs/core/modules/propal/doc/doc_easydoc_propal_html.modules.php
+ *	\ingroup    propal
+ *	\brief      File of class to build PDF documents for propales
  */
 
-require_once DOL_DOCUMENT_ROOT . '/core/modules/commande/modules_commande.php';
+require_once DOL_DOCUMENT_ROOT . '/core/modules/propale/modules_propale.php';
 require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/doc.lib.php';
-dol_include_once('/easydocgenerator/lib/easydocgenerator.lib.php');
 
 
 /**
  *	Class to build documents using HTML templates
  */
-class doc_easydoc_order_html extends ModelePDFCommandes
+class doc_easydoc_propale_html extends ModelePDFPropales
 {
 	/**
 	 * Dolibarr version of the loaded document
@@ -64,7 +63,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$this->name = "HTML templates";
 		$this->description = $langs->trans("DocumentModelHtml");
 		// Name of constant that is used to save list of directories to scan
-		$this->scandir = 'ORDER_ADDON_EASYDOC_HTM_PATH';
+		$this->scandir = 'PROPALE_ADDON_EASYDOC_HTML_PATH';
 		// Save the name of generated file as the main doc when generating a doc with this template
 		$this->update_main_doc_field = 1;
 
@@ -116,13 +115,13 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$text .= '<input type="hidden" name="token" value="' . newToken() . '">';
 		$text .= '<input type="hidden" name="page_y" value="">';
 		$text .= '<input type="hidden" name="action" value="setModuleOptions">';
-		$text .= '<input type="hidden" name="param1" value="ORDER_ADDON_EASYDOC_HTM_PATH">';
+		$text .= '<input type="hidden" name="param1" value="PROPALE_ADDON_EASYDOC_HTML_PATH">';
 		$text .= '<table class="nobordernopadding" width="100%">';
 
 		// List of directories area
 		$text .= '<tr><td>';
 		$texttitle = $langs->trans("ListOfDirectoriesForHtmlTemplates");
-		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim($conf->global->ORDER_ADDON_EASYDOC_HTM_PATH)));
+		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim($conf->global->PROPALE_ADDON_EASYDOC_HTML_PATH)));
 		$listoffiles = array();
 		foreach ($listofdir as $key => $tmpdir) {
 			$tmpdir = trim($tmpdir);
@@ -149,7 +148,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$text .= $form->textwithpicto($texttitle, $texthelp, 1, 'help', '', 1, 3, $this->name);
 		$text .= '<div><div style="display: inline-block; min-width: 100px; vertical-align: middle;">';
 		$text .= '<textarea class="flat" cols="60" name="value1">';
-		$text .= getDolGlobalString('ORDER_ADDON_EASYDOC_HTM_PATH');
+		$text .= getDolGlobalString('PROPALE_ADDON_EASYDOC_HTML_PATH');
 		$text .= '</textarea>';
 		$text .= '</div><div style="display: inline-block; vertical-align: middle;">';
 		$text .= '<input type="submit" class="button button-edit reposition smallpaddingimp" name="modify" value="' . dol_escape_htmltag($langs->trans("Modify")) . '">';
@@ -157,7 +156,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 
 		// Scan directories
 		$nbofiles = count($listoffiles);
-		if (getDolGlobalString('ORDER_ADDON_EASYDOC_HTM_PATH')) {
+		if (getDolGlobalString('PROPALE_ADDON_EASYDOC_HTML_PATH')) {
 			$text .= $langs->trans("NumberOfModelHTMLFilesFound") . ': <b>';
 			//$text.=$nbofiles?'<a id="a_'.get_class($this).'" href="#">':'';
 			$text .= count($listoffiles);
@@ -169,8 +168,8 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			$text .= '<div id="div_' . get_class($this) . '" class="hiddenx">';
 			// Show list of found files
 			foreach ($listoffiles as $file) {
-				$text .= '- ' . $file['name'] . ' <a href="' . DOL_URL_ROOT . '/document.php?modulepart=doctemplates&file=orders/' . urlencode(basename($file['name'])) . '">' . img_picto('', 'listlight') . '</a>';
-				$text .= ' &nbsp; <a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=ORDER_ADDON_EASYDOC_HTM_PATH&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name'])) . '">' . img_picto('', 'delete') . '</a>';
+				$text .= '- ' . $file['name'] . ' <a href="' . DOL_URL_ROOT . '/document.php?modulepart=doctemplates&file=propales/' . urlencode(basename($file['name'])) . '">' . img_picto('', 'listlight') . '</a>';
+				$text .= ' &nbsp; <a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=PROPALE_ADDON_EASYDOC_HTML_PATH&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name'])) . '">' . img_picto('', 'delete') . '</a>';
 				$text .= '<br>';
 			}
 			$text .= '</div>';
@@ -184,7 +183,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			$text .= '<input type="hidden" name="MAX_FILE_SIZE" value="' . ($maxmin * 1024) . '">';
 		}
 		$text .= ' <input type="file" name="uploadfile">';
-		$text .= '<input type="hidden" value="ORDER_ADDON_EASYDOC_HTM_PATH" name="keyforuploaddir">';
+		$text .= '<input type="hidden" value="PROPALE_ADDON_EASYDOC_HTML_PATH" name="keyforuploaddir">';
 		$text .= '<input type="submit" class="button reposition smallpaddingimp" value="' . dol_escape_htmltag($langs->trans("Upload")) . '" name="upload">';
 		$text .= '</div>';
 
@@ -202,7 +201,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 	/**
 	 *  Function to build a document on disk using the generic odt module.
 	 *
-	 *	@param		Commande	$object				Object source to build document
+	 *	@param		Propale 	$object				Object source to build document
 	 *	@param		Translate	$outputlangs		Lang output object
 	 * 	@param		string		$srctemplatepath	Full path of source filename for generator using a template file
 	 *  @param		int			$hidedetails		Do not show line details
@@ -216,7 +215,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 
 		if (empty($srctemplatepath)) {
-			dol_syslog("doc_easydoc_order_html::write_file parameter srctemplatepath empty", LOG_WARNING);
+			dol_syslog("doc_easydoc_propale_html::write_file parameter srctemplatepath empty", LOG_WARNING);
 			return -1;
 		}
 
@@ -231,7 +230,6 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
 		}
-		$object->fetch_thirdparty();
 		$sav_charset_output = $outputlangs->charset_output;
 		$outputlangs->charset_output = 'UTF-8';
 
@@ -241,8 +239,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			$outputlangs->charset_output = 'ISO-8859-1';
 		}
 
-		$outputlangs->loadLangs(array("main", "dict", "companies", "bills", "products", "orders", "deliveries"));
-		$currency = !empty($currency) ? $currency : $conf->currency;
+		$outputlangs->loadLangs(array("main", "dict", "companies", "bills", "products", "propal", "deliveries"));
 
 		require dol_buildpath('easydocgenerator/vendor/autoload.php');
 
@@ -250,7 +247,6 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$twig = new \Twig\Environment($loader, [
 			// 'cache' => DOL_DATA_ROOT.'/easydocgenerator/temp',
 			'cache' => false,
-			'autoescape' => false,
 		]);
 		$template = $twig->load(basename($srctemplatepath));
 
@@ -262,36 +258,6 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				$logo = $logodir . '/logos/' . $this->emetteur->logo;
 			}
 		}
-		$langtocountryflag = array(
-			'ar_AR' => '',
-			'ca_ES' => 'catalonia',
-			'da_DA' => 'dk',
-			'fr_CA' => 'mq',
-			'sv_SV' => 'se',
-			'sw_SW' => 'unknown',
-			'AQ' => 'unknown',
-			'CW' => 'unknown',
-			'IM' => 'unknown',
-			'JE' => 'unknown',
-			'MF' => 'unknown',
-			'BL' => 'unknown',
-			'SX' => 'unknown'
-		);
-
-		if (isset($langtocountryflag[$mysoc->country_code])) {
-			$flagImage = $langtocountryflag[$mysoc->country_code];
-		} else {
-			$tmparray = explode('_', $mysoc->country_code);
-			$flagImage = empty($tmparray[1]) ? $tmparray[0] : $tmparray[1];
-		}
-		if ($object->cond_reglement_code) {
-			$label_payment_conditions = ($outputlangs->transnoentities("PaymentCondition" . $object->cond_reglement_code) != 'PaymentCondition' . $object->cond_reglement_code) ? $outputlangs->transnoentities("PaymentCondition" . $object->cond_reglement_code) : $outputlangs->convToOutputCharset($object->cond_reglement_doc ? $object->cond_reglement_doc : $object->cond_reglement_label);
-			$label_payment_conditions = str_replace('\n', "\n", $label_payment_conditions);
-			if ($object->deposit_percent > 0) {
-				$label_payment_conditions = str_replace('__DEPOSIT_PERCENT__', $object->deposit_percent, $label_payment_conditions);
-			}
-		}
-
 		$substitutions = [
 			'mysoc' => [
 				'name' => $mysoc->name,
@@ -300,8 +266,6 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				'zip' => $mysoc->zip,
 				'town' => $mysoc->town,
 				'country' => $mysoc->country,
-				'flag' => DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($flagImage) . '.png',
-				// 'phone' => dol_print_phone($mysoc->phone, $mysoc->country_code, 0, 0, '', ''),
 				'phone' => $mysoc->phone,
 				'email' => $mysoc->email,
 				'idprof1' => $mysoc->idprof1,
@@ -310,88 +274,39 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				'idprof4' => $mysoc->idprof4,
 				'idprof5' => $mysoc->idprof5,
 				'idprof6' => $mysoc->idprof6,
-				'capital' => $mysoc->capital,
-				'tvanumber' => $mysoc->tva_intra,
-			],
-			'thirdparty' => [
-				'name' => $object->thirdparty->name,
-				'name_alias' => $object->thirdparty->name_alias,
-				'address' => $object->thirdparty->address,
-				'zip' => $object->thirdparty->zip,
-				'town' => $object->thirdparty->town,
-				'country' => $object->thirdparty->country,
-				'flag' => DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($object->thirdparty->country_code) . '.png',
-				// 'phone' => dol_print_phone($object->thirdparty->phone, $object->thirdparty->country_code, 0, 0, '', ''),
-				'phone' => $object->thirdparty->phone,
-				'email' => $object->thirdparty->email,
-				'idprof1' => $object->thirdparty->idprof1,
-				'idprof2' => $object->thirdparty->idprof2,
-				'idprof3' => $object->thirdparty->idprof3,
-				'idprof4' => $object->thirdparty->idprof4,
-				'idprof5' => $object->thirdparty->idprof5,
-				'idprof6' => $object->thirdparty->idprof6,
-				'capital' => $object->thirdparty->capital,
-				'code_client' => $object->thirdparty->code_client,
 			],
 			'object' => [
-				'date' => dol_print_date($object->date, "day", false, $outputlangs, true),
+				'date' => dol_print_date($object->date, 'day'),
 				'ref' => $object->ref,
-				'total_tva' => price($object->total_tva),
-				'total_ht' => price($object->total_ht),
-				'total_ttc' => price($object->total_ttc),
-				'ref_customer' => $outputlangs->convToOutputCharset($object->ref_client),
 			],
-			'doctitle' => $outputlangs->transnoentitiesnoconv('PdfOrderTitle'),
-			'date' => $outputlangs->transnoentities("OrderDate"),
+			'doctitle' => $outputlangs->trans('PdfCommercialProposalTitle'),
+			'ref_customer' => $outputlangs->transnoentities("RefCustomer"),
 			'qty' => $outputlangs->transnoentitiesnoconv('Qty'),
 			'ref' => $outputlangs->transnoentitiesnoconv('Ref'),
-			'ref_customer' => $outputlangs->transnoentities("RefCustomer"),
 			'unitprice_ht' => $outputlangs->transnoentitiesnoconv('PriceUHT'),
 			'total_ht' => $outputlangs->transnoentitiesnoconv('TotalHTShort'),
-			'total_tva' => $outputlangs->transnoentitiesnoconv('TotalVAT'),
 			'total_ttc' => $outputlangs->transnoentitiesnoconv('TotalTTCShort'),
 			'vat' => $outputlangs->transnoentitiesnoconv('VAT'),
 			'description' => $outputlangs->trans('Description'),
 			'logo' => $logo,
-			'freetext' => getDolGlobalString('COMMANDE_FREE_TEXT'),
+			'freetext' => getDolGlobalString('PROPOSAL_FREE_TEXT'),
 			'lines' => [],
-			'footerinfo' => getPdfPagefoot($outputlangs, $paramfreetext, $mysoc, $object),
-			'paymentconditions' => $outputlangs->transnoentities("PaymentConditions"),
-			'labelpaymentconditions' => $label_payment_conditions,
-			'currencyinfo' => $outputlangs->transnoentities("AmountInCurrency", $outputlangs->transnoentitiesnoconv("Currency" . $currency)),
-			'SUBTOTAL_TITLE_BACKGROUNDCOLOR' => getDolGlobalString('SUBTOTAL_TITLE_BACKGROUNDCOLOR', '#ffffff'),
-			'SUBTOTAL_SUBTOTAL_BACKGROUNDCOLOR' => getDolGlobalString('SUBTOTAL_SUBTOTAL_BACKGROUNDCOLOR', '#ebebeb'),
 		];
-		$subtotal_ht = 0;
-		$subtotal_ttc = 0;
 		foreach ($object->lines as $key => $line) {
-			$subtotal_ht += $line->total_ht;
-			$subtotal_ttc += $line->total_ttc;
-			if ($line->special_code == 104777 && $line->qty == 99) {
-				$line->total_ht = $subtotal_ht;
-				$line->total_ttc = $subtotal_ttc;
-				$subtotal_ht = 0;
-				$subtotal_ttc = 0;
-			}
 			$substitutions['lines'][$key] = [
 				'qty' => $line->qty,
 				'ref' => $line->product_ref,
-				'label' => $line->label,
-				'description' => $line->desc,
-				'product_label' => $line->product_label,
-				'product_description' => $line->product_desc,
+				'label' => $line->product_label,
+				'description' => $line->product_desc,
 				'subprice' => price($line->subprice),
 				'total_ht' => price($line->total_ht),
 				'total_ttc' => price($line->total_ttc),
 				'vatrate' => price($line->tva_tx) . '%',
-				'special_code' => $line->special_code,
 			];
 		}
 
-		// var_dump($substitutions);
-
 		$html = $template->render($substitutions);
-		// print $html;
+
 		$mpdf = new \Mpdf\Mpdf([
 			'margin_left' => 10,
 			'margin_right' => 10,
@@ -403,18 +318,97 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$mpdf->SetProtection(array('print'));
 		$mpdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
 		$mpdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
-		$mpdf->SetWatermarkText(getDolGlobalString('COMMANDE_DRAFT_WATERMARK'));
+		$mpdf->SetWatermarkText(getDolGlobalString('PROPALE_DRAFT_WATERMARK'));
 
-		$mpdf->showWatermarkText = ($object->statut == Commande::STATUS_DRAFT && getDolGlobalString('COMMANDE_DRAFT_WATERMARK'));
+		$mpdf->showWatermarkText = ($object->statut == Propal::STATUS_DRAFT && getDolGlobalString('PROPALE_DRAFT_WATERMARK'));
 		$mpdf->watermark_font = 'DejaVuSansCondensed';
 		$mpdf->watermarkTextAlpha = 0.1;
 
 		$mpdf->SetDisplayMode('fullpage');
 
-		$mpdf->Bookmark($outputlangs->trans('PdfOrderTitle'));
+		$mpdf->Bookmark($outputlangs->trans('PdfCommercialProposalTitle'));
 		$mpdf->WriteHTML($html);
 
-		$dir = $conf->commande->multidir_output[$object->entity];
+		//If propal merge product PDF is active
+		if (getDolGlobalString('PRODUIT_PDF_MERGE_PROPAL')) {
+			require_once DOL_DOCUMENT_ROOT . '/product/class/propalmergepdfproduct.class.php';
+
+			$already_merged = array();
+			foreach ($object->lines as $line) {
+				if (!empty($line->fk_product) && !(in_array($line->fk_product, $already_merged))) {
+					// Find the desire PDF
+					$filetomerge = new Propalmergepdfproduct($this->db);
+
+					if (getDolGlobalInt('MAIN_MULTILANGS')) {
+						$filetomerge->fetch_by_product($line->fk_product, $outputlangs->defaultlang);
+					} else {
+						$filetomerge->fetch_by_product($line->fk_product);
+					}
+
+					$already_merged[] = $line->fk_product;
+
+					$product = new Product($this->db);
+					$product->fetch($line->fk_product);
+
+					if ($product->entity != $conf->entity) {
+						$entity_product_file = $product->entity;
+					} else {
+						$entity_product_file = $conf->entity;
+					}
+					// If PDF is selected and file is not empty
+					if (count($filetomerge->lines) > 0) {
+						foreach ($filetomerge->lines as $linefile) {
+							if (!empty($linefile->id) && !empty($linefile->file_name)) {
+								if (getDolGlobalInt('PRODUCT_USE_OLD_PATH_FOR_PHOTO')) {
+									if (isModEnabled("product")) {
+										$filetomerge_dir = $conf->product->multidir_output[$entity_product_file] . '/' . get_exdir($product->id, 2, 0, 0, $product, 'product') . $product->id . "/photos";
+									} elseif (isModEnabled("service")) {
+										$filetomerge_dir = $conf->service->multidir_output[$entity_product_file] . '/' . get_exdir($product->id, 2, 0, 0, $product, 'product') . $product->id . "/photos";
+									}
+								} else {
+									if (isModEnabled("product")) {
+										$filetomerge_dir = $conf->product->multidir_output[$entity_product_file] . '/' . get_exdir(0, 0, 0, 0, $product, 'product');
+									} elseif (isModEnabled("service")) {
+										$filetomerge_dir = $conf->service->multidir_output[$entity_product_file] . '/' . get_exdir(0, 0, 0, 0, $product, 'product');
+									}
+								}
+
+								dol_syslog(get_class($this) . ':: upload_dir=' . $filetomerge_dir, LOG_DEBUG);
+
+								$infile = $filetomerge_dir . $linefile->file_name;
+								if (file_exists($infile) && is_readable($infile)) {
+									// stop adding header on every page
+									$mpdf->SetHeader();
+									$mpdf->Bookmark($linefile->file_name);
+									// This PDF document probably uses a compression technique which is not supported by the free parser shipped with FPDI
+									// Alternatively the document you're trying to import has to be resaved without the use of compressed cross-reference streams
+									// and objects by an external programm (e.g. by lowering the PDF version to 1.4).
+									$pagecount = $mpdf->setSourceFile($infile);
+									for ($i = 1; $i <= $pagecount; $i++) {
+										$tplIdx = $mpdf->importPage($i);
+										if ($tplIdx !== false) {
+											$s = $mpdf->getTemplatesize($tplIdx);
+											// array (size=5)
+											//   'width' => float 210.00155555556
+											//   'height' => float 296.99655555556
+											//   0 => float 210.00155555556
+											//   1 => float 296.99655555556
+											//   'orientation' => string 'P' (length=1)
+											$mpdf->AddPage($s['height'] > $s['width'] ? 'P' : 'L');
+											$mpdf->useTemplate($tplIdx);
+										} else {
+											setEventMessages(null, array($infile . ' cannot be added, probably protected PDF'), 'warnings');
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		$dir = $conf->propal->multidir_output[$object->entity];
 		$objectref = dol_sanitizeFileName($object->ref);
 		if (!preg_match('/specimen/i', $objectref)) {
 			$dir .= "/" . $objectref;
@@ -430,11 +424,9 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 
 		$mpdf->Output($file, \Mpdf\Output\Destination::FILE);
 
-		$this->result = array('fullpath' => $file);
-
 		return 1;
 
-		if (!empty($conf->commande->dir_output)) {
+		if ($conf->propal->dir_output) {
 			// If $object is id instead of object
 			if (!is_object($object)) {
 				$id = $object;
@@ -448,7 +440,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 
 			$object->fetch_thirdparty();
 
-			$dir = $conf->commande->multidir_output[$object->entity];
+			$dir = $conf->propal->multidir_output[$object->entity];
 			$objectref = dol_sanitizeFileName($object->ref);
 			if (!preg_match('/specimen/i', $objectref)) {
 				$dir .= "/" . $objectref;
@@ -487,14 +479,14 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				//print "file=".$file;
 				//print "conf->societe->dir_temp=".$conf->societe->dir_temp;
 
-				dol_mkdir($conf->commande->dir_temp);
-				if (!is_writable($conf->commande->dir_temp)) {
-					$this->error = $langs->transnoentities("ErrorFailedToWriteInTempDirectory", $conf->commande->dir_temp);
+				dol_mkdir($conf->propal->dir_temp);
+				if (!is_writable($conf->propal->dir_temp)) {
+					$this->error = $langs->transnoentities("ErrorFailedToWriteInTempDirectory", $conf->propal->dir_temp);
 					dol_syslog('Error in write_file: ' . $this->error, LOG_ERR);
 					return -1;
 				}
 
-				// If CUSTOMER contact defined on order, we use it
+				// If CUSTOMER contact defined on propale, we use it
 				$usecontact = false;
 				$arrayidcontact = $object->getIdContact('external', 'CUSTOMER');
 				if (count($arrayidcontact) > 0) {
@@ -534,7 +526,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 
 				// Line of free text
 				$newfreetext = '';
-				$paramfreetext = 'ORDER_FREE_TEXT';
+				$paramfreetext = 'PROPAL_FREE_TEXT';
 				if (!empty($conf->global->$paramfreetext)) {
 					$newfreetext = make_substitutions(getDolGlobalString($paramfreetext), $substitutionarray);
 				}
@@ -545,7 +537,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 					$odfHandler = new Odf(
 						$srctemplatepath,
 						array(
-							'PATH_TO_TMP'	  => $conf->commande->dir_temp,
+							'PATH_TO_TMP'	  => $conf->propal->dir_temp,
 							'ZIP_PROXY'		  => 'PclZipProxy', // PhpZipProxy or PclZipProxy. Got "bad compression method" error when using PhpZipProxy.
 							'DELIMITER_LEFT'  => '{',
 							'DELIMITER_RIGHT' => '}'
@@ -663,14 +655,23 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				$reshook = $hookmanager->executeHooks('beforeODTSave', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 
 				// Write new file
-				try {
-					$odfHandler->saveToDisk($file);
-				} catch (Exception $e) {
-					$this->error = $e->getMessage();
-					dol_syslog($e->getMessage(), LOG_INFO);
-					return -1;
+				if (getDolGlobalString('MAIN_ODT_AS_PDF')) {
+					try {
+						$odfHandler->exportAsAttachedPDF($file);
+					} catch (Exception $e) {
+						$this->error = $e->getMessage();
+						dol_syslog($e->getMessage(), LOG_INFO);
+						return -1;
+					}
+				} else {
+					try {
+						$odfHandler->saveToDisk($file);
+					} catch (Exception $e) {
+						$this->error = $e->getMessage();
+						dol_syslog($e->getMessage(), LOG_INFO);
+						return -1;
+					}
 				}
-
 
 				$parameters = array(
 					'odfHandler' => &$odfHandler,

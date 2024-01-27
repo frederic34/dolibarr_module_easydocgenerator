@@ -1,17 +1,20 @@
 {
-    "numero": 500000,
+    "numero": 13371234,
     "version": "1.0.0",
     "rights_class": "easydocgenerator",
     "family": "other",
-    "picto": "easydocgenerator@easydocgenerator",
+    "picto": "pdf",
     "description": "EasydocgeneratorDescription",
     "descriptionlong": "EasydocgeneratorDescription",
     "module_position": "90",
-    "editor_name": "Net Logic",
-    "editor_url": "https://www.netlogic.fr",
+    "editor_name": "frederic34",
+    "editor_url": "https://fredericfrance.fr",
     "hidden": false,
     "depends": [],
-    "dirs": ["/easydocgenerator/temp"],
+    "dirs": [
+        "/easydocgenerator/temp",
+        "/ecm/easydocgenerator"
+    ],
     "module_parts": {
         "triggers": 0,
         "login": 0,
@@ -34,5 +37,10 @@
     "right_class": "easydocgenerator",
     "tabs": [],
     "dictionaries": [],
-    "boxes": []
+    "boxes": [],
+    "const": [
+        ["ORDER_ADDON_EASYDOC_HTM_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/orders", "Directory for orders templates", 1],
+        ["INVOICE_ADDON_EASYDOC_HTM_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/invoices", "Directory for invoices templates", 1],
+        ["PROPALE_ADDON_EASYDOC_HTM_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/propales", "Directory for propales templates", 1]
+    ]
 }
