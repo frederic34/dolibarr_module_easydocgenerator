@@ -21,9 +21,24 @@ table thead th { background-color: #EEEEEE;
 .items td.blanktotal {
 	background-color: #EEEEEE;
 	border: 0.1mm solid #000000;
-	background-color: #FFFFFF;
 	border: 0mm none #000000;
 	border-top: 0.1mm solid #000000;
+	border-right: 0.1mm solid #000000;
+}
+.items td.subtotaltitle {
+	background-color: {{ SUBTOTAL_TITLE_BACKGROUNDCOLOR }};
+	border: 0.1mm solid #000000;
+	border: 0mm none #000000;
+	border-top: 0.1mm solid #000000;
+	border-bottom: 0.1mm solid #000000;
+	border-right: 0.1mm solid #000000;
+}
+.items td.subtotalsubtotal {
+	background-color: {{ SUBTOTAL_SUBTOTAL_BACKGROUNDCOLOR }};
+	border: 0.1mm solid #000000;
+	border: 0mm none #000000;
+	border-top: 0.1mm solid #000000;
+	border-bottom: 0.1mm solid #000000;
 	border-right: 0.1mm solid #000000;
 }
 .items td.totals {
@@ -31,7 +46,7 @@ table thead th { background-color: #EEEEEE;
 	border: 0.1mm solid #000000;
 }
 .items td.cost {
-	text-align: "." center;
+	text-align: "." right;
 }
 </style>
 </head>
@@ -41,20 +56,34 @@ table thead th { background-color: #EEEEEE;
 <htmlpageheader name="myheader">
 <table width="100%">
 <tr>
-<td><img src="{{ logo }}" height="80px"/></td>
+<td align="center"><img src="{{ logo }}" height="80px"/></td>
 <td width="40%" style="color:#0000BB; ">
 	<span style="font-weight: bold; font-size: 14pt;">{{ mysoc.name|e }}</span><br />
 	{{ mysoc.address|e}}<br />
 	{{ mysoc.zip|e}} {{ mysoc.town|e}}<br />
-	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ mysoc.phone|e}}</td>
-<td width="40%" style="text-align: right;">{{ doctitle|e }}<br /><span style="font-weight: bold; font-size: 12pt;">{{ object.ref|e}}</span></td>
+	<img src="{{ mysoc.flag }}"> {{ mysoc.country|e}}<br />
+	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ mysoc.phone|e}}<br />
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ mysoc.email|e}}<br />
+	{{ mysoc.tvanumber|e}}<br />
+</td>
+<td width="40%" style="text-align: right;">
+<span style="font-weight: bold; font-size: 12pt;">{{ doctitle|e }}: {{ object.ref|e}}</span>
+<br /><span style="font-weight: bold; font-size: 12pt;">{{ date|e }}: {{ object.date|e}}</span>
+{% if object.ref_customer %}
+	<br /><span style="font-weight: bold; font-size: 12pt;">{{ ref_customer|e }}: {{ object.ref_customer|e}}</span>
+{% endif %}
+{% if object.ref_project %}
+	<br /><span style="font-weight: bold; font-size: 12pt;">{{ ref_project|e }}: {{ object.ref_project|e}}</span>
+{% endif %}
+</td>
 </tr>
 </table>
-
 </htmlpageheader>
 
 <htmlpagefooter name="myfooter">
-<div style="border-top: 1px solid #000000; font-size: 9pt; text-align: center; padding-top: 3mm; ">
+<div style="border-top: 1px solid #000000; font-size: 6pt; text-align: center; padding-top: 3mm; ">
+{{ footerinfo.line3|e }}<br />
+{{ footerinfo.line4|e }}<br />
 Page {PAGENO} of {nb}
 </div>
 </htmlpagefooter>
@@ -63,208 +92,96 @@ Page {PAGENO} of {nb}
 <sethtmlpagefooter name="myfooter" value="on" />
 mpdf-->
 
-<div style="text-align: right">{{ object.date|e }}</div>
 
 <table width="100%" style="font-family: serif;" cellpadding="10">
 <tr>
-<td width="45%" style="border: 0.1mm solid #888888; "><span style="font-size: 7pt; color: #555555; font-family: sans;">SOLD TO:</span><br /><br />345 Anotherstreet<br />Little Village<br />Their City<br />CB22 6SO</td>
-<td width="10%">&nbsp;</td>
-<td width="45%" style="border: 0.1mm solid #888888;"><span style="font-size: 7pt; color: #555555; font-family: sans;">SHIP TO:</span><br /><br />345 Anotherstreet<br />Little Village<br />Their City<br />CB22 6SO</td>
+<td width="46%" style="border: 0.1mm solid #888888; ">
+<span style="font-size: 7pt; color: #555555; font-family: sans;">SOLD TO:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
+{% if thirdparty.phone %}
+	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone|e}}<br />
+{% endif %}
+{% if thirdparty.email %}
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ thirdparty.email|e}}<br />
+{% endif %}
+</td>
+<td width="8%">&nbsp;</td>
+<td width="46%" style="border: 0.1mm solid #888888;">
+<span style="font-size: 7pt; color: #555555; font-family: sans;">SHIP TO:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
+{% if thirdparty.phone %}
+	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone|e}}<br />
+{% endif %}
+{% if thirdparty.email %}
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ thirdparty.email|e}}<br />
+{% endif %}
+</td>
 </tr>
 </table>
 
 <br />
+<div style="text-align: right">{{ currencyinfo|e }}</div>
 
-<table class="items" width="100%" style="font-size: 9pt; border-collapse: collapse; " cellpadding="8">
+<table class="items" width="100%" style="font-size: 7pt; border-collapse: collapse; " cellpadding="8">
 <thead>
 <tr>
-<th width="15%">Ref. No.</th>
+<th width="15%">{{ ref|e }}</th>
+<th width="40%">{{ description|e }}</th>
+<th width="10%">{{ vat|e }}</th>
 <th width="10%">{{ qty|e}}</th>
-<th width="45%">{{ description|e }}</th>
-<th width="15%">Unit Price</th>
-<th width="15%">Amount</th>
+<th width="15%">{{ unitprice_ht|e }}</th>
+<th width="15%">{{ total_ht|e }}</th>
 </tr>
 </thead>
 <tbody>
 <!-- ITEMS HERE -->
-<tr>
-<td align="center">MF1234567</td>
-<td align="center">10</td>
-<td>Large pack Hoover bags</td>
-<td class="cost">&pound;2.56</td>
-<td class="cost">&pound;25.60</td>
-</tr>
-<tr>
-<td align="center">MX37801982</td>
-<td align="center">1</td>
-<td>Womans waterproof jacket<br />Options - Red and charcoal.</td>
-<td class="cost">&pound;102.11</td>
-<td class="cost">&pound;102.11</td>
-</tr>
-<tr>
-<td align="center">MR7009298</td>
-<td align="center">25</td>
-<td>Steel nails; oval head; 30mm x 3mm. Packs of 1000.</td>
-<td class="cost">&pound;12.26</td>
-<td class="cost">&pound;325.60</td>
-</tr>
-<tr>
-<td align="center">MF1234567</td>
-<td align="center">10</td>
-<td>Large pack Hoover bags</td>
-<td class="cost">&pound;2.56</td>
-<td class="cost">&pound;25.60</td>
-</tr>
-<tr>
-<td align="center">MX37801982</td>
-<td align="center">1</td>
-<td>Womans waterproof jacket<br />Options - Red and charcoal.</td>
-<td class="cost">&pound;102.11</td>
-<td class="cost">&pound;102.11</td>
-</tr>
-<tr>
-<td align="center">MR7009298</td>
-<td align="center">25</td>
-<td>Steel nails; oval head; 30mm x 3mm. Packs of 1000.</td>
-<td class="cost">&pound;12.26</td>
-<td class="cost">&pound;325.60</td>
-</tr>
-<tr>
-<td align="center">MF1234567</td>
-<td align="center">10</td>
-<td>Large pack Hoover bags</td>
-<td class="cost">&pound;2.56</td>
-<td class="cost">&pound;25.60</td>
-</tr>
-<tr>
-<td align="center">MX37801982</td>
-<td align="center">1</td>
-<td>Womans waterproof jacket<br />Options - Red and charcoal.</td>
-<td class="cost">&pound;102.11</td>
-<td class="cost">&pound;102.11</td>
-</tr>
-<tr>
-<td align="center">MR7009298</td>
-<td align="center">25</td>
-<td>Steel nails; oval head; 30mm x 3mm. Packs of 1000.</td>
-<td class="cost">&pound;12.26</td>
-<td class="cost">&pound;325.60</td>
-</tr>
-<tr>
-<td align="center">MF1234567</td>
-<td align="center">10</td>
-<td>Large pack Hoover bags</td>
-<td class="cost">&pound;2.56</td>
-<td class="cost">&pound;25.60</td>
-</tr>
-<tr>
-<td align="center">MX37801982</td>
-<td align="center">1</td>
-<td>Womans waterproof jacket<br />Options - Red and charcoal.</td>
-<td class="cost">&pound;102.11</td>
-<td class="cost">&pound;102.11</td>
-</tr>
-<tr>
-<td align="center">MR7009298</td>
-<td align="center">25</td>
-<td>Steel nails; oval head; 30mm x 3mm. Packs of 1000.</td>
-<td class="cost">&pound;12.26</td>
-<td class="cost">&pound;325.60</td>
-</tr>
-<tr>
-<td align="center">MF1234567</td>
-<td align="center">10</td>
-<td>Large pack Hoover bags</td>
-<td class="cost">&pound;2.56</td>
-<td class="cost">&pound;25.60</td>
-</tr>
-<tr>
-<td align="center">MX37801982</td>
-<td align="center">1</td>
-<td>Womans waterproof jacket<br />Options - Red and charcoal.</td>
-<td class="cost">&pound;102.11</td>
-<td class="cost">&pound;102.11</td>
-</tr>
-<tr>
-<td align="center">MF1234567</td>
-<td align="center">10</td>
-<td>Large pack Hoover bags</td>
-<td class="cost">&pound;2.56</td>
-<td class="cost">&pound;25.60</td>
-</tr>
-<tr>
-<td align="center">MX37801982</td>
-<td align="center">1</td>
-<td>Womans waterproof jacket<br />Options - Red and charcoal.</td>
-<td class="cost">&pound;102.11</td>
-<td class="cost">&pound;102.11</td>
-</tr>
-<tr>
-<td align="center">MR7009298</td>
-<td align="center">25</td>
-<td>Steel nails; oval head; 30mm x 3mm. Packs of 1000.</td>
-<td class="cost">&pound;12.26</td>
-<td class="cost">&pound;325.60</td>
-</tr>
-<tr>
-<td align="center">MR7009298</td>
-<td align="center">25</td>
-<td>Steel nails; oval head; 30mm x 3mm. Packs of 1000.</td>
-<td class="cost">&pound;12.26</td>
-<td class="cost">&pound;325.60</td>
-</tr>
-<tr>
-<td align="center">MF1234567</td>
-<td align="center">10</td>
-<td>Large pack Hoover bags</td>
-<td class="cost">&pound;2.56</td>
-<td class="cost">&pound;25.60</td>
-</tr>
-<tr>
-<td align="center">MX37801982</td>
-<td align="center">1</td>
-<td>Womans waterproof jacket<br />Options - Red and charcoal.</td>
-<td class="cost">&pound;102.11</td>
-<td class="cost">&pound;102.11</td>
-</tr>
-<tr>
-<td align="center">MR7009298</td>
-<td align="center">25</td>
-<td>Steel nails; oval head; 30mm x 3mm. Packs of 1000.</td>
-<td class="cost">&pound;12.26</td>
-<td class="cost">&pound;325.60</td>
-</tr>
+{% if lines is iterable %}
+	{% for line in lines %}
+		<tr>
+		{% if line.special_code == 104777 %}
+			{% if line.qty == 1 %}
+				<!-- SUBTOTAL TITLE -->
+				<td class="subtotaltitle" colspan="6" align="left">{{ line.label }}</td>
+			{% elseif line.qty == 50 %}
+				<!-- SUBTOTAL TEXT -->
+				<td class="blanktotal" colspan="6">{{ line.description }}</td>
+			{% elseif line.qty == 99 %}
+				<!-- SUBTOTAL SUBTOTAL -->
+				<td class="subtotalsubtotal" colspan="6" align="right">{{ line.label }}: {{ line.total_ht|e }}</td>
+			{% else %}
+				<td class="subtotal" colspan="6" align="left">{{ line.label }}{{ line.qty }}</td>
+			{% endif %}
+		{% else %}
+			<td align="center">{{ line.ref }}</td>
+			<td>{{ line.product_label }}<br />{{ line.product_description }}</td>
+			<td align="right">{{ line.vatrate }}</td>
+			<td align="center">{{ line.qty }}</td>
+			<td class="cost">{{ line.subprice|e }}</td>
+			<td class="cost">{{ line.total_ht|e }}</td>
+		{% endif %}
+		</tr>
+	{% endfor %}
+{% else %}
+	{# lines is empty #}
+	No lines
+{% endif %}
 <!-- END ITEMS HERE -->
 <tr>
-<td class="blanktotal" colspan="3" rowspan="6"></td>
-<td class="totals">Subtotal:</td>
-<td class="totals cost">&pound;1825.60</td>
+<td class="blanktotal" colspan="4" rowspan="3"></td>
+<td class="totals">{{ total_ht|e }}</td>
+<td class="totals cost">{{ object.total_ht|e }}</td>
 </tr>
 <tr>
-<td class="totals">Tax:</td>
-<td class="totals cost">&pound;18.25</td>
+<td class="totals">{{ total_tva|e }}</td>
+<td class="totals cost">{{ object.total_tva|e }}</td>
 </tr>
 <tr>
-<td class="totals">Shipping:</td>
-<td class="totals cost">&pound;42.56</td>
-</tr>
-<tr>
-<td class="totals"><b>TOTAL:</b></td>
-<td class="totals cost"><b>&pound;1882.56</b></td>
-</tr>
-<tr>
-<td class="totals">Deposit:</td>
-<td class="totals cost">&pound;100.00</td>
-</tr>
-<tr>
-<td class="totals"><b>Balance due:</b></td>
-<td class="totals cost"><b>&pound;1782.56</b></td>
+<td class="totals"><b>{{ total_ttc|e }}</b></td>
+<td class="totals cost"><b>{{ object.total_ttc|e }}</b></td>
 </tr>
 </tbody>
 </table>
 
 
-<div style="text-align: center; font-style: italic;">Payment terms: payment due in 30 days</div>
+<div style="text-align: center; font-style: italic;">{{  paymentconditions|e }}: {{ labelpaymentconditions|e }}</div>
 
 
 </body>
