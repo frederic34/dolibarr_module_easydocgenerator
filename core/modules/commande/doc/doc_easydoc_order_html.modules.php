@@ -419,7 +419,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		if (!preg_match('/specimen/i', $objectref)) {
 			$dir .= "/" . $objectref;
 		}
-		$file = $dir . "/" . $objectref . ".pdf";
+		$file = $dir . "/" . $objectref . '_' . basename($srctemplatepath) . ".pdf";
 
 		if (!file_exists($dir)) {
 			if (dol_mkdir($dir) < 0) {
@@ -427,7 +427,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				return -1;
 			}
 		}
-
+		var_dump($file);
 		$mpdf->Output($file, \Mpdf\Output\Destination::FILE);
 
 		$this->result = ['fullpath' => $file];
