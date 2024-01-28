@@ -39,8 +39,9 @@
     "dictionaries": [],
     "boxes": [],
     "const": [
-        ["ORDER_ADDON_EASYDOC_HTM_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/orders", "Directory for orders templates", 1],
-        ["INVOICE_ADDON_EASYDOC_HTM_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/invoices", "Directory for invoices templates", 1],
-        ["PROPALE_ADDON_EASYDOC_HTM_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/propales", "Directory for propales templates", 1]
+        ["ORDER_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/orders", "Directory for orders templates", 1],
+        ["INVOICE_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/invoices", "Directory for invoices templates", 1],
+        ["PROPALE_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/propales", "Directory for propales templates", 1],
+        ["SHIPPING_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/shippings", "Directory for shippings templates", 1]
     ]
 }
