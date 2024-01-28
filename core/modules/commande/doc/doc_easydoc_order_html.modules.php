@@ -65,7 +65,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$this->name = "HTML templates";
 		$this->description = $langs->trans("DocumentModelEasydocgeneratorTemplate");
 		// Name of constant that is used to save list of directories to scan
-		$this->scandir = 'ORDER_ADDON_EASYDOC_HTM_PATH';
+		$this->scandir = 'ORDER_ADDON_EASYDOC_TEMPLATES_PATH';
 		// Save the name of generated file as the main doc when generating a doc with this template
 		$this->update_main_doc_field = 1;
 
@@ -117,13 +117,13 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$text .= '<input type="hidden" name="token" value="' . newToken() . '">';
 		$text .= '<input type="hidden" name="page_y" value="">';
 		$text .= '<input type="hidden" name="action" value="setModuleOptions">';
-		$text .= '<input type="hidden" name="param1" value="ORDER_ADDON_EASYDOC_HTM_PATH">';
+		$text .= '<input type="hidden" name="param1" value="ORDER_ADDON_EASYDOC_TEMPLATES_PATH">';
 		$text .= '<table class="nobordernopadding" width="100%">';
 
 		// List of directories area
 		$text .= '<tr><td>';
 		$texttitle = $langs->trans("ListOfDirectoriesForHtmlTemplates");
-		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim($conf->global->ORDER_ADDON_EASYDOC_HTM_PATH)));
+		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim($conf->global->ORDER_ADDON_EASYDOC_TEMPLATES_PATH)));
 		$listoffiles = [];
 		foreach ($listofdir as $key => $tmpdir) {
 			$tmpdir = trim($tmpdir);
@@ -150,7 +150,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$text .= $form->textwithpicto($texttitle, $texthelp, 1, 'help', '', 1, 3, $this->name);
 		$text .= '<div><div style="display: inline-block; min-width: 100px; vertical-align: middle;">';
 		$text .= '<textarea class="flat" cols="60" name="value1">';
-		$text .= getDolGlobalString('ORDER_ADDON_EASYDOC_HTM_PATH');
+		$text .= getDolGlobalString('ORDER_ADDON_EASYDOC_TEMPLATES_PATH');
 		$text .= '</textarea>';
 		$text .= '</div><div style="display: inline-block; vertical-align: middle;">';
 		$text .= '<input type="submit" class="button button-edit reposition smallpaddingimp" name="modify" value="' . dol_escape_htmltag($langs->trans("Modify")) . '">';
@@ -158,7 +158,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 
 		// Scan directories
 		$nbofiles = count($listoffiles);
-		if (getDolGlobalString('ORDER_ADDON_EASYDOC_HTM_PATH')) {
+		if (getDolGlobalString('ORDER_ADDON_EASYDOC_TEMPLATES_PATH')) {
 			$text .= $langs->trans("NumberOfModelHTMLFilesFound") . ': <b>';
 			//$text.=$nbofiles?'<a id="a_'.get_class($this).'" href="#">':'';
 			$text .= count($listoffiles);
@@ -171,7 +171,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			// Show list of found files
 			foreach ($listoffiles as $file) {
 				$text .= '- ' . $file['name'] . ' <a href="' . DOL_URL_ROOT . '/document.php?modulepart=doctemplates&file=orders/' . urlencode(basename($file['name'])) . '">' . img_picto('', 'listlight') . '</a>';
-				$text .= ' &nbsp; <a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=ORDER_ADDON_EASYDOC_HTM_PATH&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name'])) . '">' . img_picto('', 'delete') . '</a>';
+				$text .= ' &nbsp; <a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=ORDER_ADDON_EASYDOC_TEMPLATES_PATH&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name'])) . '">' . img_picto('', 'delete') . '</a>';
 				$text .= '<br>';
 			}
 			$text .= '</div>';
@@ -185,7 +185,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			$text .= '<input type="hidden" name="MAX_FILE_SIZE" value="' . ($maxmin * 1024) . '">';
 		}
 		$text .= ' <input type="file" name="uploadfile">';
-		$text .= '<input type="hidden" value="ORDER_ADDON_EASYDOC_HTM_PATH" name="keyforuploaddir">';
+		$text .= '<input type="hidden" value="ORDER_ADDON_EASYDOC_TEMPLATES_PATH" name="keyforuploaddir">';
 		$text .= '<input type="submit" class="button reposition smallpaddingimp" value="' . dol_escape_htmltag($langs->trans("Upload")) . '" name="upload">';
 		$text .= '</div>';
 
