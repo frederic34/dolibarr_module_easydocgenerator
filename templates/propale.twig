@@ -1,0 +1,188 @@
+<html>
+<head>
+<style>
+body {font-family: sans-serif;
+	font-size: 10pt;
+}
+p {	margin: 0pt; }
+table.items {
+	border: 0.1mm solid #000000;
+}
+td { vertical-align: top; }
+.items td {
+	border-left: 0.1mm solid #000000;
+	border-right: 0.1mm solid #000000;
+}
+table thead th { background-color: #EEEEEE;
+	text-align: center;
+	border: 0.1mm solid #000000;
+	font-variant: helvetica;
+}
+.items td.blanktotal {
+	background-color: #EEEEEE;
+	border: 0.1mm solid #000000;
+	border: 0mm none #000000;
+	border-top: 0.1mm solid #000000;
+	border-right: 0.1mm solid #000000;
+}
+.items td.subtotaltitle {
+	background-color: {{ SUBTOTAL_TITLE_BACKGROUNDCOLOR }};
+	border: 0.1mm solid #000000;
+	border: 0mm none #000000;
+	border-top: 0.1mm solid #000000;
+	border-bottom: 0.1mm solid #000000;
+	border-right: 0.1mm solid #000000;
+}
+.items td.subtotalsubtotal {
+	background-color: {{ SUBTOTAL_SUBTOTAL_BACKGROUNDCOLOR }};
+	border: 0.1mm solid #000000;
+	border: 0mm none #000000;
+	border-top: 0.1mm solid #000000;
+	border-bottom: 0.1mm solid #000000;
+	border-right: 0.1mm solid #000000;
+}
+.items td.totals {
+	text-align: right;
+	border: 0.1mm solid #000000;
+}
+.items td.cost {
+	text-align: "." right;
+}
+</style>
+</head>
+<body>
+
+<!--mpdf
+<htmlpageheader name="myheader">
+<table width="100%">
+<tr>
+<td align="center"><img src="{{ logo }}" height="80px"/></td>
+<td width="40%" style="color:#0000BB; ">
+	<span style="font-weight: bold; font-size: 14pt;">{{ mysoc.name|e }}</span><br />
+	{{ mysoc.address|e}}<br />
+	{{ mysoc.zip|e}} {{ mysoc.town|e}}<br />
+	<img src="{{ mysoc.flag }}"> {{ mysoc.country|e}}<br />
+	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ mysoc.phone|e}}<br />
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ mysoc.email|e}}<br />
+	{{ mysoc.tvanumber|e}}<br />
+</td>
+<td width="40%" style="text-align: right;">
+<span style="font-weight: bold; font-size: 12pt;">{{ doctitle|e }}: {{ object.ref|e}}</span>
+<br /><span style="font-weight: bold; font-size: 12pt;">{{ date|e }}: {{ object.date|e}}</span>
+{% if object.ref_customer %}
+	<br /><span style="font-weight: bold; font-size: 12pt;">{{ ref_customer|e }}: {{ object.ref_customer|e}}</span>
+{% endif %}
+{% if object.ref_project %}
+	<br /><span style="font-weight: bold; font-size: 12pt;">{{ ref_project|e }}: {{ object.ref_project|e}}</span>
+{% endif %}
+</td>
+</tr>
+</table>
+</htmlpageheader>
+
+<htmlpagefooter name="myfooter">
+<div style="border-top: 1px solid #000000; font-size: 6pt; text-align: center; padding-top: 3mm; ">
+{{ footerinfo.line3|e }}<br />
+{{ footerinfo.line4|e }}<br />
+Page {PAGENO} of {nb}
+</div>
+</htmlpagefooter>
+
+<sethtmlpageheader name="myheader" value="on" show-this-page="1" />
+<sethtmlpagefooter name="myfooter" value="on" />
+mpdf-->
+
+
+<table width="100%" style="font-family: serif;" cellpadding="10">
+<tr>
+<td width="46%" style="border: 0.1mm solid #888888; ">
+<span style="font-size: 7pt; color: #555555; font-family: sans;">SOLD TO:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
+{% if thirdparty.phone %}
+	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone|e}}<br />
+{% endif %}
+{% if thirdparty.email %}
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ thirdparty.email|e}}<br />
+{% endif %}
+</td>
+<td width="8%">&nbsp;</td>
+<td width="46%" style="border: 0.1mm solid #888888;">
+<span style="font-size: 7pt; color: #555555; font-family: sans;">SHIP TO:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
+{% if thirdparty.phone %}
+	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone|e}}<br />
+{% endif %}
+{% if thirdparty.email %}
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ thirdparty.email|e}}<br />
+{% endif %}
+</td>
+</tr>
+</table>
+
+<br />
+<div style="text-align: right">{{ currencyinfo|e }}</div>
+
+<table class="items" width="100%" style="font-size: 7pt; border-collapse: collapse; " cellpadding="8">
+<thead>
+<tr>
+<th width="15%">{{ ref|e }}</th>
+<th width="40%">{{ description|e }}</th>
+<th width="10%">{{ vat|e }}</th>
+<th width="10%">{{ qty|e}}</th>
+<th width="15%">{{ unitprice_ht|e }}</th>
+<th width="15%">{{ total_ht|e }}</th>
+</tr>
+</thead>
+<tbody>
+<!-- ITEMS HERE -->
+{% if lines is iterable %}
+	{% for line in lines %}
+		<tr>
+		{% if line.special_code == 104777 %}
+			{% if line.qty == 1 %}
+				<!-- SUBTOTAL TITLE -->
+				<td class="subtotaltitle" colspan="6" align="left">{{ line.label }}</td>
+			{% elseif line.qty == 50 %}
+				<!-- SUBTOTAL TEXT -->
+				<td class="blanktotal" colspan="6">{{ line.description }}</td>
+			{% elseif line.qty == 99 %}
+				<!-- SUBTOTAL SUBTOTAL -->
+				<td class="subtotalsubtotal" colspan="6" align="right">{{ line.label }}: {{ line.total_ht|e }}</td>
+			{% else %}
+				<td class="subtotal" colspan="6" align="left">{{ line.label }}{{ line.qty|e }}</td>
+			{% endif %}
+		{% else %}
+			<td align="center">{{ line.ref }}</td>
+			<td>{{ line.product_label }}<br />{{ line.product_description }}</td>
+			<td align="right">{{ line.vatrate }}</td>
+			<td align="center">{{ line.qty|e }}</td>
+			<td class="cost">{{ line.subprice|e }}</td>
+			<td class="cost">{{ line.total_ht|e }}</td>
+		{% endif %}
+		</tr>
+	{% endfor %}
+{% else %}
+	{# lines is empty #}
+	No lines
+{% endif %}
+<!-- END ITEMS HERE -->
+<tr>
+<td class="blanktotal" colspan="4" rowspan="3"></td>
+<td class="totals">{{ total_ht|e }}</td>
+<td class="totals cost">{{ object.total_ht|e }}</td>
+</tr>
+<tr>
+<td class="totals">{{ total_tva|e }}</td>
+<td class="totals cost">{{ object.total_tva|e }}</td>
+</tr>
+<tr>
+<td class="totals"><b>{{ total_ttc|e }}</b></td>
+<td class="totals cost"><b>{{ object.total_ttc|e }}</b></td>
+</tr>
+</tbody>
+</table>
+
+
+<div style="text-align: center; font-style: italic;">{{  paymentconditions|e }}: {{ labelpaymentconditions|e }}</div>
+
+
+</body>
+</html>
