@@ -99,7 +99,7 @@ function getPdfPagefoot($outputlangs, $paramfreetext, $fromcompany, $object, $sh
 
 	$outputlangs->load("dict");
 	$line = '';
-	$reg = array();
+	$reg = [];
 
 
 	// Line of free text

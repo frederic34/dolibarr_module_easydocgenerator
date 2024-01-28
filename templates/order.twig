@@ -147,13 +147,13 @@ mpdf-->
 				<!-- SUBTOTAL SUBTOTAL -->
 				<td class="subtotalsubtotal" colspan="6" align="right">{{ line.label }}: {{ line.total_ht|e }}</td>
 			{% else %}
-				<td class="subtotal" colspan="6" align="left">{{ line.label }}{{ line.qty }}</td>
+				<td class="subtotal" colspan="6" align="left">{{ line.label }}{{ line.qty|e }}</td>
 			{% endif %}
 		{% else %}
 			<td align="center">{{ line.ref }}</td>
 			<td>{{ line.product_label }}<br />{{ line.product_description }}</td>
 			<td align="right">{{ line.vatrate }}</td>
-			<td align="center">{{ line.qty }}</td>
+			<td align="center">{{ line.qty|e }}</td>
 			<td class="cost">{{ line.subprice|e }}</td>
 			<td class="cost">{{ line.total_ht|e }}</td>
 		{% endif %}

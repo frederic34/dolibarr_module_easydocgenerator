@@ -58,7 +58,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		global $langs, $mysoc;
 
 		// Load translation files required by the page
-		$langs->loadLangs(array("main", "companies"));
+		$langs->loadLangs(["main", "companies"]);
 
 		$this->db = $db;
 		$this->name = "HTML templates";
@@ -72,7 +72,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$this->type = 'html';
 		$this->page_largeur = 0;
 		$this->page_hauteur = 0;
-		$this->format = array($this->page_largeur, $this->page_hauteur);
+		$this->format = [$this->page_largeur, $this->page_hauteur];
 		$this->marge_gauche = 0;
 		$this->marge_droite = 0;
 		$this->marge_haute = 0;
@@ -107,7 +107,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		global $conf, $langs;
 
 		// Load translation files required by the page
-		$langs->loadLangs(array("errors", "companies", "easydocgenerator@easydocgenerator"));
+		$langs->loadLangs(["errors", "companies", "easydocgenerator@easydocgenerator"]);
 
 		$form = new Form($this->db);
 
@@ -123,7 +123,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$text .= '<tr><td>';
 		$texttitle = $langs->trans("ListOfDirectoriesForHtmlTemplates");
 		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim($conf->global->ORDER_ADDON_EASYDOC_HTM_PATH)));
-		$listoffiles = array();
+		$listoffiles = [];
 		foreach ($listofdir as $key => $tmpdir) {
 			$tmpdir = trim($tmpdir);
 			$tmpdir = preg_replace('/DOL_DATA_ROOT/', DOL_DATA_ROOT, $tmpdir);
@@ -225,7 +225,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			include_once DOL_DOCUMENT_ROOT . '/core/class/hookmanager.class.php';
 			$hookmanager = new HookManager($this->db);
 		}
-		$hookmanager->initHooks(array('odtgeneration'));
+		$hookmanager->initHooks(['odtgeneration']);
 		global $action;
 
 		if (!is_object($outputlangs)) {
@@ -241,7 +241,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			$outputlangs->charset_output = 'ISO-8859-1';
 		}
 
-		$outputlangs->loadLangs(array("main", "dict", "companies", "bills", "products", "orders", "deliveries"));
+		$outputlangs->loadLangs(["main", "dict", "companies", "bills", "products", "orders", "deliveries"]);
 		$currency = !empty($currency) ? $currency : $conf->currency;
 
 		require dol_buildpath('easydocgenerator/vendor/autoload.php');
@@ -262,7 +262,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				$logo = $logodir . '/logos/' . $this->emetteur->logo;
 			}
 		}
-		$langtocountryflag = array(
+		$langtocountryflag = [
 			'ar_AR' => '',
 			'ca_ES' => 'catalonia',
 			'da_DA' => 'dk',
@@ -276,7 +276,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			'MF' => 'unknown',
 			'BL' => 'unknown',
 			'SX' => 'unknown'
-		);
+		];
 
 		if (isset($langtocountryflag[$mysoc->country_code])) {
 			$flagImage = $langtocountryflag[$mysoc->country_code];
@@ -400,7 +400,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			'margin_header' => 10,
 			'margin_footer' => 10
 		]);
-		$mpdf->SetProtection(array('print'));
+		$mpdf->SetProtection(['print']);
 		$mpdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
 		$mpdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
 		$mpdf->SetWatermarkText(getDolGlobalString('COMMANDE_DRAFT_WATERMARK'));
@@ -430,7 +430,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 
 		$mpdf->Output($file, \Mpdf\Output\Destination::FILE);
 
-		$this->result = array('fullpath' => $file);
+		$this->result = ['fullpath' => $file];
 
 		return 1;
 
@@ -520,16 +520,16 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				}
 
 				// Make substitution
-				$substitutionarray = array(
+				$substitutionarray = [
 					'__FROM_NAME__' => $this->emetteur->name,
 					'__FROM_EMAIL__' => $this->emetteur->email,
 					'__TOTAL_TTC__' => $object->total_ttc,
 					'__TOTAL_HT__' => $object->total_ht,
 					'__TOTAL_VAT__' => $object->total_tva
-				);
+				];
 				complete_substitutions_array($substitutionarray, $langs, $object);
 				// Call the ODTSubstitution hook
-				$parameters = array('file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$substitutionarray);
+				$parameters = ['file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$substitutionarray];
 				$reshook = $hookmanager->executeHooks('ODTSubstitution', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 
 				// Line of free text
@@ -544,12 +544,12 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				try {
 					$odfHandler = new Odf(
 						$srctemplatepath,
-						array(
+						[
 							'PATH_TO_TMP'	  => $conf->commande->dir_temp,
 							'ZIP_PROXY'		  => 'PclZipProxy', // PhpZipProxy or PclZipProxy. Got "bad compression method" error when using PhpZipProxy.
 							'DELIMITER_LEFT'  => '{',
 							'DELIMITER_RIGHT' => '}'
-						)
+						]
 					);
 				} catch (Exception $e) {
 					$this->error = $e->getMessage();
@@ -579,7 +579,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				$array_thirdparty = $this->get_substitutionarray_thirdparty($socobject, $outputlangs);
 				$array_other = $this->get_substitutionarray_other($outputlangs);
 				// retrieve contact information for use in object as contact_xxx tags
-				$array_thirdparty_contact = array();
+				$array_thirdparty_contact = [];
 
 				if ($usecontact && is_object($contactobject)) {
 					$array_thirdparty_contact = $this->get_substitutionarray_contact($contactobject, $outputlangs, 'contact');
@@ -589,7 +589,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				complete_substitutions_array($tmparray, $outputlangs, $object);
 
 				// Call the ODTSubstitution hook
-				$parameters = array('odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray);
+				$parameters = ['odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray];
 				$reshook = $hookmanager->executeHooks('ODTSubstitution', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 
 				foreach ($tmparray as $key => $value) {
@@ -627,7 +627,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 							$tmparray = $this->get_substitutionarray_lines($line, $outputlangs, $linenumber);
 							complete_substitutions_array($tmparray, $outputlangs, $object, $line, "completesubstitutionarray_lines");
 							// Call the ODTSubstitutionLine hook
-							$parameters = array('odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray, 'line' => $line);
+							$parameters = ['odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray, 'line' => $line];
 							$reshook = $hookmanager->executeHooks('ODTSubstitutionLine', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 							foreach ($tmparray as $key => $val) {
 								try {
@@ -659,7 +659,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				}
 
 				// Call the beforeODTSave hook
-				$parameters = array('odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray);
+				$parameters = ['odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray];
 				$reshook = $hookmanager->executeHooks('beforeODTSave', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 
 				// Write new file
@@ -672,13 +672,13 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				}
 
 
-				$parameters = array(
+				$parameters = [
 					'odfHandler' => &$odfHandler,
 					'file' => $file,
 					'object' => $object,
 					'outputlangs' => $outputlangs,
 					'substitutionarray' => &$tmparray
-				);
+				];
 				// Note that $action and $object may have been modified by some hooks
 				$reshook = $hookmanager->executeHooks('afterODTCreation', $parameters, $this, $action);
 
@@ -686,7 +686,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 
 				$odfHandler = null; // Destroy object
 
-				$this->result = array('fullpath' => $file);
+				$this->result = ['fullpath' => $file];
 
 				return 1; // Success
 			} else {
