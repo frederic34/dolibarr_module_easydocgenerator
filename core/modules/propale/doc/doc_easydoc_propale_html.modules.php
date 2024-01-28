@@ -33,6 +33,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/doc.lib.php';
+dol_include_once('/easydocgenerator/lib/easydocgenerator.lib.php');
 
 // phpcs:disable
 /**
@@ -231,6 +232,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
 		}
+		$object->fetch_thirdparty();
 		$sav_charset_output = $outputlangs->charset_output;
 		$outputlangs->charset_output = 'UTF-8';
 
@@ -241,6 +243,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		}
 
 		$outputlangs->loadLangs(["main", "dict", "companies", "bills", "products", "propal", "deliveries"]);
+		$currency = !empty($currency) ? $currency : $conf->currency;
 
 		require dol_buildpath('easydocgenerator/vendor/autoload.php');
 
@@ -248,6 +251,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		$twig = new \Twig\Environment($loader, [
 			// 'cache' => DOL_DATA_ROOT.'/easydocgenerator/temp',
 			'cache' => false,
+			'autoescape' => false,
 		]);
 		$template = $twig->load(basename($srctemplatepath));
 
@@ -259,6 +263,36 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 				$logo = $logodir . '/logos/' . $this->emetteur->logo;
 			}
 		}
+		$langtocountryflag = [
+			'ar_AR' => '',
+			'ca_ES' => 'catalonia',
+			'da_DA' => 'dk',
+			'fr_CA' => 'mq',
+			'sv_SV' => 'se',
+			'sw_SW' => 'unknown',
+			'AQ' => 'unknown',
+			'CW' => 'unknown',
+			'IM' => 'unknown',
+			'JE' => 'unknown',
+			'MF' => 'unknown',
+			'BL' => 'unknown',
+			'SX' => 'unknown'
+		];
+
+		if (isset($langtocountryflag[$mysoc->country_code])) {
+			$flagImage = $langtocountryflag[$mysoc->country_code];
+		} else {
+			$tmparray = explode('_', $mysoc->country_code);
+			$flagImage = empty($tmparray[1]) ? $tmparray[0] : $tmparray[1];
+		}
+		if ($object->cond_reglement_code) {
+			$label_payment_conditions = ($outputlangs->transnoentities("PaymentCondition" . $object->cond_reglement_code) != 'PaymentCondition' . $object->cond_reglement_code) ? $outputlangs->transnoentities("PaymentCondition" . $object->cond_reglement_code) : $outputlangs->convToOutputCharset($object->cond_reglement_doc ? $object->cond_reglement_doc : $object->cond_reglement_label);
+			$label_payment_conditions = str_replace('\n', "\n", $label_payment_conditions);
+			if ($object->deposit_percent > 0) {
+				$label_payment_conditions = str_replace('__DEPOSIT_PERCENT__', $object->deposit_percent, $label_payment_conditions);
+			}
+		}
+
 		$substitutions = [
 			'mysoc' => [
 				'name' => $mysoc->name,
@@ -267,6 +301,8 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 				'zip' => $mysoc->zip,
 				'town' => $mysoc->town,
 				'country' => $mysoc->country,
+				'flag' => DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($flagImage) . '.png',
+				// 'phone' => dol_print_phone($mysoc->phone, $mysoc->country_code, 0, 0, '', ''),
 				'phone' => $mysoc->phone,
 				'email' => $mysoc->email,
 				'idprof1' => $mysoc->idprof1,
@@ -275,39 +311,88 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 				'idprof4' => $mysoc->idprof4,
 				'idprof5' => $mysoc->idprof5,
 				'idprof6' => $mysoc->idprof6,
+				'capital' => $mysoc->capital,
+				'tvanumber' => $mysoc->tva_intra,
+			],
+			'thirdparty' => [
+				'name' => $object->thirdparty->name,
+				'name_alias' => $object->thirdparty->name_alias,
+				'address' => $object->thirdparty->address,
+				'zip' => $object->thirdparty->zip,
+				'town' => $object->thirdparty->town,
+				'country' => $object->thirdparty->country,
+				'flag' => DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($object->thirdparty->country_code) . '.png',
+				// 'phone' => dol_print_phone($object->thirdparty->phone, $object->thirdparty->country_code, 0, 0, '', ''),
+				'phone' => $object->thirdparty->phone,
+				'email' => $object->thirdparty->email,
+				'idprof1' => $object->thirdparty->idprof1,
+				'idprof2' => $object->thirdparty->idprof2,
+				'idprof3' => $object->thirdparty->idprof3,
+				'idprof4' => $object->thirdparty->idprof4,
+				'idprof5' => $object->thirdparty->idprof5,
+				'idprof6' => $object->thirdparty->idprof6,
+				'capital' => $object->thirdparty->capital,
+				'code_client' => $object->thirdparty->code_client,
 			],
 			'object' => [
-				'date' => dol_print_date($object->date, 'day'),
+				'date' => dol_print_date($object->date, "day", false, $outputlangs, true),
 				'ref' => $object->ref,
+				'total_tva' => price($object->total_tva),
+				'total_ht' => price($object->total_ht),
+				'total_ttc' => price($object->total_ttc),
+				'ref_customer' => $outputlangs->convToOutputCharset($object->ref_client),
 			],
 			'doctitle' => $outputlangs->trans('PdfCommercialProposalTitle'),
-			'ref_customer' => $outputlangs->transnoentities("RefCustomer"),
+			'date' => $outputlangs->transnoentities("OrderDate"),
 			'qty' => $outputlangs->transnoentitiesnoconv('Qty'),
 			'ref' => $outputlangs->transnoentitiesnoconv('Ref'),
+			'ref_customer' => $outputlangs->transnoentities("RefCustomer"),
 			'unitprice_ht' => $outputlangs->transnoentitiesnoconv('PriceUHT'),
 			'total_ht' => $outputlangs->transnoentitiesnoconv('TotalHTShort'),
+			'total_tva' => $outputlangs->transnoentitiesnoconv('TotalVAT'),
 			'total_ttc' => $outputlangs->transnoentitiesnoconv('TotalTTCShort'),
 			'vat' => $outputlangs->transnoentitiesnoconv('VAT'),
 			'description' => $outputlangs->trans('Description'),
 			'logo' => $logo,
 			'freetext' => getDolGlobalString('PROPOSAL_FREE_TEXT'),
 			'lines' => [],
+			'footerinfo' => getPdfPagefoot($outputlangs, $paramfreetext, $mysoc, $object),
+			'paymentconditions' => $outputlangs->transnoentities("PaymentConditions"),
+			'labelpaymentconditions' => $label_payment_conditions,
+			'currencyinfo' => $outputlangs->transnoentities("AmountInCurrency", $outputlangs->transnoentitiesnoconv("Currency" . $currency)),
+			'SUBTOTAL_TITLE_BACKGROUNDCOLOR' => getDolGlobalString('SUBTOTAL_TITLE_BACKGROUNDCOLOR', '#ffffff'),
+			'SUBTOTAL_SUBTOTAL_BACKGROUNDCOLOR' => getDolGlobalString('SUBTOTAL_SUBTOTAL_BACKGROUNDCOLOR', '#ebebeb'),
 		];
+		$subtotal_ht = 0;
+		$subtotal_ttc = 0;
 		foreach ($object->lines as $key => $line) {
+			$subtotal_ht += $line->total_ht;
+			$subtotal_ttc += $line->total_ttc;
+			if ($line->special_code == 104777 && $line->qty == 99) {
+				$line->total_ht = $subtotal_ht;
+				$line->total_ttc = $subtotal_ttc;
+				$subtotal_ht = 0;
+				$subtotal_ttc = 0;
+			}
 			$substitutions['lines'][$key] = [
 				'qty' => $line->qty,
 				'ref' => $line->product_ref,
-				'label' => $line->product_label,
-				'description' => $line->product_desc,
+				'label' => $line->label,
+				'description' => $line->desc,
+				'product_label' => $line->product_label,
+				'product_description' => $line->product_desc,
 				'subprice' => price($line->subprice),
 				'total_ht' => price($line->total_ht),
 				'total_ttc' => price($line->total_ttc),
 				'vatrate' => price($line->tva_tx) . '%',
+				'special_code' => $line->special_code,
 			];
 		}
 
-		$html = $template->render($substitutions);
+		// var_dump($substitutions);
 
+		$html = $template->render($substitutions);
+		// print $html;
 		$mpdf = new \Mpdf\Mpdf([
 			'margin_left' => 10,
 			'margin_right' => 10,
@@ -414,7 +499,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		if (!preg_match('/specimen/i', $objectref)) {
 			$dir .= "/" . $objectref;
 		}
-		$file = $dir . "/" . $objectref . ".pdf";
+		$file = $dir . "/" . $objectref . '_' . basename($srctemplatepath) . ".pdf";
 
 		if (!file_exists($dir)) {
 			if (dol_mkdir($dir) < 0) {
@@ -425,9 +510,11 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 
 		$mpdf->Output($file, \Mpdf\Output\Destination::FILE);
 
+		$this->result = ['fullpath' => $file];
+
 		return 1;
 
-		if ($conf->propal->dir_output) {
+		if (!empty($conf->propal->dir_output)) {
 			// If $object is id instead of object
 			if (!is_object($object)) {
 				$id = $object;
@@ -656,23 +743,14 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 				$reshook = $hookmanager->executeHooks('beforeODTSave', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 
 				// Write new file
-				if (getDolGlobalString('MAIN_ODT_AS_PDF')) {
-					try {
-						$odfHandler->exportAsAttachedPDF($file);
-					} catch (Exception $e) {
-						$this->error = $e->getMessage();
-						dol_syslog($e->getMessage(), LOG_INFO);
-						return -1;
-					}
-				} else {
-					try {
-						$odfHandler->saveToDisk($file);
-					} catch (Exception $e) {
-						$this->error = $e->getMessage();
-						dol_syslog($e->getMessage(), LOG_INFO);
-						return -1;
-					}
+				try {
+					$odfHandler->saveToDisk($file);
+				} catch (Exception $e) {
+					$this->error = $e->getMessage();
+					dol_syslog($e->getMessage(), LOG_INFO);
+					return -1;
 				}
+
 
 				$parameters = [
 					'odfHandler' => &$odfHandler,

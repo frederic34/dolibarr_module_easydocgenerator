@@ -63,7 +63,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 
 		$this->db = $db;
 		$this->name = "HTML templates";
-		$this->description = $langs->trans("DocumentModelHtml");
+		$this->description = $langs->trans("DocumentModelEasydocgeneratorTemplate");
 		// Name of constant that is used to save list of directories to scan
 		$this->scandir = 'ORDER_ADDON_EASYDOC_HTM_PATH';
 		// Save the name of generated file as the main doc when generating a doc with this template

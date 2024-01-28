@@ -38,6 +38,6 @@ EASYBUILDER_MYPARAM2Tooltip=My param 2 tooltip
 # About page
 #
 
-EasyBuilderAbout = About EasyBuilder
+EasydocgeneratorAbout = A propos d'Easydocgenerator
 EasyBuilderAboutPage = EasyBuilder about page
 
