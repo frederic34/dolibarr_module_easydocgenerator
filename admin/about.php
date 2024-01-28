@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2004-2017  Laurent Destailleur     <eldy@users.sourceforge.net>
- * Copyright (C) 2019-2021  Frédéric France         <frederic.france@netlogic.fr>
+ * Copyright (C) 2019-2021  Frédéric France         <frederic.france@free.fr>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 require_once '../lib/easydocgenerator.lib.php';
 
 // Translations
-$langs->loadLangs(array("errors", "admin", "easydocgenerator@easydocgenerator"));
+$langs->loadLangs(["errors", "admin", "easydocgenerator@easydocgenerator"]);
 
 // Access control
 if (!$user->admin) {
