@@ -2,3 +2,9 @@
  * Language code: pl_PL
  * Generation date 2024-01-28 10:04:09
  */
+ModuleEasydocgeneratorName=Łatwydogenerator
+ModuleEasydocgeneratorDesc=Opis generatora Easydoc
+EasydocgeneratorSetup=Ustawienia Easydocgeneratora
+EasydocgeneratorSetupPage=Ustawienia Easydocgeneratora
+EasydocgeneratorAbout=O Easydocgeneratorze
+EasydocgeneratorAboutPage=Easydocgenerator o stronie

@@ -2,3 +2,9 @@
  * Language code: es_ES
  * Generation date 2024-01-28 10:04:03
  */
+ModuleEasydocgeneratorName=generadorfacildoc
+ModuleEasydocgeneratorDesc=Descripción de Easydocgenerator
+EasydocgeneratorSetup=Configuración del generador Easydoc
+EasydocgeneratorSetupPage=Configuración del generador Easydoc
+EasydocgeneratorAbout=Acerca de Easydocgenerator
+EasydocgeneratorAboutPage=Easydocgenerator sobre la página
