@@ -233,6 +233,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			$outputlangs = $langs;
 		}
 		$object->fetch_thirdparty();
+
 		$sav_charset_output = $outputlangs->charset_output;
 		$outputlangs->charset_output = 'UTF-8';
 
@@ -302,8 +303,8 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				'town' => $mysoc->town,
 				'country' => $mysoc->country,
 				'flag' => DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($flagImage) . '.png',
-				// 'phone' => dol_print_phone($mysoc->phone, $mysoc->country_code, 0, 0, '', ''),
-				'phone' => $mysoc->phone,
+				'phone' => dol_print_phone($mysoc->phone, $mysoc->country_code, 0, 0, '', ' '),
+				// 'phone' => $mysoc->phone,
 				'email' => $mysoc->email,
 				'idprof1' => $mysoc->idprof1,
 				'idprof2' => $mysoc->idprof2,
@@ -322,8 +323,8 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				'town' => $object->thirdparty->town,
 				'country' => $object->thirdparty->country,
 				'flag' => DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($object->thirdparty->country_code) . '.png',
-				// 'phone' => dol_print_phone($object->thirdparty->phone, $object->thirdparty->country_code, 0, 0, '', ''),
-				'phone' => $object->thirdparty->phone,
+				'phone' => dol_print_phone($object->thirdparty->phone, $object->thirdparty->country_code, 0, 0, '', ' '),
+				'fax' => dol_print_phone($object->thirdparty->fax, $object->thirdparty->country_code, 0, 0, '', ' '),
 				'email' => $object->thirdparty->email,
 				'idprof1' => $object->thirdparty->idprof1,
 				'idprof2' => $object->thirdparty->idprof2,
@@ -342,9 +343,9 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				'total_ttc' => price($object->total_ttc),
 				'ref_customer' => $outputlangs->convToOutputCharset($object->ref_client),
 			],
-			'doctitle' => $outputlangs->transnoentitiesnoconv('PdfOrderTitle'),
-			'date' => $outputlangs->transnoentities("OrderDate"),
-			'qty' => $outputlangs->transnoentitiesnoconv('Qty'),
+			'doctitle' => $outputlangs->trans('PdfOrderTitle'),
+			'date' => $outputlangs->trans("OrderDate"),
+			'qty' => $outputlangs->trans('Qty'),
 			'ref' => $outputlangs->transnoentitiesnoconv('Ref'),
 			'ref_customer' => $outputlangs->transnoentities("RefCustomer"),
 			'unitprice_ht' => $outputlangs->transnoentitiesnoconv('PriceUHT'),
@@ -386,6 +387,9 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				'total_ttc' => price($line->total_ttc),
 				'vatrate' => price($line->tva_tx) . '%',
 				'special_code' => $line->special_code,
+				'product_type' => $line->product_type,
+				'line_options' => [],
+				'product_options' => [],
 			];
 		}
 

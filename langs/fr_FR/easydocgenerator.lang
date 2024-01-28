@@ -17,21 +17,16 @@
 # Generic
 #
 
-# Module label 'ModuleEasyBuilderName'
-ModuleEasyBuilderName = EasyBuilder
-# Module description 'ModuleEasyBuilderDesc'
-ModuleEasyBuilderDesc = EasyBuilder description
+# Module label 'ModuleEasydocgeneratorName'
+ModuleEasydocgeneratorName = Easydocgenerator
+# Module description 'ModuleEasydocgeneratorDesc'
+ModuleEasydocgeneratorDesc = Easydocgenerator description
 
 #
 # Admin page
 #
-EasyBuilderSetup = EasyBuilder setup
-Settings = Settings
-EasyBuilderSetupPage = EasyBuilder setup page
-EASYBUILDER_MYPARAM1 = My param 1
-EASYBUILDER_MYPARAM1Tooltip = My param 1 tooltip
-EASYBUILDER_MYPARAM2=My param 2
-EASYBUILDER_MYPARAM2Tooltip=My param 2 tooltip
+EasydocgeneratorSetup = Paramètres Easydocgenerator
+EasydocgeneratorSetupPage = Paramètres Easydocgenerator
 
 
 #
@@ -39,5 +34,5 @@ EASYBUILDER_MYPARAM2Tooltip=My param 2 tooltip
 #
 
 EasydocgeneratorAbout = A propos d'Easydocgenerator
-EasyBuilderAboutPage = EasyBuilder about page
+EasydocgeneratorAboutPage = Easydocgenerator about page
 

@@ -2,15 +2,4 @@
  * Language code: it_IT
  * Generation date 2024-01-28 10:03:59
  */
-ModuleEasyBuilderName=EasyBuilder
-ModuleEasyBuilderDesc=Descrizione di EasyBuilder
-EasyBuilderSetup=Configurazione di EasyBuilder
-Settings=Impostazioni
-EasyBuilderSetupPage=Pagina di configurazione di EasyBuilder
-EASYBUILDER_MYPARAM1=Il mio parametro 1
-EASYBUILDER_MYPARAM1Tooltip=Descrizione comando del mio parametro 1
-EASYBUILDER_MYPARAM2=Il mio parametro 2
-EASYBUILDER_MYPARAM2Tooltip=Il mio tooltip param 2
-EasyBuilderAbout=Informazioni su EasyBuilder
-EasyBuilderAboutPage=EasyBuilder sulla pagina
-EasydocgeneratorAbout=Informazioni su Easydocgenerator
+<
