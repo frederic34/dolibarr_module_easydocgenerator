@@ -34,12 +34,12 @@ include_once DOL_DOCUMENT_ROOT . '/core/modules/DolibarrModules.class.php';
  */
 class modEasydocgenerator extends DolibarrModules
 {
+	// phpcs:enable
 	/**
 	 * @var array configuration from json file
 	 */
 	public $configuration;
 
-	// phpcs:enable
 	/**
 	 * Constructor. Define names, constants, directories, boxes, permissions
 	 *
@@ -150,8 +150,12 @@ class modEasydocgenerator extends DolibarrModules
 		// Array to add new pages in new tabs
 		$this->tabs = $this->configuration['tabs'];
 		// Example:
-		// $this->tabs[] = ['data'=>'objecttype:+tabname1:Title1:mylangfile@easydocgenerator:$user->rights->easydocgenerator->read:/easydocgenerator/mynewtab1.php?id=__ID__'];  					// To add a new tab identified by code tabname1
-		// $this->tabs[] = array('data'=>'objecttype:+tabname2:SUBSTITUTION_Title2:mylangfile@easydocgenerator:$user->rights->othermodule->read:/easydocgenerator/mynewtab2.php?id=__ID__');  	// To add another new tab identified by code tabname2. Label will be result of calling all substitution functions on 'Title2' key.
+		// $this->tabs[] = [
+		// 	// To add a new tab identified by code tabname1
+		// 	'data'=>'objecttype:+tabname1:Title1:mylangfile@easydocgenerator:$user->rights->easydocgenerator->read:/easydocgenerator/mynewtab1.php?id=__ID__'
+		// ];
+		// // To add another new tab identified by code tabname2. Label will be result of calling all substitution functions on 'Title2' key.
+		// $this->tabs[] = array('data'=>'objecttype:+tabname2:SUBSTITUTION_Title2:mylangfile@easydocgenerator:$user->rights->othermodule->read:/easydocgenerator/mynewtab2.php?id=__ID__');
 		// $this->tabs[] = array('data'=>'objecttype:-tabname:NU:conditiontoremove');                                                     										// To remove an existing tab identified by code tabname
 		//
 		// Where objecttype can be
@@ -462,7 +466,7 @@ class modEasydocgenerator extends DolibarrModules
 		foreach ($modules as $module) {
 			$src = DOL_DOCUMENT_ROOT . '/install/doctemplates/' . $moduledir . '/template_myobjects.twig';
 			$dirtwig = DOL_DATA_ROOT . '/doctemplates/' . $moduledir;
-			$dest = $dirtwig . '/'.$module . '/template_myobjects.twig';
+			$dest = $dirtwig . '/' . $module . '/template_myobjects.twig';
 
 			if (file_exists($src) && !file_exists($dest)) {
 				require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';

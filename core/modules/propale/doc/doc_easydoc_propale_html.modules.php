@@ -34,12 +34,13 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/doc.lib.php';
 
-
+// phpcs:disable
 /**
  *	Class to build documents using HTML templates
  */
 class doc_easydoc_propale_html extends ModelePDFPropales
 {
+	// phpcs:enable
 	/**
 	 * Dolibarr version of the loaded document
 	 * @var string
@@ -197,7 +198,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		return $text;
 	}
 
-	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
+	// phpcs:disable
 	/**
 	 *  Function to build a document on disk using the generic odt module.
 	 *

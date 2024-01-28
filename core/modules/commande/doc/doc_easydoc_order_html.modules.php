@@ -35,12 +35,13 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/doc.lib.php';
 dol_include_once('/easydocgenerator/lib/easydocgenerator.lib.php');
 
-
+// phpcs:disable
 /**
  *	Class to build documents using HTML templates
  */
 class doc_easydoc_order_html extends ModelePDFCommandes
 {
+	// phpcs:enable
 	/**
 	 * Dolibarr version of the loaded document
 	 * @var string
@@ -198,7 +199,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		return $text;
 	}
 
-	// phpcs:disable PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps
+	// phpcs:disable
 	/**
 	 *  Function to build a document on disk using the generic odt module.
 	 *
