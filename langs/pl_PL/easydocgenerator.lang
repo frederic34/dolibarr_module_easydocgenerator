@@ -8,3 +8,6 @@ EasydocgeneratorSetup=Ustawienia Easydocgeneratora
 EasydocgeneratorSetupPage=Ustawienia Easydocgeneratora
 EasydocgeneratorAbout=O Easydocgeneratorze
 EasydocgeneratorAboutPage=Easydocgenerator o stronie
+EasydocgeneratorEnableDevelopperMode=Włącz tryb programisty
+CHECKLASTVERSION_EXTERNALMODULE=Wymuś sprawdzanie wersji modułów zewnętrznych (niezalecane, opcja mogła zostać aktywowana przez inny moduł)
+MAIN_ENABLE_AJAX_TOOLTIP=Włącz podpowiedzi Ajax (wymaga wersji Dolibar &gt;= 18)
