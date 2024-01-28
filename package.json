@@ -1,7 +1,7 @@
 {
   "name": "easydocgenerator",
   "changelog": {
-    "repo": "Net-Logic/dolibarr_module_easydocgenerator",
+    "repo": "frederic34/dolibarr_module_easydocgenerator",
     "labels": {
       "nextVersion": "Unreleased",
       "breaking": ":boom: Breaking Change",
