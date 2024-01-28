@@ -1,0 +1,15 @@
+/*
+ * Language code: en_US
+ * Generation date 2024-01-28 10:04:01
+ */
+ModuleEasyBuilderName=EasyBuilder
+ModuleEasyBuilderDesc=EasyBuilder description
+EasyBuilderSetup=EasyBuilder setup
+Settings=Settings
+EasyBuilderSetupPage=EasyBuilder setup page
+EASYBUILDER_MYPARAM1=My param 1
+EASYBUILDER_MYPARAM1Tooltip=My param 1 tooltip
+EASYBUILDER_MYPARAM2=My param 2
+EASYBUILDER_MYPARAM2Tooltip=My param 2 tooltip
+EasyBuilderAbout=About EasyBuilder
+EasyBuilderAboutPage=EasyBuilder about page
