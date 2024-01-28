@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE ruleset SYSTEM "ruleset.dtd">
+<ruleset name="Net Logic">
+	<description>Net Logic coding standard.</description>
+	<arg name="tab-width" value="4"/>
+
+	<exclude-pattern type="relative">build</exclude-pattern>
+	<exclude-pattern type="relative">vendor</exclude-pattern>
+	<exclude-pattern type="relative">node_modules</exclude-pattern>
+	<exclude-pattern type="relative">build/html</exclude-pattern>
+
+	<!-- List of all tests -->
+	<rule ref="PSR12">
+		<exclude name="Generic.WhiteSpace.DisallowTabIndent"/>
+		<exclude name="PSR1.Files.SideEffects.FoundWithSymbols" />
+		<exclude name="PSR1.Classes.ClassDeclaration.MissingNamespace" />
+		<exclude name="PSR12.Files.FileHeader.SpacingAfterBlock" />
+		<exclude name="PSR12.Properties.ConstantVisibility.NotFound" />
+	</rule>
+
+	<!-- Disallow usage of space -->
+	<rule ref="Generic.WhiteSpace.DisallowSpaceIndent" />
+	<rule ref="Generic.Arrays.DisallowLongArraySyntax" />
+
+	<rule ref="Generic.WhiteSpace.ScopeIndent">
+	  <properties>
+		<property name="indent" value="4"/>
+		<property name="tabIndent" value="true"/>
+	  </properties>
+	</rule>
+	<!-- Lines can be 85 chars long, but never show errors -->
+	<rule ref="Generic.Files.LineLength">
+		<properties>
+			<property name="lineLimit" value="300" />
+			<property name="absoluteLineLimit" value="0" />
+		</properties>
+	</rule>
+</ruleset>
