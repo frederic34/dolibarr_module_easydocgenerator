@@ -155,7 +155,6 @@ function getPdfPagefoot($outputlangs, $paramfreetext, $fromcompany, $object, $sh
 		if ($fromcompany->fax) {
 			$line2 .= ($line2 ? " - " : "") . $outputlangs->transnoentities("Fax") . ": " . $fromcompany->fax;
 		}
-
 		// URL
 		if ($fromcompany->url) {
 			$line2 .= ($line2 ? " - " : "") . $fromcompany->url;

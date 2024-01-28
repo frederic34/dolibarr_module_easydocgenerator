@@ -209,14 +209,7 @@ class modEasydocgenerator extends DolibarrModules
 		$this->dictionaries = $this->configuration['dictionaries'];
 
 		// Boxes/Widgets
-		// Add here list of php file(s) stored in easydocgenerator/core/boxes that contains a class to show a widget.
 		$this->boxes = $this->configuration['boxes'];
-		//  0 => array(
-		//      'file' => 'easydocgeneratorwidget1.php@easydocgenerator',
-		//      'note' => 'Widget provided by Easydocgenerator',
-		//      'enabledbydefaulton' => 'Home',
-		//  ),
-		//  ...
 
 		// Cronjobs (List of cron jobs entries to add when module is enabled)
 		// unit_frequency must be 60 for minute, 3600 for hour, 86400 for day, 604800 for week
@@ -237,11 +230,6 @@ class modEasydocgenerator extends DolibarrModules
 			//      'priority' => 50,
 			//  ),
 		];
-		/* END MODULEBUILDER CRON */
-		// Example: $this->cronjobs=array(
-		//    0=>array('label'=>'My label', 'jobtype'=>'method', 'class'=>'/dir/class/file.class.php', 'objectname'=>'MyClass', 'method'=>'myMethod', 'parameters'=>'param1, param2', 'comment'=>'Comment', 'frequency'=>2, 'unitfrequency'=>3600, 'status'=>0, 'test'=>'isModEnabled("easydocgenerator")', 'priority'=>50),
-		//    1=>array('label'=>'My label', 'jobtype'=>'command', 'command'=>'', 'parameters'=>'param1, param2', 'comment'=>'Comment', 'frequency'=>1, 'unitfrequency'=>3600*24, 'status'=>0, 'test'=>'isModEnabled("easydocgenerator")', 'priority'=>50)
-		// );
 
 		// Permissions provided by this module
 		$this->rights = [];
@@ -333,73 +321,6 @@ class modEasydocgenerator extends DolibarrModules
 			'target'=>'',
 			'user'=>2,				                // 0=Menu for internal users, 1=external users, 2=both
 		);*/
-		/* END MODULEBUILDER LEFTMENU MYOBJECT */
-		// Exports profiles provided by this module
-		$r = 1;
-		/* BEGIN MODULEBUILDER EXPORT MYOBJECT */
-		/*
-		$langs->load("easydocgenerator@easydocgenerator");
-		$this->export_code[$r]=$this->rights_class.'_'.$r;
-		$this->export_label[$r]='MyObjectLines';	// Translation key (used only if key ExportDataset_xxx_z not found)
-		$this->export_icon[$r]='myobject@easydocgenerator';
-		// Define $this->export_fields_array, $this->export_TypeFields_array and $this->export_entities_array
-		$keyforclass = 'MyObject'; $keyforclassfile='/easydocgenerator/class/myobject.class.php'; $keyforelement='myobject@easydocgenerator';
-		include DOL_DOCUMENT_ROOT.'/core/commonfieldsinexport.inc.php';
-		//$this->export_fields_array[$r]['t.fieldtoadd']='FieldToAdd'; $this->export_TypeFields_array[$r]['t.fieldtoadd']='Text';
-		//unset($this->export_fields_array[$r]['t.fieldtoremove']);
-		//$keyforclass = 'MyObjectLine'; $keyforclassfile='/easydocgenerator/class/myobject.class.php'; $keyforelement='myobjectline@easydocgenerator'; $keyforalias='tl';
-		//include DOL_DOCUMENT_ROOT.'/core/commonfieldsinexport.inc.php';
-		$keyforselect='myobject'; $keyforaliasextra='extra'; $keyforelement='myobject@easydocgenerator';
-		include DOL_DOCUMENT_ROOT.'/core/extrafieldsinexport.inc.php';
-		//$keyforselect='myobjectline'; $keyforaliasextra='extraline'; $keyforelement='myobjectline@easydocgenerator';
-		//include DOL_DOCUMENT_ROOT.'/core/extrafieldsinexport.inc.php';
-		//$this->export_dependencies_array[$r] = array('myobjectline'=>array('tl.rowid','tl.ref')); // To force to activate one or several fields if we select some fields that need same (like to select a unique key if we ask a field of a child to avoid the DISTINCT to discard them, or for computed field than need several other fields)
-		//$this->export_special_array[$r] = array('t.field'=>'...');
-		//$this->export_examplevalues_array[$r] = array('t.field'=>'Example');
-		//$this->export_help_array[$r] = array('t.field'=>'FieldDescHelp');
-		$this->export_sql_start[$r]='SELECT DISTINCT ';
-		$this->export_sql_end[$r]  =' FROM '.MAIN_DB_PREFIX.'myobject as t';
-		//$this->export_sql_end[$r]  =' LEFT JOIN '.MAIN_DB_PREFIX.'myobject_line as tl ON tl.fk_myobject = t.rowid';
-		$this->export_sql_end[$r] .=' WHERE 1 = 1';
-		$this->export_sql_end[$r] .=' AND t.entity IN ('.getEntity('myobject').')';
-		$r++; */
-		/* END MODULEBUILDER EXPORT MYOBJECT */
-
-		// Imports profiles provided by this module
-		$r = 1;
-		/* BEGIN MODULEBUILDER IMPORT MYOBJECT */
-		/*
-		$langs->load("easydocgenerator@easydocgenerator");
-		$this->import_code[$r]=$this->rights_class.'_'.$r;
-		$this->import_label[$r]='MyObjectLines';	// Translation key (used only if key ExportDataset_xxx_z not found)
-		$this->import_icon[$r]='myobject@easydocgenerator';
-		$this->import_tables_array[$r] = array('t' => MAIN_DB_PREFIX.'easydocgenerator_myobject', 'extra' => MAIN_DB_PREFIX.'easydocgenerator_myobject_extrafields');
-		$this->import_tables_creator_array[$r] = array('t' => 'fk_user_author'); // Fields to store import user id
-		$import_sample = array();
-		$keyforclass = 'MyObject'; $keyforclassfile='/easydocgenerator/class/myobject.class.php'; $keyforelement='myobject@easydocgenerator';
-		include DOL_DOCUMENT_ROOT.'/core/commonfieldsinimport.inc.php';
-		$import_extrafield_sample = array();
-		$keyforselect='myobject'; $keyforaliasextra='extra'; $keyforelement='myobject@easydocgenerator';
-		include DOL_DOCUMENT_ROOT.'/core/extrafieldsinimport.inc.php';
-		$this->import_fieldshidden_array[$r] = array('extra.fk_object' => 'lastrowid-'.MAIN_DB_PREFIX.'easydocgenerator_myobject');
-		$this->import_regex_array[$r] = array();
-		$this->import_examplevalues_array[$r] = array_merge($import_sample, $import_extrafield_sample);
-		$this->import_updatekeys_array[$r] = array('t.ref' => 'Ref');
-		$this->import_convertvalue_array[$r] = array(
-			't.ref' => array(
-				'rule'=>'getrefifauto',
-				'class'=>(!getDolGlobalString('EASYDOCGENERATOR_MYOBJECT_ADDON') ? 'mod_myobject_standard' : getDolGlobalString('EASYDOCGENERATOR_MYOBJECT_ADDON')),
-				'path'=>"/core/modules/commande/".(!getDolGlobalString('EASYDOCGENERATOR_MYOBJECT_ADDON') ? 'mod_myobject_standard' : getDolGlobalString('EASYDOCGENERATOR_MYOBJECT_ADDON')).'.php'
-				'classobject'=>'MyObject',
-				'pathobject'=>'/easydocgenerator/class/myobject.class.php',
-			),
-			't.fk_soc' => array('rule' => 'fetchidfromref', 'file' => '/societe/class/societe.class.php', 'class' => 'Societe', 'method' => 'fetch', 'element' => 'ThirdParty'),
-			't.fk_user_valid' => array('rule' => 'fetchidfromref', 'file' => '/user/class/user.class.php', 'class' => 'User', 'method' => 'fetch', 'element' => 'user'),
-			't.fk_mode_reglement' => array('rule' => 'fetchidfromcodeorlabel', 'file' => '/compta/paiement/class/cpaiement.class.php', 'class' => 'Cpaiement', 'method' => 'fetch', 'element' => 'cpayment'),
-		);
-		$this->import_run_sql_after_array[$r] = array();
-		$r++; */
-		/* END MODULEBUILDER IMPORT MYOBJECT */
 	}
 
 	/**
@@ -461,11 +382,12 @@ class modEasydocgenerator extends DolibarrModules
 		$moduledir = dol_sanitizeFileName('easydocgenerator');
 		$modules = [];
 		$modules = [
-			'commande',
+			'order',
+			'invoice',
 		];
 
 		foreach ($modules as $module) {
-			$src = DOL_DOCUMENT_ROOT . '/install/doctemplates/' . $moduledir . '/template_myobjects.twig';
+			$src = dol_buildpath('/easydocgenerator/templates/');
 			$dirtwig = DOL_DATA_ROOT . '/doctemplates/' . $moduledir;
 			$dest = $dirtwig . '/' . $module . '/template_myobjects.twig';
 

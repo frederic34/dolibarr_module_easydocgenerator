@@ -33,6 +33,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/doc.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
 dol_include_once('/easydocgenerator/lib/easydocgenerator.lib.php');
 
 // phpcs:disable
@@ -293,6 +294,52 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				$label_payment_conditions = str_replace('__DEPOSIT_PERCENT__', $object->deposit_percent, $label_payment_conditions);
 			}
 		}
+		// If CUSTOMER contact defined on order, we use it
+		$usecontact = false;
+		$arrayidcontact = $object->getIdContact('external', 'CUSTOMER');
+		if (count($arrayidcontact) > 0) {
+			$usecontact = true;
+			$result = $object->fetch_contact($arrayidcontact[0]);
+		}
+
+		// Recipient name
+		$contactobject = null;
+		if (!empty($usecontact)) {
+			// We can use the company of contact instead of thirdparty company
+			if ($object->contact->socid != $object->thirdparty->id && (!isset($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) || getDolGlobalString('MAIN_USE_COMPANY_NAME_OF_CONTACT'))) {
+				$object->contact->fetch_thirdparty();
+				$socobject = $object->contact->thirdparty;
+				$contactobject = $object->contact;
+			} else {
+				$socobject = $object->thirdparty;
+				// if we have a CUSTOMER contact and we don't use it as thirdparty recipient we store the contact object for later use
+				$contactobject = $object->contact;
+			}
+		} else {
+			$socobject = $object->thirdparty;
+		}
+
+		// Make substitution
+		$substitutionarray = [
+			'__FROM_NAME__' => $this->emetteur->name,
+			'__FROM_EMAIL__' => $this->emetteur->email,
+			'__TOTAL_TTC__' => $object->total_ttc,
+			'__TOTAL_HT__' => $object->total_ht,
+			'__TOTAL_VAT__' => $object->total_tva
+		];
+		complete_substitutions_array($substitutionarray, $langs, $object);
+		$substitutionarray = array_merge(getCommonSubstitutionArray($outputlangs, 0, null, $object), $substitutionarray);
+
+		// Call the ODTSubstitution hook
+		$parameters = ['file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$substitutionarray];
+		$reshook = $hookmanager->executeHooks('ODTSubstitution', $parameters, $this, $action);
+
+		// Line of free text
+		$newfreetext = '';
+		$paramfreetext = 'ORDER_FREE_TEXT';
+		if (!empty($conf->global->$paramfreetext)) {
+			$newfreetext = make_substitutions(getDolGlobalString($paramfreetext), $substitutionarray);
+		}
 
 		$substitutions = [
 			'mysoc' => [
@@ -355,7 +402,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			'vat' => $outputlangs->transnoentitiesnoconv('VAT'),
 			'description' => $outputlangs->trans('Description'),
 			'logo' => $logo,
-			'freetext' => getDolGlobalString('COMMANDE_FREE_TEXT'),
+			'freetext' => $newfreetext,
 			'lines' => [],
 			'footerinfo' => getPdfPagefoot($outputlangs, $paramfreetext, $mysoc, $object),
 			'paymentconditions' => $outputlangs->transnoentities("PaymentConditions"),
@@ -366,6 +413,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		];
 		$subtotal_ht = 0;
 		$subtotal_ttc = 0;
+		$linenumber = 1;
 		foreach ($object->lines as $key => $line) {
 			$subtotal_ht += $line->total_ht;
 			$subtotal_ttc += $line->total_ttc;
@@ -376,6 +424,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				$subtotal_ttc = 0;
 			}
 			$substitutions['lines'][$key] = [
+				'linenumber' => $linenumber,
 				'qty' => $line->qty,
 				'ref' => $line->product_ref,
 				'label' => $line->label,
@@ -391,6 +440,9 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				'line_options' => [],
 				'product_options' => [],
 			];
+			if (empty($line->special_code)) {
+				$linenumber++;
+			}
 		}
 
 		// var_dump($substitutions);
@@ -440,18 +492,6 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		return 1;
 
 		if (!empty($conf->commande->dir_output)) {
-			// If $object is id instead of object
-			if (!is_object($object)) {
-				$id = $object;
-				$object = new Commande($this->db);
-				$result = $object->fetch($id);
-				if ($result < 0) {
-					dol_print_error($this->db, $object->error);
-					return -1;
-				}
-			}
-
-			$object->fetch_thirdparty();
 
 			$dir = $conf->commande->multidir_output[$object->entity];
 			$objectref = dol_sanitizeFileName($object->ref);
@@ -499,81 +539,6 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 					return -1;
 				}
 
-				// If CUSTOMER contact defined on order, we use it
-				$usecontact = false;
-				$arrayidcontact = $object->getIdContact('external', 'CUSTOMER');
-				if (count($arrayidcontact) > 0) {
-					$usecontact = true;
-					$result = $object->fetch_contact($arrayidcontact[0]);
-				}
-
-				// Recipient name
-				$contactobject = null;
-				if (!empty($usecontact)) {
-					// We can use the company of contact instead of thirdparty company
-					if ($object->contact->socid != $object->thirdparty->id && (!isset($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) || getDolGlobalString('MAIN_USE_COMPANY_NAME_OF_CONTACT'))) {
-						$object->contact->fetch_thirdparty();
-						$socobject = $object->contact->thirdparty;
-						$contactobject = $object->contact;
-					} else {
-						$socobject = $object->thirdparty;
-						// if we have a CUSTOMER contact and we don't use it as thirdparty recipient we store the contact object for later use
-						$contactobject = $object->contact;
-					}
-				} else {
-					$socobject = $object->thirdparty;
-				}
-
-				// Make substitution
-				$substitutionarray = [
-					'__FROM_NAME__' => $this->emetteur->name,
-					'__FROM_EMAIL__' => $this->emetteur->email,
-					'__TOTAL_TTC__' => $object->total_ttc,
-					'__TOTAL_HT__' => $object->total_ht,
-					'__TOTAL_VAT__' => $object->total_tva
-				];
-				complete_substitutions_array($substitutionarray, $langs, $object);
-				// Call the ODTSubstitution hook
-				$parameters = ['file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$substitutionarray];
-				$reshook = $hookmanager->executeHooks('ODTSubstitution', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
-
-				// Line of free text
-				$newfreetext = '';
-				$paramfreetext = 'ORDER_FREE_TEXT';
-				if (!empty($conf->global->$paramfreetext)) {
-					$newfreetext = make_substitutions(getDolGlobalString($paramfreetext), $substitutionarray);
-				}
-
-				// Open and load template
-				require_once ODTPHP_PATH . 'odf.php';
-				try {
-					$odfHandler = new Odf(
-						$srctemplatepath,
-						[
-							'PATH_TO_TMP'	  => $conf->commande->dir_temp,
-							'ZIP_PROXY'		  => 'PclZipProxy', // PhpZipProxy or PclZipProxy. Got "bad compression method" error when using PhpZipProxy.
-							'DELIMITER_LEFT'  => '{',
-							'DELIMITER_RIGHT' => '}'
-						]
-					);
-				} catch (Exception $e) {
-					$this->error = $e->getMessage();
-					dol_syslog($e->getMessage(), LOG_INFO);
-					return -1;
-				}
-				// After construction $odfHandler->contentXml contains content and
-				// [!-- BEGIN row.lines --]*[!-- END row.lines --] has been replaced by
-				// [!-- BEGIN lines --]*[!-- END lines --]
-				//print html_entity_decode($odfHandler->__toString());
-				//print exit;
-
-
-				// Make substitutions into odt of freetext
-				try {
-					$odfHandler->setVars('free_text', $newfreetext, true, 'UTF-8');
-				} catch (OdfException $e) {
-					dol_syslog($e->getMessage(), LOG_INFO);
-				}
 
 				// Define substitution array
 				$substitutionarray = getCommonSubstitutionArray($outputlangs, 0, null, $object);
@@ -598,33 +563,11 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				$reshook = $hookmanager->executeHooks('ODTSubstitution', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 
 				foreach ($tmparray as $key => $value) {
-					try {
-						if (preg_match('/logo$/', $key)) { // Image
-							if (file_exists($value)) {
-								$odfHandler->setImage($key, $value);
-							} else {
-								$odfHandler->setVars($key, 'ErrorFileNotFound', true, 'UTF-8');
-							}
-						} else { // Text
-							$odfHandler->setVars($key, $value, true, 'UTF-8');
-						}
-					} catch (OdfException $e) {
-						dol_syslog($e->getMessage(), LOG_INFO);
-					}
 				}
 				// Replace tags of lines
 				try {
 					$foundtagforlines = 1;
-					try {
-						$listlines = $odfHandler->setSegment('lines');
-					} catch (OdfExceptionSegmentNotFound $e) {
-						// We may arrive here if tags for lines not present into template
-						$foundtagforlines = 0;
-						dol_syslog($e->getMessage(), LOG_INFO);
-					} catch (OdfException $e) {
-						$foundtagforlines = 0;
-						dol_syslog($e->getMessage(), LOG_INFO);
-					}
+
 					if ($foundtagforlines) {
 						$linenumber = 0;
 						foreach ($object->lines as $line) {
@@ -635,17 +578,8 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 							$parameters = ['odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray, 'line' => $line];
 							$reshook = $hookmanager->executeHooks('ODTSubstitutionLine', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 							foreach ($tmparray as $key => $val) {
-								try {
-									$listlines->setVars($key, $val, true, 'UTF-8');
-								} catch (OdfException $e) {
-									dol_syslog($e->getMessage(), LOG_INFO);
-								} catch (SegmentException $e) {
-									dol_syslog($e->getMessage(), LOG_INFO);
-								}
 							}
-							$listlines->merge();
 						}
-						$odfHandler->mergeSegment($listlines);
 					}
 				} catch (OdfException $e) {
 					$this->error = $e->getMessage();
@@ -655,27 +589,10 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 
 				// Replace labels translated
 				$tmparray = $outputlangs->get_translations_for_substitutions();
-				foreach ($tmparray as $key => $value) {
-					try {
-						$odfHandler->setVars($key, $value, true, 'UTF-8');
-					} catch (OdfException $e) {
-						dol_syslog($e->getMessage(), LOG_INFO);
-					}
-				}
 
 				// Call the beforeODTSave hook
 				$parameters = ['odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray];
 				$reshook = $hookmanager->executeHooks('beforeODTSave', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
-
-				// Write new file
-				try {
-					$odfHandler->saveToDisk($file);
-				} catch (Exception $e) {
-					$this->error = $e->getMessage();
-					dol_syslog($e->getMessage(), LOG_INFO);
-					return -1;
-				}
-
 
 				$parameters = [
 					'odfHandler' => &$odfHandler,
@@ -685,11 +602,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 					'substitutionarray' => &$tmparray
 				];
 				// Note that $action and $object may have been modified by some hooks
-				$reshook = $hookmanager->executeHooks('afterODTCreation', $parameters, $this, $action);
-
-				dolChmod($file);
-
-				$odfHandler = null; // Destroy object
+				$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action);
 
 				$this->result = ['fullpath' => $file];
 
