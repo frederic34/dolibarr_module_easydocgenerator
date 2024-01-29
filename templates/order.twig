@@ -58,15 +58,6 @@ table thead th { background-color: #EEEEEE;
 <tr>
 <td align="center"><img src="{{ logo }}" height="80px"/></td>
 <td width="40%" style="color:#0000BB; ">
-<<<<<<< HEAD
-	<span style="font-weight: bold; font-size: 14pt;">{{ mysoc.name|e }}</span><br />
-	{{ mysoc.address|e}}<br />
-	{{ mysoc.zip|e}} {{ mysoc.town|e}}<br />
-	<img src="{{ mysoc.flag }}"> {{ mysoc.country|e}}<br />
-	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ mysoc.phone }}<br />
-	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ mysoc.email }}<br />
-	{{ mysoc.tvanumber|e}}<br />
-=======
 	<span style="font-weight: bold; font-size: 14pt;">{{ mysoc.name }}</span><br />
 	{{ mysoc.address }}<br />
 	{{ mysoc.zip }} {{ mysoc.town }}<br />
@@ -74,7 +65,6 @@ table thead th { background-color: #EEEEEE;
 	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ mysoc.phone }}<br />
 	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ mysoc.email }}<br />
 	{{ mysoc.tvanumber }}<br />
->>>>>>> origin/main
 </td>
 <td width="40%" style="text-align: right;">
 <span style="font-weight: bold; font-size: 12pt;">{{ doctitle }}: {{ object.ref }}</span>
@@ -136,11 +126,7 @@ mpdf-->
 <th width="15%">{{ ref }}</th>
 <th width="40%">{{ description }}</th>
 <th width="10%">{{ vat }}</th>
-<<<<<<< HEAD
-<th width="10%">{{ qty}}</th>
-=======
 <th width="10%">{{ qty }}</th>
->>>>>>> origin/main
 <th width="15%">{{ unitprice_ht }}</th>
 <th width="15%">{{ total_ht }}</th>
 </tr>
@@ -168,13 +154,8 @@ mpdf-->
 			<td>{{ line.product_label }}<br />{{ line.product_description }}</td>
 			<td align="right">{{ line.vatrate }}</td>
 			<td align="center">{{ line.qty }}</td>
-<<<<<<< HEAD
-			<td class="cost">{{ line.subprice|e }}</td>
-			<td class="cost">{{ line.total_ht|e }}</td>
-=======
 			<td class="cost">{{ line.subprice }}</td>
 			<td class="cost">{{ line.total_ht }}</td>
->>>>>>> origin/main
 		{% endif %}
 		</tr>
 	{% endfor %}
@@ -201,10 +182,7 @@ mpdf-->
 
 
 <div style="text-align: center; font-style: italic;">{{ paymentconditions }}: {{ labelpaymentconditions }}</div>
-<<<<<<< HEAD
 <div>{{ freetext }}</div>
-=======
->>>>>>> origin/main
 
 
 </body>
