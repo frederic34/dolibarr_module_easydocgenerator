@@ -62,7 +62,7 @@ jobs:
           VERBOSE: true
       - name: Zip Folder
         run: |
-          composer update
+          composer update --no-dev
           ls -al
           mkdir build/easydocgenerator
           rsync -arv --exclude='.git/' --exclude='.github/' --exclude='.gitignore' --exclude='.tx/' --exclude='build/' --exclude='codesniffer/' . ./build/easydocgenerator
