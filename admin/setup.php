@@ -52,16 +52,42 @@ $backtopage = GETPOST('backtopage', 'alpha');
 // $urlwithroot = DOL_MAIN_URL_ROOT;               // This is to use same domain name than current
 
 $arrayofparameters = [
-	// 'EASYDOCGENERATOR_ID' => [
-	// 	'css' => 'minwidth500',
-	// 	'type' => 'text',
-	// 	'enabled' => 1,
-	// ],
-	// 'OAUTH_EASYDOCGENERATOR_SECRET' => [
-	// 	'css' => 'minwidth500',
-	// 	'type' => 'password',
-	// 	'enabled' => 1,
-	// ],
+	'EASYDOC_PDF_MARGIN_LEFT' => [
+		'css' => 'minwidth500',
+		'type' => 'number',
+		'enabled' => 1,
+		'default' => 10,
+	],
+	'EASYDOC_PDF_MARGIN_RIGHT' => [
+		'css' => 'minwidth500',
+		'type' => 'number',
+		'enabled' => 1,
+		'default' => 10,
+	],
+	'EASYDOC_PDF_MARGIN_TOP' => [
+		'css' => 'minwidth500',
+		'type' => 'number',
+		'enabled' => 1,
+		'default' => 48,
+	],
+	'EASYDOC_PDF_MARGIN_BOTTOM' => [
+		'css' => 'minwidth500',
+		'type' => 'number',
+		'enabled' => 1,
+		'default' => 25,
+	],
+	'EASYDOC_PDF_MARGIN_HEADER' => [
+		'css' => 'minwidth500',
+		'type' => 'number',
+		'enabled' => 1,
+		'default' => 10,
+	],
+	'EASYDOC_PDF_MARGIN_FOOTER' => [
+		'css' => 'minwidth500',
+		'type' => 'number',
+		'enabled' => 1,
+		'default' => 10,
+	],
 	// 'OAUTH_EASYDOCGENERATOR_URI' => [
 	// 	'css' => 'minwidth500',
 	// 	'default' => dol_buildpath('/easydocgenerator/core/modules/oauth/easydocgenerator_oauthcallback.php', 2),
@@ -188,7 +214,7 @@ if ($action == 'edit') {
 		$tooltiphelp = (($langs->trans($key . 'Tooltip') != $key . 'Tooltip') ? $langs->trans($key . 'Tooltip') : '');
 		print $form->textwithpicto($langs->trans($key), $tooltiphelp);
 		print '</td><td>';
-		$value = $conf->global->$key;
+		$value = getDolGlobalString('$key', $val['default']);
 		if (isset($val['type']) && $val['type'] == 'password') {
 			$value = preg_replace('/./i', '*', $value);
 		}
