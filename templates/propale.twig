@@ -1,8 +1,9 @@
 <html>
 <head>
 <style>
-body {font-family: sans-serif;
-	font-size: 10pt;
+body {
+	font-family: sans-serif;
+	font-size: 9pt;
 }
 p {	margin: 0pt; }
 table.items {
@@ -13,7 +14,8 @@ td { vertical-align: top; }
 	border-left: 0.1mm solid #000000;
 	border-right: 0.1mm solid #000000;
 }
-table thead th { background-color: #EEEEEE;
+table thead th {
+	background-color: #EEEEEE;
 	text-align: center;
 	border: 0.1mm solid #000000;
 	font-variant: helvetica;
@@ -26,7 +28,7 @@ table thead th { background-color: #EEEEEE;
 	border-right: 0.1mm solid #000000;
 }
 .items td.subtotaltitle {
-	background-color: {{ SUBTOTAL_TITLE_BACKGROUNDCOLOR }};
+	background-color: {{ getDolGlobalString('SUBTOTAL_TITLE_BACKGROUNDCOLOR', '#ffffff') }};
 	border: 0.1mm solid #000000;
 	border: 0mm none #000000;
 	border-top: 0.1mm solid #000000;
@@ -34,7 +36,7 @@ table thead th { background-color: #EEEEEE;
 	border-right: 0.1mm solid #000000;
 }
 .items td.subtotalsubtotal {
-	background-color: {{ SUBTOTAL_SUBTOTAL_BACKGROUNDCOLOR }};
+	background-color: {{ getDolGlobalString('SUBTOTAL_SUBTOTAL_BACKGROUNDCOLOR', '#ebebeb') }};
 	border: 0.1mm solid #000000;
 	border: 0mm none #000000;
 	border-top: 0.1mm solid #000000;
@@ -57,23 +59,38 @@ table thead th { background-color: #EEEEEE;
 <table width="100%">
 <tr>
 <td align="center"><img src="{{ logo }}" height="80px"/></td>
-<td width="40%" style="color:#0000BB; ">
+<td width="45%" style="color:#000000; ">
 	<span style="font-weight: bold; font-size: 14pt;">{{ mysoc.name }}</span><br />
 	{{ mysoc.address }}<br />
 	{{ mysoc.zip }} {{ mysoc.town }}<br />
 	<img src="{{ mysoc.flag }}"> {{ mysoc.country }}<br />
-	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ mysoc.phone }}<br />
+	{% if mysoc.phone %}
+		<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ mysoc.phone }}
+	{% endif %}
+	{% if mysoc.fax %}
+		<span style="font-family:dejavusanscondensed;">&#8507; </span>{{ mysoc.fax }}
+	{% endif %}
+	<br />
 	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ mysoc.email }}<br />
-	{{ mysoc.tvanumber }}<br />
+	{{ trans('VATIntraShort') }}: {{ mysoc.tvanumber }}<br />
 </td>
-<td width="40%" style="text-align: right;">
-<span style="font-weight: bold; font-size: 12pt;">{{ doctitle }}: {{ object.ref }}</span>
-<br /><span style="font-weight: bold; font-size: 12pt;">{{ date }}: {{ object.date }}</span>
+<td width="45%" style="text-align: right;">
+<span style="font-weight: bold; font-size: 14pt;"><b>{{ trans('PdfCommercialProposalTitle') }}</b></span>
+<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('Ref') }}: {{ object.ref }}</span>
+<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('Date') }}: {{ object.date }}</span>
 {% if object.ref_customer %}
-	<br /><span style="font-weight: bold; font-size: 12pt;">{{ trans('RefCustomer') }: {{ object.ref_customer }}</span>
+	<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('RefCustomer') }}: {{ object.ref_customer }}</span>
 {% endif %}
 {% if object.ref_project %}
-	<br /><span style="font-weight: bold; font-size: 12pt;">{{ ref_project }}: {{ object.ref_project }}</span>
+	<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans("RefProject") }}: {{ object.ref_project }}</span>
+{% endif %}
+{% if thirdparty.code_client %}
+	<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('CustomerCode') }}: {{ thirdparty.code_client }}</span>
+{% endif %}
+{% if linkedObjects is iterable %}
+	{% for link in linkedObjects %}
+		<br /><span style="font-weight: bold; font-size: 10pt;">{{ link.ref_title}}: {{ link.ref_value }}</span>
+	{% endfor %}
 {% endif %}
 </td>
 </tr>
@@ -84,7 +101,7 @@ table thead th { background-color: #EEEEEE;
 <div style="border-top: 1px solid #000000; font-size: 6pt; text-align: center; padding-top: 3mm; ">
 {{ footerinfo.line3 }}<br />
 {{ footerinfo.line4 }}<br />
-Page {PAGENO} of {nb}
+{PAGENO} / {nb}
 </div>
 </htmlpagefooter>
 
@@ -93,7 +110,7 @@ Page {PAGENO} of {nb}
 mpdf-->
 
 
-<table width="100%" style="font-family: serif;" cellpadding="10">
+<table width="100%" style="font-family: serif; " cellpadding="10">
 <tr>
 <td width="46%" style="border: 0.1mm solid #888888; ">
 <span style="font-size: 7pt; color: #555555; font-family: sans;">SOLD TO:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
@@ -118,17 +135,25 @@ mpdf-->
 </table>
 
 <br />
+{% if object.note_public %}
+<table class="items" width="100%" style="font-size: 7pt; border-collapse: collapse; " cellpadding="8">
+<tr>
+<td>{{ object.note_public }}</td>
+</tr>
+</table>
+<br />
+{% endif %}
 <div style="text-align: right">{{ currencyinfo }}</div>
 
 <table class="items" width="100%" style="font-size: 7pt; border-collapse: collapse; " cellpadding="8">
 <thead>
 <tr>
-<th width="15%">{{ ref }}</th>
-<th width="40%">{{ description }}</th>
-<th width="10%">{{ vat }}</th>
-<th width="10%">{{ qty }}</th>
-<th width="15%">{{ unitprice_ht }}</th>
-<th width="15%">{{ total_ht }}</th>
+<th width="15%">{{ trans('Ref') }}</th>
+<th width="40%">{{ trans('Description') }}</th>
+<th width="10%">{{ trans('VAT') }}</th>
+<th width="10%">{{ trans('Qty') }}</th>
+<th width="15%">{{ trans('PriceUHT') }}</th>
+<th width="15%">{{ trans('TotalHTShort') }}</th>
 </tr>
 </thead>
 <tbody>
@@ -166,23 +191,23 @@ mpdf-->
 <!-- END ITEMS HERE -->
 <tr>
 <td class="blanktotal" colspan="4" rowspan="3"></td>
-<td class="totals">{{ total_ht }}</td>
+<td class="totals">{{ trans('TotalHT') }}</td>
 <td class="totals cost">{{ object.total_ht }}</td>
 </tr>
 <tr>
-<td class="totals">{{ total_tva }}</td>
+<td class="totals">{{ trans('TotalVAT') }}</td>
 <td class="totals cost">{{ object.total_tva }}</td>
 </tr>
 <tr>
-<td class="totals"><b>{{ total_ttc }}</b></td>
+<td class="totals"><b>{{ trans('TotalTTC') }}</b></td>
 <td class="totals cost"><b>{{ object.total_ttc }}</b></td>
 </tr>
 </tbody>
 </table>
 
 
-<div style="text-align: center; font-style: italic;">{{  paymentconditions }}: {{ labelpaymentconditions }}</div>
-
+<div style="text-align: center; font-style: italic;">{{ trans('PaymentConditions') }}: {{ labelpaymentconditions }}</div>
+<div>{{ freetext }}</div>
 
 </body>
 </html>
