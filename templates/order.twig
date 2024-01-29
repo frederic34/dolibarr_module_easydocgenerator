@@ -58,22 +58,22 @@ table thead th { background-color: #EEEEEE;
 <tr>
 <td align="center"><img src="{{ logo }}" height="80px"/></td>
 <td width="40%" style="color:#0000BB; ">
-	<span style="font-weight: bold; font-size: 14pt;">{{ mysoc.name|e }}</span><br />
-	{{ mysoc.address|e}}<br />
-	{{ mysoc.zip|e}} {{ mysoc.town|e}}<br />
-	<img src="{{ mysoc.flag }}"> {{ mysoc.country|e}}<br />
-	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ mysoc.phone|e}}<br />
-	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ mysoc.email|e}}<br />
-	{{ mysoc.tvanumber|e}}<br />
+	<span style="font-weight: bold; font-size: 14pt;">{{ mysoc.name }}</span><br />
+	{{ mysoc.address }}<br />
+	{{ mysoc.zip }} {{ mysoc.town }}<br />
+	<img src="{{ mysoc.flag }}"> {{ mysoc.country }}<br />
+	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ mysoc.phone }}<br />
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ mysoc.email }}<br />
+	{{ mysoc.tvanumber }}<br />
 </td>
 <td width="40%" style="text-align: right;">
-<span style="font-weight: bold; font-size: 12pt;">{{ doctitle|e }}: {{ object.ref|e}}</span>
-<br /><span style="font-weight: bold; font-size: 12pt;">{{ date|e }}: {{ object.date|e}}</span>
+<span style="font-weight: bold; font-size: 12pt;">{{ doctitle }}: {{ object.ref }}</span>
+<br /><span style="font-weight: bold; font-size: 12pt;">{{ date }}: {{ object.date }}</span>
 {% if object.ref_customer %}
-	<br /><span style="font-weight: bold; font-size: 12pt;">{{ ref_customer|e }}: {{ object.ref_customer|e}}</span>
+	<br /><span style="font-weight: bold; font-size: 12pt;">{{ ref_customer }}: {{ object.ref_customer }}</span>
 {% endif %}
 {% if object.ref_project %}
-	<br /><span style="font-weight: bold; font-size: 12pt;">{{ ref_project|e }}: {{ object.ref_project|e}}</span>
+	<br /><span style="font-weight: bold; font-size: 12pt;">{{ ref_project }}: {{ object.ref_project }}</span>
 {% endif %}
 </td>
 </tr>
@@ -82,8 +82,8 @@ table thead th { background-color: #EEEEEE;
 
 <htmlpagefooter name="myfooter">
 <div style="border-top: 1px solid #000000; font-size: 6pt; text-align: center; padding-top: 3mm; ">
-{{ footerinfo.line3|e }}<br />
-{{ footerinfo.line4|e }}<br />
+{{ footerinfo.line3 }}<br />
+{{ footerinfo.line4 }}<br />
 Page {PAGENO} of {nb}
 </div>
 </htmlpagefooter>
@@ -98,37 +98,37 @@ mpdf-->
 <td width="46%" style="border: 0.1mm solid #888888; ">
 <span style="font-size: 7pt; color: #555555; font-family: sans;">SOLD TO:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
 {% if thirdparty.phone %}
-	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone|e}}<br />
+	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone }}<br />
 {% endif %}
 {% if thirdparty.email %}
-	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ thirdparty.email|e}}<br />
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ thirdparty.email }}<br />
 {% endif %}
 </td>
 <td width="8%">&nbsp;</td>
 <td width="46%" style="border: 0.1mm solid #888888;">
 <span style="font-size: 7pt; color: #555555; font-family: sans;">SHIP TO:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
 {% if thirdparty.phone %}
-	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone|e}}<br />
+	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone }}<br />
 {% endif %}
 {% if thirdparty.email %}
-	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ thirdparty.email|e}}<br />
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ thirdparty.email }}<br />
 {% endif %}
 </td>
 </tr>
 </table>
 
 <br />
-<div style="text-align: right">{{ currencyinfo|e }}</div>
+<div style="text-align: right">{{ currencyinfo }}</div>
 
 <table class="items" width="100%" style="font-size: 7pt; border-collapse: collapse; " cellpadding="8">
 <thead>
 <tr>
-<th width="15%">{{ ref|e }}</th>
-<th width="40%">{{ description|e }}</th>
-<th width="10%">{{ vat|e }}</th>
-<th width="10%">{{ qty|e}}</th>
-<th width="15%">{{ unitprice_ht|e }}</th>
-<th width="15%">{{ total_ht|e }}</th>
+<th width="15%">{{ ref }}</th>
+<th width="40%">{{ description }}</th>
+<th width="10%">{{ vat }}</th>
+<th width="10%">{{ qty }}</th>
+<th width="15%">{{ unitprice_ht }}</th>
+<th width="15%">{{ total_ht }}</th>
 </tr>
 </thead>
 <tbody>
@@ -145,17 +145,17 @@ mpdf-->
 				<td class="blanktotal" colspan="6">{{ line.description }}</td>
 			{% elseif line.qty == 99 %}
 				<!-- SUBTOTAL SUBTOTAL -->
-				<td class="subtotalsubtotal" colspan="6" align="right">{{ line.label }}: {{ line.total_ht|e }}</td>
+				<td class="subtotalsubtotal" colspan="6" align="right">{{ line.label }}: {{ line.total_ht }}</td>
 			{% else %}
-				<td class="subtotal" colspan="6" align="left">{{ line.label }}{{ line.qty|e }}</td>
+				<td class="subtotal" colspan="6" align="left">{{ line.label }}{{ line.qty }}</td>
 			{% endif %}
 		{% else %}
 			<td align="center">{{ line.ref }}</td>
 			<td>{{ line.product_label }}<br />{{ line.product_description }}</td>
 			<td align="right">{{ line.vatrate }}</td>
-			<td align="center">{{ line.qty|e }}</td>
-			<td class="cost">{{ line.subprice|e }}</td>
-			<td class="cost">{{ line.total_ht|e }}</td>
+			<td align="center">{{ line.qty }}</td>
+			<td class="cost">{{ line.subprice }}</td>
+			<td class="cost">{{ line.total_ht }}</td>
 		{% endif %}
 		</tr>
 	{% endfor %}
@@ -166,22 +166,22 @@ mpdf-->
 <!-- END ITEMS HERE -->
 <tr>
 <td class="blanktotal" colspan="4" rowspan="3"></td>
-<td class="totals">{{ total_ht|e }}</td>
-<td class="totals cost">{{ object.total_ht|e }}</td>
+<td class="totals">{{ total_ht }}</td>
+<td class="totals cost">{{ object.total_ht }}</td>
 </tr>
 <tr>
-<td class="totals">{{ total_tva|e }}</td>
-<td class="totals cost">{{ object.total_tva|e }}</td>
+<td class="totals">{{ total_tva }}</td>
+<td class="totals cost">{{ object.total_tva }}</td>
 </tr>
 <tr>
-<td class="totals"><b>{{ total_ttc|e }}</b></td>
-<td class="totals cost"><b>{{ object.total_ttc|e }}</b></td>
+<td class="totals"><b>{{ total_ttc }}</b></td>
+<td class="totals cost"><b>{{ object.total_ttc }}</b></td>
 </tr>
 </tbody>
 </table>
 
 
-<div style="text-align: center; font-style: italic;">{{  paymentconditions|e }}: {{ labelpaymentconditions|e }}</div>
+<div style="text-align: center; font-style: italic;">{{ paymentconditions }}: {{ labelpaymentconditions }}</div>
 
 
 </body>
