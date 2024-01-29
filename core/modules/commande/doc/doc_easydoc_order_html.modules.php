@@ -248,8 +248,8 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			include_once DOL_DOCUMENT_ROOT . '/core/class/hookmanager.class.php';
 			$hookmanager = new HookManager($this->db);
 		}
-		$hookmanager->initHooks(array('pdfgeneration'));
-		$parameters = array('file' => $file, 'object' => $object, 'outputlangs' => $outputlangs);
+		$hookmanager->initHooks(['pdfgeneration']);
+		$parameters = ['file' => $file, 'object' => $object, 'outputlangs' => $outputlangs];
 		global $action;
 		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
@@ -277,7 +277,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		try {
 			$template = $twig->load(basename($srctemplatepath));
 		} catch (\Twig\Error\SyntaxError $e) {
-			$this->errors = $e->getMessage() . ' at line ' . $e->getLine() . ' in file '. $e->getFile();
+			$this->errors = $e->getMessage() . ' at line ' . $e->getLine() . ' in file ' . $e->getFile();
 			return -1;
 		} catch (Exception $e) {
 			$this->errors = $e->getMessage();
