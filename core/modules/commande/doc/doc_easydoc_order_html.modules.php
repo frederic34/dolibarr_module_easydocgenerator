@@ -4,7 +4,7 @@
  * Copyright (C) 2014		Marcos García		<marcosgdf@gmail.com>
  * Copyright (C) 2016		Charlie Benke		<charlie@patas-monkey.com>
  * Copyright (C) 2018-2021  Philippe Grand      <philippe.grand@atoo-net.com>
- * Copyright (C) 2018-2019  Frédéric France     <frederic.france@free.fr>
+ * Copyright (C) 2018-2024  Frédéric France     <frederic.france@free.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$this->update_main_doc_field = 1;
 
 		// Page size for A4 format
-		$this->type = 'html';
+		$this->type = 'easydoc';
 		$this->page_largeur = 0;
 		$this->page_hauteur = 0;
 		$this->format = [$this->page_largeur, $this->page_hauteur];
@@ -222,18 +222,14 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			return -1;
 		}
 
-		// Add odtgeneration hook
-		if (!is_object($hookmanager)) {
-			include_once DOL_DOCUMENT_ROOT . '/core/class/hookmanager.class.php';
-			$hookmanager = new HookManager($this->db);
-		}
-		$hookmanager->initHooks(['odtgeneration']);
-		global $action;
-
 		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
 		}
 		$object->fetch_thirdparty();
+
+		// add linked objects to note_public
+		pdf_getLinkedObjects($object, $outputlangs);
+
 
 		$sav_charset_output = $outputlangs->charset_output;
 		$outputlangs->charset_output = 'UTF-8';
@@ -247,6 +243,17 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$outputlangs->loadLangs(["main", "dict", "companies", "bills", "products", "orders", "deliveries"]);
 		$currency = !empty($currency) ? $currency : $conf->currency;
 
+		// Add pdfgeneration hook
+		if (!is_object($hookmanager)) {
+			include_once DOL_DOCUMENT_ROOT . '/core/class/hookmanager.class.php';
+			$hookmanager = new HookManager($this->db);
+		}
+		$hookmanager->initHooks(['pdfgeneration']);
+		$parameters = ['file' => $file, 'object' => $object, 'outputlangs' => $outputlangs];
+		global $action;
+		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
+
+
 		require dol_buildpath('easydocgenerator/vendor/autoload.php');
 
 		$loader = new \Twig\Loader\FilesystemLoader(dirname($srctemplatepath));
@@ -255,7 +262,27 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			'cache' => false,
 			'autoescape' => false,
 		]);
-		$template = $twig->load(basename($srctemplatepath));
+		// create twig function which translate with $outpulangs->trans()
+		$function = new \Twig\TwigFunction('trans', function ($value) {
+			global $outputlangs;
+			return $outputlangs->trans($value);
+		});
+		$twig->addFunction($function);
+		// create twig function which translate with getDolGlobalString(
+		$function = new \Twig\TwigFunction('getDolGlobalString', function ($value, $default = '') {
+			// var_dump($value, $default);exit;
+			return getDolGlobalString($value, $default);
+		});
+		$twig->addFunction($function);
+		try {
+			$template = $twig->load(basename($srctemplatepath));
+		} catch (\Twig\Error\SyntaxError $e) {
+			$this->errors = $e->getMessage() . ' at line ' . $e->getLine() . ' in file ' . $e->getFile();
+			return -1;
+		} catch (Exception $e) {
+			$this->errors = $e->getMessage();
+			return -1;
+		}
 
 		if ($this->emetteur->logo) {
 			$logodir = $conf->mycompany->dir_output;
@@ -351,7 +378,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				'country' => $mysoc->country,
 				'flag' => DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($flagImage) . '.png',
 				'phone' => dol_print_phone($mysoc->phone, $mysoc->country_code, 0, 0, '', ' '),
-				// 'phone' => $mysoc->phone,
+				'fax' => dol_print_phone($mysoc->fax, $mysoc->country_code, 0, 0, '', ' '),
 				'email' => $mysoc->email,
 				'idprof1' => $mysoc->idprof1,
 				'idprof2' => $mysoc->idprof2,
@@ -385,31 +412,31 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			'object' => [
 				'date' => dol_print_date($object->date, "day", false, $outputlangs, true),
 				'ref' => $object->ref,
+				'note_public' => $object->note_public,
+				'note_private' => $object->note_private,
 				'total_tva' => price($object->total_tva),
 				'total_ht' => price($object->total_ht),
 				'total_ttc' => price($object->total_ttc),
 				'ref_customer' => $outputlangs->convToOutputCharset($object->ref_client),
 			],
-			'doctitle' => $outputlangs->trans('PdfOrderTitle'),
-			'date' => $outputlangs->trans("OrderDate"),
-			'qty' => $outputlangs->trans('Qty'),
-			'ref' => $outputlangs->transnoentitiesnoconv('Ref'),
-			'ref_customer' => $outputlangs->transnoentities("RefCustomer"),
-			'unitprice_ht' => $outputlangs->transnoentitiesnoconv('PriceUHT'),
-			'total_ht' => $outputlangs->transnoentitiesnoconv('TotalHTShort'),
-			'total_tva' => $outputlangs->transnoentitiesnoconv('TotalVAT'),
-			'total_ttc' => $outputlangs->transnoentitiesnoconv('TotalTTCShort'),
-			'vat' => $outputlangs->transnoentitiesnoconv('VAT'),
-			'description' => $outputlangs->trans('Description'),
+			// 'doctitle' => $outputlangs->trans('PdfOrderTitle'),
+			// 'date' => $outputlangs->trans("OrderDate"),
+			// 'qty' => $outputlangs->trans('Qty'),
+			// 'ref' => $outputlangs->trans('Ref'),
+			// 'ref_customer' => $outputlangs->trans("RefCustomer"),
+			// 'unitprice_ht' => $outputlangs->trans('PriceUHT'),
+			// 'total_ht' => $outputlangs->trans('TotalHTShort'),
+			// 'total_tva' => $outputlangs->trans('TotalVAT'),
+			// 'total_ttc' => $outputlangs->trans('TotalTTCShort'),
+			// 'vat' => $outputlangs->trans('VAT'),
+			// 'vatintrashort' => $outputlangs->trans("VATIntraShort"),
+			// 'description' => $outputlangs->trans('Description'),
 			'logo' => $logo,
 			'freetext' => $newfreetext,
 			'lines' => [],
 			'footerinfo' => getPdfPagefoot($outputlangs, $paramfreetext, $mysoc, $object),
-			'paymentconditions' => $outputlangs->transnoentities("PaymentConditions"),
 			'labelpaymentconditions' => $label_payment_conditions,
-			'currencyinfo' => $outputlangs->transnoentities("AmountInCurrency", $outputlangs->transnoentitiesnoconv("Currency" . $currency)),
-			'SUBTOTAL_TITLE_BACKGROUNDCOLOR' => getDolGlobalString('SUBTOTAL_TITLE_BACKGROUNDCOLOR', '#ffffff'),
-			'SUBTOTAL_SUBTOTAL_BACKGROUNDCOLOR' => getDolGlobalString('SUBTOTAL_SUBTOTAL_BACKGROUNDCOLOR', '#ebebeb'),
+			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
 		];
 		$subtotal_ht = 0;
 		$subtotal_ttc = 0;
@@ -526,10 +553,6 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 					$filename = $newfiletmp . '.' . $newfileformat;
 				}
 				$file = $dir . '/' . $filename;
-				//print "newdir=".$dir;
-				//print "newfile=".$newfile;
-				//print "file=".$file;
-				//print "conf->societe->dir_temp=".$conf->societe->dir_temp;
 
 				dol_mkdir($conf->commande->dir_temp);
 				if (!is_writable($conf->commande->dir_temp)) {
@@ -537,7 +560,6 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 					dol_syslog('Error in write_file: ' . $this->error, LOG_ERR);
 					return -1;
 				}
-
 
 				// Define substitution array
 				$substitutionarray = getCommonSubstitutionArray($outputlangs, 0, null, $object);
@@ -594,7 +616,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				$reshook = $hookmanager->executeHooks('beforeODTSave', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 
 				$parameters = [
-					'odfHandler' => &$odfHandler,
+					// 'odfHandler' => &$odfHandler,
 					'file' => $file,
 					'object' => $object,
 					'outputlangs' => $outputlangs,
