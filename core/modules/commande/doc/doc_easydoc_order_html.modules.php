@@ -259,7 +259,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$loader = new \Twig\Loader\FilesystemLoader(dirname($srctemplatepath));
 		$twig = new \Twig\Environment($loader, [
 			// developer mode unactive caching
-			'cache' => getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE') ? false : DOL_DATA_ROOT.'/easydocgenerator/temp',
+			'cache' => getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE') ? false : DOL_DATA_ROOT . '/easydocgenerator/temp',
 			'autoescape' => false,
 		]);
 		// create twig function which translate with $outpulangs->trans()
