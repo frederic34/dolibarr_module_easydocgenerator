@@ -62,8 +62,8 @@ table thead th { background-color: #EEEEEE;
 	{{ mysoc.address|e}}<br />
 	{{ mysoc.zip|e}} {{ mysoc.town|e}}<br />
 	<img src="{{ mysoc.flag }}"> {{ mysoc.country|e}}<br />
-	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ mysoc.phone|e}}<br />
-	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ mysoc.email|e}}<br />
+	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ mysoc.phone }}<br />
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ mysoc.email }}<br />
 	{{ mysoc.tvanumber|e}}<br />
 </td>
 <td width="40%" style="text-align: right;">
@@ -98,17 +98,17 @@ mpdf-->
 <td width="46%" style="border: 0.1mm solid #888888; ">
 <span style="font-size: 7pt; color: #555555; font-family: sans;">SOLD TO:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
 {% if thirdparty.phone %}
-	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone|e}}<br />
+	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone }}<br />
 {% endif %}
 {% if thirdparty.email %}
-	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ thirdparty.email|e}}<br />
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ thirdparty.email }}<br />
 {% endif %}
 </td>
 <td width="8%">&nbsp;</td>
 <td width="46%" style="border: 0.1mm solid #888888;">
 <span style="font-size: 7pt; color: #555555; font-family: sans;">SHIP TO:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
 {% if thirdparty.phone %}
-	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone|e}}<br />
+	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone }}<br />
 {% endif %}
 {% if thirdparty.email %}
 	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ thirdparty.email|e}}<br />
@@ -123,12 +123,12 @@ mpdf-->
 <table class="items" width="100%" style="font-size: 7pt; border-collapse: collapse; " cellpadding="8">
 <thead>
 <tr>
-<th width="15%">{{ ref|e }}</th>
-<th width="40%">{{ description|e }}</th>
-<th width="10%">{{ vat|e }}</th>
-<th width="10%">{{ qty|e}}</th>
-<th width="15%">{{ unitprice_ht|e }}</th>
-<th width="15%">{{ total_ht|e }}</th>
+<th width="15%">{{ ref }}</th>
+<th width="40%">{{ description }}</th>
+<th width="10%">{{ vat }}</th>
+<th width="10%">{{ qty}}</th>
+<th width="15%">{{ unitprice_ht }}</th>
+<th width="15%">{{ total_ht }}</th>
 </tr>
 </thead>
 <tbody>
@@ -153,7 +153,7 @@ mpdf-->
 			<td align="center">{{ line.ref }}</td>
 			<td>{{ line.product_label }}<br />{{ line.product_description }}</td>
 			<td align="right">{{ line.vatrate }}</td>
-			<td align="center">{{ line.qty|e }}</td>
+			<td align="center">{{ line.qty }}</td>
 			<td class="cost">{{ line.subprice|e }}</td>
 			<td class="cost">{{ line.total_ht|e }}</td>
 		{% endif %}
@@ -166,22 +166,23 @@ mpdf-->
 <!-- END ITEMS HERE -->
 <tr>
 <td class="blanktotal" colspan="4" rowspan="3"></td>
-<td class="totals">{{ total_ht|e }}</td>
-<td class="totals cost">{{ object.total_ht|e }}</td>
+<td class="totals">{{ total_ht }}</td>
+<td class="totals cost">{{ object.total_ht }}</td>
 </tr>
 <tr>
-<td class="totals">{{ total_tva|e }}</td>
-<td class="totals cost">{{ object.total_tva|e }}</td>
+<td class="totals">{{ total_tva }}</td>
+<td class="totals cost">{{ object.total_tva }}</td>
 </tr>
 <tr>
-<td class="totals"><b>{{ total_ttc|e }}</b></td>
-<td class="totals cost"><b>{{ object.total_ttc|e }}</b></td>
+<td class="totals"><b>{{ total_ttc }}</b></td>
+<td class="totals cost"><b>{{ object.total_ttc }}</b></td>
 </tr>
 </tbody>
 </table>
 
 
-<div style="text-align: center; font-style: italic;">{{  paymentconditions|e }}: {{ labelpaymentconditions|e }}</div>
+<div style="text-align: center; font-style: italic;">{{ paymentconditions }}: {{ labelpaymentconditions }}</div>
+<div>{{ freetext }}</div>
 
 
 </body>
