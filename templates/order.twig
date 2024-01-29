@@ -59,7 +59,7 @@ table thead th {
 <table width="100%">
 <tr>
 <td align="center"><img src="{{ logo }}" height="80px"/></td>
-<td width="40%" style="color:#0000BB; ">
+<td width="45%" style="color:#000000; ">
 	<span style="font-weight: bold; font-size: 14pt;">{{ mysoc.name }}</span><br />
 	{{ mysoc.address }}<br />
 	{{ mysoc.zip }} {{ mysoc.town }}<br />
@@ -74,7 +74,7 @@ table thead th {
 	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ mysoc.email }}<br />
 	{{ trans('VATIntraShort') }}: {{ mysoc.tvanumber }}<br />
 </td>
-<td width="40%" style="text-align: right;">
+<td width="45%" style="text-align: right;">
 <span style="font-weight: bold; font-size: 14pt;"><b>{{ trans('PdfOrderTitle') }}</b></span>
 <br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('Ref') }}: {{ object.ref }}</span>
 <br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('OrderDate') }}: {{ object.date }}</span>
@@ -82,7 +82,15 @@ table thead th {
 	<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('RefCustomer') }}: {{ object.ref_customer }}</span>
 {% endif %}
 {% if object.ref_project %}
-	<br /><span style="font-weight: bold; font-size: 10pt;">{{ ref_project }}: {{ object.ref_project }}</span>
+	<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans("RefProject") }}: {{ object.ref_project }}</span>
+{% endif %}
+{% if thirdparty.code_client %}
+	<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('CustomerCode') }}: {{ thirdparty.code_client }}</span>
+{% endif %}
+{% if linkedObjects is iterable %}
+	{% for link in linkedObjects %}
+		<br /><span style="font-weight: bold; font-size: 10pt;">{{ link.ref_title}}: {{ link.ref_value }}</span>
+	{% endfor %}
 {% endif %}
 </td>
 </tr>
@@ -200,7 +208,6 @@ mpdf-->
 
 <div style="text-align: center; font-style: italic;">{{ trans('PaymentConditions') }}: {{ labelpaymentconditions }}</div>
 <div>{{ freetext }}</div>
-
 
 </body>
 </html>

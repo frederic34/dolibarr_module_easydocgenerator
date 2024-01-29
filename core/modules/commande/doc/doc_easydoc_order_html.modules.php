@@ -228,7 +228,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$object->fetch_thirdparty();
 
 		// add linked objects to note_public
-		pdf_getLinkedObjects($object, $outputlangs);
+		$linkedObjects = pdf_getLinkedObjects($object, $outputlangs);
 
 
 		$sav_charset_output = $outputlangs->charset_output;
@@ -258,8 +258,8 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 
 		$loader = new \Twig\Loader\FilesystemLoader(dirname($srctemplatepath));
 		$twig = new \Twig\Environment($loader, [
-			// 'cache' => DOL_DATA_ROOT.'/easydocgenerator/temp',
-			'cache' => false,
+			// developer mode unactive caching
+			'cache' => getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE') ? false : DOL_DATA_ROOT.'/easydocgenerator/temp',
 			'autoescape' => false,
 		]);
 		// create twig function which translate with $outpulangs->trans()
@@ -419,21 +419,10 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				'total_ttc' => price($object->total_ttc),
 				'ref_customer' => $outputlangs->convToOutputCharset($object->ref_client),
 			],
-			// 'doctitle' => $outputlangs->trans('PdfOrderTitle'),
-			// 'date' => $outputlangs->trans("OrderDate"),
-			// 'qty' => $outputlangs->trans('Qty'),
-			// 'ref' => $outputlangs->trans('Ref'),
-			// 'ref_customer' => $outputlangs->trans("RefCustomer"),
-			// 'unitprice_ht' => $outputlangs->trans('PriceUHT'),
-			// 'total_ht' => $outputlangs->trans('TotalHTShort'),
-			// 'total_tva' => $outputlangs->trans('TotalVAT'),
-			// 'total_ttc' => $outputlangs->trans('TotalTTCShort'),
-			// 'vat' => $outputlangs->trans('VAT'),
-			// 'vatintrashort' => $outputlangs->trans("VATIntraShort"),
-			// 'description' => $outputlangs->trans('Description'),
 			'logo' => $logo,
 			'freetext' => $newfreetext,
 			'lines' => [],
+			'linkedObjects' => $linkedObjects,
 			'footerinfo' => getPdfPagefoot($outputlangs, $paramfreetext, $mysoc, $object),
 			'labelpaymentconditions' => $label_payment_conditions,
 			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
@@ -503,7 +492,8 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		if (!preg_match('/specimen/i', $objectref)) {
 			$dir .= "/" . $objectref;
 		}
-		$file = $dir . "/" . $objectref . '_' . basename($srctemplatepath) . ".pdf";
+		$filename = str_replace('.twig', '', basename($srctemplatepath));
+		$file = $dir . "/" . $objectref . '_' . $filename . ".pdf";
 
 		if (!file_exists($dir)) {
 			if (dol_mkdir($dir) < 0) {
