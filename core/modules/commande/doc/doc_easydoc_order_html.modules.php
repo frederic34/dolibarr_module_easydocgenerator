@@ -270,7 +270,6 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$twig->addFunction($function);
 		// create twig function which translate with getDolGlobalString(
 		$function = new \Twig\TwigFunction('getDolGlobalString', function ($value, $default = '') {
-			// var_dump($value, $default);exit;
 			return getDolGlobalString($value, $default);
 		});
 		$twig->addFunction($function);
@@ -606,7 +605,6 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				$reshook = $hookmanager->executeHooks('beforeODTSave', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 
 				$parameters = [
-					// 'odfHandler' => &$odfHandler,
 					'file' => $file,
 					'object' => $object,
 					'outputlangs' => $outputlangs,
