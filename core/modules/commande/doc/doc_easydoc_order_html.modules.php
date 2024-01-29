@@ -465,12 +465,12 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$html = $template->render($substitutions);
 		// print $html;
 		$mpdf = new \Mpdf\Mpdf([
-			'margin_left' => 10,
-			'margin_right' => 10,
-			'margin_top' => 48,
-			'margin_bottom' => 25,
-			'margin_header' => 10,
-			'margin_footer' => 10
+			'margin_left' => getDolGlobalInt('EASYDOC_PDF_MARGIN_LEFT', 10),
+			'margin_right' => getDolGlobalInt('EASYDOC_PDF_MARGIN_RIGHT', 10),
+			'margin_top' => getDolGlobalInt('EASYDOC_PDF_MARGIN_TOP', 48),
+			'margin_bottom' => getDolGlobalInt('EASYDOC_PDF_MARGIN_BOTTOM', 25),
+			'margin_header' =>  getDolGlobalInt('EASYDOC_PDF_MARGIN_HEADER', 10),
+			'margin_footer' =>  getDolGlobalInt('EASYDOC_PDF_MARGIN_FOOTER', 10),
 		]);
 		$mpdf->SetProtection(['print']);
 		$mpdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
