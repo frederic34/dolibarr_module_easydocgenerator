@@ -386,29 +386,29 @@ class modEasydocgenerator extends DolibarrModules
 			'invoice',
 		];
 
-		foreach ($modules as $module) {
-			$src = dol_buildpath('/easydocgenerator/templates/');
-			$dirtwig = DOL_DATA_ROOT . '/doctemplates/' . $moduledir;
-			$dest = $dirtwig . '/' . $module . '/template_myobjects.twig';
+		// foreach ($modules as $module) {
+		// 	$src = dol_buildpath('/easydocgenerator/templates/');
+		// 	$dirtwig = DOL_DATA_ROOT . '/doctemplates/' . $moduledir;
+		// 	$dest = $dirtwig . '/' . $module . '/template_myobjects.twig';
 
-			if (file_exists($src) && !file_exists($dest)) {
-				require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
-				dol_mkdir($dirtwig);
-				$result = dol_copy($src, $dest, 0, 0);
-				if ($result < 0) {
-					$langs->load("errors");
-					$this->error = $langs->trans('ErrorFailToCopyFile', $src, $dest);
-					return 0;
-				}
-			}
+		// 	if (file_exists($src) && !file_exists($dest)) {
+		// 		require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
+		// 		dol_mkdir($dirtwig);
+		// 		$result = dol_copy($src, $dest, 0, 0);
+		// 		if ($result < 0) {
+		// 			$langs->load("errors");
+		// 			$this->error = $langs->trans('ErrorFailToCopyFile', $src, $dest);
+		// 			return 0;
+		// 		}
+		// 	}
 
-			$sql = array_merge($sql, [
-				"DELETE FROM " . MAIN_DB_PREFIX . "document_model WHERE nom = 'standard_" . strtolower($myTmpObjectKey) . "' AND type = '" . $this->db->escape(strtolower($myTmpObjectKey)) . "' AND entity = " . ((int) $conf->entity),
-				"INSERT INTO " . MAIN_DB_PREFIX . "document_model (nom, type, entity) VALUES('standard_" . strtolower($myTmpObjectKey) . "', '" . $this->db->escape(strtolower($myTmpObjectKey)) . "', " . ((int) $conf->entity) . ")",
-				"DELETE FROM " . MAIN_DB_PREFIX . "document_model WHERE nom = 'generic_" . strtolower($myTmpObjectKey) . "_twig' AND type = '" . $this->db->escape(strtolower($myTmpObjectKey)) . "' AND entity = " . ((int) $conf->entity),
-				"INSERT INTO " . MAIN_DB_PREFIX . "document_model (nom, type, entity) VALUES('generic_" . strtolower($myTmpObjectKey) . "_twig', '" . $this->db->escape(strtolower($myTmpObjectKey)) . "', " . ((int) $conf->entity) . ")"
-			]);
-		}
+		// 	$sql = array_merge($sql, [
+		// 		"DELETE FROM " . MAIN_DB_PREFIX . "document_model WHERE nom = 'standard_" . strtolower($myTmpObjectKey) . "' AND type = '" . $this->db->escape(strtolower($myTmpObjectKey)) . "' AND entity = " . ((int) $conf->entity),
+		// 		"INSERT INTO " . MAIN_DB_PREFIX . "document_model (nom, type, entity) VALUES('standard_" . strtolower($myTmpObjectKey) . "', '" . $this->db->escape(strtolower($myTmpObjectKey)) . "', " . ((int) $conf->entity) . ")",
+		// 		"DELETE FROM " . MAIN_DB_PREFIX . "document_model WHERE nom = 'generic_" . strtolower($myTmpObjectKey) . "_twig' AND type = '" . $this->db->escape(strtolower($myTmpObjectKey)) . "' AND entity = " . ((int) $conf->entity),
+		// 		"INSERT INTO " . MAIN_DB_PREFIX . "document_model (nom, type, entity) VALUES('generic_" . strtolower($myTmpObjectKey) . "_twig', '" . $this->db->escape(strtolower($myTmpObjectKey)) . "', " . ((int) $conf->entity) . ")"
+		// 	]);
+		// }
 
 		return $this->_init($sql, $options);
 	}
