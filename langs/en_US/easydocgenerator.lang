@@ -8,3 +8,6 @@ EasydocgeneratorSetup=Easydocgenerator settings
 EasydocgeneratorSetupPage=Easydocgenerator settings
 EasydocgeneratorAbout=About Easydocgenerator
 EasydocgeneratorAboutPage=Easydocgenerator about page
+EasydocgeneratorEnableDevelopperMode=Enable developer mode
+CHECKLASTVERSION_EXTERNALMODULE=Force version checking of external modules (not recommended, this option may have been activated by another module)
+MAIN_ENABLE_AJAX_TOOLTIP=Enable Ajax tooltips (requires a version of Dolibar &gt;= 18)

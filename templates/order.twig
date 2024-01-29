@@ -58,6 +58,7 @@ table thead th { background-color: #EEEEEE;
 <tr>
 <td align="center"><img src="{{ logo }}" height="80px"/></td>
 <td width="40%" style="color:#0000BB; ">
+<<<<<<< HEAD
 	<span style="font-weight: bold; font-size: 14pt;">{{ mysoc.name|e }}</span><br />
 	{{ mysoc.address|e}}<br />
 	{{ mysoc.zip|e}} {{ mysoc.town|e}}<br />
@@ -65,15 +66,24 @@ table thead th { background-color: #EEEEEE;
 	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ mysoc.phone }}<br />
 	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ mysoc.email }}<br />
 	{{ mysoc.tvanumber|e}}<br />
+=======
+	<span style="font-weight: bold; font-size: 14pt;">{{ mysoc.name }}</span><br />
+	{{ mysoc.address }}<br />
+	{{ mysoc.zip }} {{ mysoc.town }}<br />
+	<img src="{{ mysoc.flag }}"> {{ mysoc.country }}<br />
+	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ mysoc.phone }}<br />
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ mysoc.email }}<br />
+	{{ mysoc.tvanumber }}<br />
+>>>>>>> origin/main
 </td>
 <td width="40%" style="text-align: right;">
-<span style="font-weight: bold; font-size: 12pt;">{{ doctitle|e }}: {{ object.ref|e}}</span>
-<br /><span style="font-weight: bold; font-size: 12pt;">{{ date|e }}: {{ object.date|e}}</span>
+<span style="font-weight: bold; font-size: 12pt;">{{ doctitle }}: {{ object.ref }}</span>
+<br /><span style="font-weight: bold; font-size: 12pt;">{{ date }}: {{ object.date }}</span>
 {% if object.ref_customer %}
-	<br /><span style="font-weight: bold; font-size: 12pt;">{{ ref_customer|e }}: {{ object.ref_customer|e}}</span>
+	<br /><span style="font-weight: bold; font-size: 12pt;">{{ ref_customer }}: {{ object.ref_customer }}</span>
 {% endif %}
 {% if object.ref_project %}
-	<br /><span style="font-weight: bold; font-size: 12pt;">{{ ref_project|e }}: {{ object.ref_project|e}}</span>
+	<br /><span style="font-weight: bold; font-size: 12pt;">{{ ref_project }}: {{ object.ref_project }}</span>
 {% endif %}
 </td>
 </tr>
@@ -82,8 +92,8 @@ table thead th { background-color: #EEEEEE;
 
 <htmlpagefooter name="myfooter">
 <div style="border-top: 1px solid #000000; font-size: 6pt; text-align: center; padding-top: 3mm; ">
-{{ footerinfo.line3|e }}<br />
-{{ footerinfo.line4|e }}<br />
+{{ footerinfo.line3 }}<br />
+{{ footerinfo.line4 }}<br />
 Page {PAGENO} of {nb}
 </div>
 </htmlpagefooter>
@@ -111,14 +121,14 @@ mpdf-->
 	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone }}<br />
 {% endif %}
 {% if thirdparty.email %}
-	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ thirdparty.email|e}}<br />
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ thirdparty.email }}<br />
 {% endif %}
 </td>
 </tr>
 </table>
 
 <br />
-<div style="text-align: right">{{ currencyinfo|e }}</div>
+<div style="text-align: right">{{ currencyinfo }}</div>
 
 <table class="items" width="100%" style="font-size: 7pt; border-collapse: collapse; " cellpadding="8">
 <thead>
@@ -126,7 +136,11 @@ mpdf-->
 <th width="15%">{{ ref }}</th>
 <th width="40%">{{ description }}</th>
 <th width="10%">{{ vat }}</th>
+<<<<<<< HEAD
 <th width="10%">{{ qty}}</th>
+=======
+<th width="10%">{{ qty }}</th>
+>>>>>>> origin/main
 <th width="15%">{{ unitprice_ht }}</th>
 <th width="15%">{{ total_ht }}</th>
 </tr>
@@ -145,17 +159,22 @@ mpdf-->
 				<td class="blanktotal" colspan="6">{{ line.description }}</td>
 			{% elseif line.qty == 99 %}
 				<!-- SUBTOTAL SUBTOTAL -->
-				<td class="subtotalsubtotal" colspan="6" align="right">{{ line.label }}: {{ line.total_ht|e }}</td>
+				<td class="subtotalsubtotal" colspan="6" align="right">{{ line.label }}: {{ line.total_ht }}</td>
 			{% else %}
-				<td class="subtotal" colspan="6" align="left">{{ line.label }}{{ line.qty|e }}</td>
+				<td class="subtotal" colspan="6" align="left">{{ line.label }}{{ line.qty }}</td>
 			{% endif %}
 		{% else %}
 			<td align="center">{{ line.ref }}</td>
 			<td>{{ line.product_label }}<br />{{ line.product_description }}</td>
 			<td align="right">{{ line.vatrate }}</td>
 			<td align="center">{{ line.qty }}</td>
+<<<<<<< HEAD
 			<td class="cost">{{ line.subprice|e }}</td>
 			<td class="cost">{{ line.total_ht|e }}</td>
+=======
+			<td class="cost">{{ line.subprice }}</td>
+			<td class="cost">{{ line.total_ht }}</td>
+>>>>>>> origin/main
 		{% endif %}
 		</tr>
 	{% endfor %}
@@ -182,7 +201,10 @@ mpdf-->
 
 
 <div style="text-align: center; font-style: italic;">{{ paymentconditions }}: {{ labelpaymentconditions }}</div>
+<<<<<<< HEAD
 <div>{{ freetext }}</div>
+=======
+>>>>>>> origin/main
 
 
 </body>
