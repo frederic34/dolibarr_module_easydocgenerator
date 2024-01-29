@@ -11,3 +11,9 @@ EasydocgeneratorAboutPage=Easydocgenerator o stronie
 EasydocgeneratorEnableDevelopperMode=Włącz tryb programisty
 CHECKLASTVERSION_EXTERNALMODULE=Wymuś sprawdzanie wersji modułów zewnętrznych (niezalecane, opcja mogła zostać aktywowana przez inny moduł)
 MAIN_ENABLE_AJAX_TOOLTIP=Włącz podpowiedzi Ajax (wymaga wersji Dolibar &gt;= 18)
+EASYDOC_PDF_MARGIN_LEFT=Lewy margines w plikach PDF
+EASYDOC_PDF_MARGIN_RIGHT=Prawy margines w plikach PDF
+EASYDOC_PDF_MARGIN_TOP=Górny margines w plikach PDF
+EASYDOC_PDF_MARGIN_BOTTOM=Niska marża na plikach PDF
+EASYDOC_PDF_MARGIN_HEADER=Nagłówek w plikach PDF
+EASYDOC_PDF_MARGIN_FOOTER=Stopka w plikach PDF

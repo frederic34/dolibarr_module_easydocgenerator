@@ -12,3 +12,9 @@ EasydocgeneratorAboutPage=Easydocgenerator sulla pagina
 EasydocgeneratorEnableDevelopperMode=Abilita la modalità sviluppatore
 CHECKLASTVERSION_EXTERNALMODULE=Forza il controllo della versione dei moduli esterni (non consigliato, questa opzione potrebbe essere stata attivata da un altro modulo)
 MAIN_ENABLE_AJAX_TOOLTIP=Abilita tooltip Ajax (richiede una versione di Dolibar &gt;= 18)
+EASYDOC_PDF_MARGIN_LEFT=Margine sinistro sui PDF
+EASYDOC_PDF_MARGIN_RIGHT=Margine destro sui PDF
+EASYDOC_PDF_MARGIN_TOP=Margine superiore sui PDF
+EASYDOC_PDF_MARGIN_BOTTOM=Margine basso sui PDF
+EASYDOC_PDF_MARGIN_HEADER=Intestazione sui PDF
+EASYDOC_PDF_MARGIN_FOOTER=Piè di pagina sui PDF

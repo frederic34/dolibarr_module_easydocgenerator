@@ -11,3 +11,9 @@ EasydocgeneratorAboutPage=Easydocgenerator über Seite
 EasydocgeneratorEnableDevelopperMode=Aktivieren Sie den Entwicklermodus
 CHECKLASTVERSION_EXTERNALMODULE=Versionsprüfung externer Module erzwingen (nicht empfohlen, diese Option wurde möglicherweise von einem anderen Modul aktiviert)
 MAIN_ENABLE_AJAX_TOOLTIP=Ajax-Tooltips aktivieren (erfordert eine Version von Dolibar &gt;= 18)
+EASYDOC_PDF_MARGIN_LEFT=Linker Rand bei PDFs
+EASYDOC_PDF_MARGIN_RIGHT=Rechter Rand bei PDFs
+EASYDOC_PDF_MARGIN_TOP=Oberer Rand bei PDFs
+EASYDOC_PDF_MARGIN_BOTTOM=Geringer Rand bei PDFs
+EASYDOC_PDF_MARGIN_HEADER=Kopfzeile bei PDFs
+EASYDOC_PDF_MARGIN_FOOTER=Fußzeile bei PDFs
