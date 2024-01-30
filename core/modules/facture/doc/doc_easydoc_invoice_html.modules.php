@@ -365,7 +365,9 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		if (!empty($conf->global->$paramfreetext)) {
 			$newfreetext = make_substitutions(getDolGlobalString($paramfreetext), $substitutionarray);
 		}
-
+		// todo
+		// $test = getEachVarObject($object, $outputlangs);
+		// var_dump($test);
 		$substitutions = [
 			'mysoc' => [
 				'name' => $mysoc->name,
@@ -425,6 +427,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			'labelpaymentconditions' => $label_payment_conditions,
 			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
 		];
+		$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
 		$subtotal_ht = 0;
 		$subtotal_ttc = 0;
 		$linenumber = 1;
@@ -473,6 +476,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		]);
 		$mpdf->SetProtection(['print']);
 		$mpdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
+		$mpdf->SetCreator('Dolibarr '.DOL_VERSION);
 		$mpdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
 		$mpdf->SetWatermarkText(getDolGlobalString('COMMANDE_DRAFT_WATERMARK'));
 
