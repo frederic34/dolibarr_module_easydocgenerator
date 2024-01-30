@@ -474,7 +474,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		]);
 		$mpdf->SetProtection(['print']);
 		$mpdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
-		$mpdf->SetCreator('Dolibarr '.DOL_VERSION);
+		$mpdf->SetCreator('Dolibarr ' . DOL_VERSION);
 		$mpdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
 		$mpdf->SetWatermarkText(getDolGlobalString('COMMANDE_DRAFT_WATERMARK'));
 
