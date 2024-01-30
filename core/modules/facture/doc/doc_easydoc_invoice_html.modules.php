@@ -476,7 +476,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		]);
 		$mpdf->SetProtection(['print']);
 		$mpdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
-		$mpdf->SetCreator('Dolibarr '.DOL_VERSION);
+		$mpdf->SetCreator('Dolibarr ' . DOL_VERSION);
 		$mpdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
 		$mpdf->SetWatermarkText(getDolGlobalString('COMMANDE_DRAFT_WATERMARK'));
 
