@@ -71,7 +71,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$this->update_main_doc_field = 1;
 
 		// Page size for A4 format
-		$this->type = 'easydoc';
+		$this->type = 'pdf';
 		$this->page_largeur = 0;
 		$this->page_hauteur = 0;
 		$this->format = [$this->page_largeur, $this->page_hauteur];

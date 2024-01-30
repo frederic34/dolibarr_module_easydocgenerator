@@ -71,7 +71,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		$this->update_main_doc_field = 1;
 
 		// Page size for A4 format
-		$this->type = 'easydoc';
+		$this->type = 'pdf';
 		$this->page_largeur = 0;
 		$this->page_hauteur = 0;
 		$this->format = [$this->page_largeur, $this->page_hauteur];
@@ -369,6 +369,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 				'code_client' => $object->thirdparty->code_client,
 			],
 			'object' => [
+				'status' => $object->status,
 				'date' => dol_print_date($object->date, "day", false, $outputlangs, true),
 				'ref' => $object->ref,
 				'note_public' => $object->note_public,
@@ -376,7 +377,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 				'total_tva' => price($object->total_tva),
 				'total_ht' => price($object->total_ht),
 				'total_ttc' => price($object->total_ttc),
-				'ref_customer' => $outputlangs->convToOutputCharset($object->ref_client),
+				'ref_customer' => $outputlangs->convToOutputCharset($object->ref_customer),
 			],
 			'date' => $outputlangs->trans("OrderDate"),
 			'qty' => $outputlangs->transnoentitiesnoconv('Qty'),
@@ -444,10 +445,12 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		]);
 		$mpdf->SetProtection(['print']);
 		$mpdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
+		$mpdf->SetCreator('Dolibarr '.DOL_VERSION);
 		$mpdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
+		$mpdf->SetKeyWords($outputlangs->convToOutputCharset($object->ref)." ".$outputlangs->transnoentities("PdfCommercialProposalTitle")." ".$outputlangs->convToOutputCharset($object->thirdparty->name));
 		$mpdf->SetWatermarkText(getDolGlobalString('PROPALE_DRAFT_WATERMARK'));
 
-		$mpdf->showWatermarkText = ($object->statut == Propal::STATUS_DRAFT && getDolGlobalString('PROPALE_DRAFT_WATERMARK'));
+		$mpdf->showWatermarkText = ($object->status == Propal::STATUS_DRAFT && getDolGlobalString('PROPALE_DRAFT_WATERMARK'));
 		$mpdf->watermark_font = 'DejaVuSansCondensed';
 		$mpdf->watermarkTextAlpha = 0.1;
 
@@ -459,7 +462,6 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		//If propal merge product PDF is active
 		if (getDolGlobalString('PRODUIT_PDF_MERGE_PROPAL')) {
 			require_once DOL_DOCUMENT_ROOT . '/product/class/propalmergepdfproduct.class.php';
-
 			$already_merged = [];
 			foreach ($object->lines as $line) {
 				if (!empty($line->fk_product) && !(in_array($line->fk_product, $already_merged))) {
