@@ -22,12 +22,12 @@
  */
 
 /**
- *	\file       htdocs/core/modules/commande/doc/doc_easydoc_order_html.modules.php
- *	\ingroup    commande
- *	\brief      File of class to build PDF documents for orders
+ *	\file       htdocs/core/modules/facture/doc/doc_easydoc_order_html.modules.php
+ *	\ingroup    facture
+ *	\brief      File of class to build PDF documents for invoices
  */
 
-require_once DOL_DOCUMENT_ROOT . '/core/modules/commande/modules_commande.php';
+require_once DOL_DOCUMENT_ROOT . '/core/modules/facture/modules_facture.php';
 require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
@@ -40,7 +40,7 @@ dol_include_once('/easydocgenerator/lib/easydocgenerator.lib.php');
 /**
  *	Class to build documents using HTML templates
  */
-class doc_easydoc_order_html extends ModelePDFCommandes
+class doc_easydoc_invoice_html extends ModelePDFFactures
 {
 	// phpcs:enable
 	/**
@@ -66,7 +66,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$this->name = "HTML templates";
 		$this->description = $langs->trans("DocumentModelEasydocgeneratorTemplate");
 		// Name of constant that is used to save list of directories to scan
-		$this->scandir = 'ORDER_ADDON_EASYDOC_TEMPLATES_PATH';
+		$this->scandir = 'INVOICE_ADDON_EASYDOC_TEMPLATES_PATH';
 		// Save the name of generated file as the main doc when generating a doc with this template
 		$this->update_main_doc_field = 1;
 
@@ -118,13 +118,13 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$text .= '<input type="hidden" name="token" value="' . newToken() . '">';
 		$text .= '<input type="hidden" name="page_y" value="">';
 		$text .= '<input type="hidden" name="action" value="setModuleOptions">';
-		$text .= '<input type="hidden" name="param1" value="ORDER_ADDON_EASYDOC_TEMPLATES_PATH">';
+		$text .= '<input type="hidden" name="param1" value="INVOICE_ADDON_EASYDOC_TEMPLATES_PATH">';
 		$text .= '<table class="nobordernopadding" width="100%">';
 
 		// List of directories area
 		$text .= '<tr><td>';
 		$texttitle = $langs->trans("ListOfDirectoriesForHtmlTemplates");
-		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim($conf->global->ORDER_ADDON_EASYDOC_TEMPLATES_PATH)));
+		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim($conf->global->INVOICE_ADDON_EASYDOC_TEMPLATES_PATH)));
 		$listoffiles = [];
 		foreach ($listofdir as $key => $tmpdir) {
 			$tmpdir = trim($tmpdir);
@@ -151,7 +151,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$text .= $form->textwithpicto($texttitle, $texthelp, 1, 'help', '', 1, 3, $this->name);
 		$text .= '<div><div style="display: inline-block; min-width: 100px; vertical-align: middle;">';
 		$text .= '<textarea class="flat" cols="60" name="value1">';
-		$text .= getDolGlobalString('ORDER_ADDON_EASYDOC_TEMPLATES_PATH');
+		$text .= getDolGlobalString('INVOICE_ADDON_EASYDOC_TEMPLATES_PATH');
 		$text .= '</textarea>';
 		$text .= '</div><div style="display: inline-block; vertical-align: middle;">';
 		$text .= '<input type="submit" class="button button-edit reposition smallpaddingimp" name="modify" value="' . dol_escape_htmltag($langs->trans("Modify")) . '">';
@@ -159,7 +159,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 
 		// Scan directories
 		$nbofiles = count($listoffiles);
-		if (getDolGlobalString('ORDER_ADDON_EASYDOC_TEMPLATES_PATH')) {
+		if (getDolGlobalString('INVOICE_ADDON_EASYDOC_TEMPLATES_PATH')) {
 			$text .= $langs->trans("NumberOfModelHTMLFilesFound") . ': <b>';
 			//$text.=$nbofiles?'<a id="a_'.get_class($this).'" href="#">':'';
 			$text .= count($listoffiles);
@@ -171,8 +171,8 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			$text .= '<div id="div_' . get_class($this) . '" class="hiddenx">';
 			// Show list of found files
 			foreach ($listoffiles as $file) {
-				$text .= '- ' . $file['name'] . ' <a href="' . DOL_URL_ROOT . '/document.php?modulepart=doctemplates&file=orders/' . urlencode(basename($file['name'])) . '">' . img_picto('', 'listlight') . '</a>';
-				$text .= ' &nbsp; <a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=ORDER_ADDON_EASYDOC_TEMPLATES_PATH&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name'])) . '">' . img_picto('', 'delete') . '</a>';
+				$text .= '- ' . $file['name'] . ' <a href="' . DOL_URL_ROOT . '/document.php?modulepart=doctemplates&file=invoices/' . urlencode(basename($file['name'])) . '">' . img_picto('', 'listlight') . '</a>';
+				$text .= ' &nbsp; <a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=INVOICE_ADDON_EASYDOC_TEMPLATES_PATH&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name'])) . '">' . img_picto('', 'delete') . '</a>';
 				$text .= '<br>';
 			}
 			$text .= '</div>';
@@ -186,7 +186,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			$text .= '<input type="hidden" name="MAX_FILE_SIZE" value="' . ($maxmin * 1024) . '">';
 		}
 		$text .= ' <input type="file" name="uploadfile">';
-		$text .= '<input type="hidden" value="ORDER_ADDON_EASYDOC_TEMPLATES_PATH" name="keyforuploaddir">';
+		$text .= '<input type="hidden" value="INVOICE_ADDON_EASYDOC_TEMPLATES_PATH" name="keyforuploaddir">';
 		$text .= '<input type="submit" class="button reposition smallpaddingimp" value="' . dol_escape_htmltag($langs->trans("Upload")) . '" name="upload">';
 		$text .= '</div>';
 
@@ -204,7 +204,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 	/**
 	 *  Function to build a document on disk using the generic odt module.
 	 *
-	 *	@param		Commande	$object				Object source to build document
+	 *	@param		Facture 	$object				Object source to build document
 	 *	@param		Translate	$outputlangs		Lang output object
 	 * 	@param		string		$srctemplatepath	Full path of source filename for generator using a template file
 	 *  @param		int			$hidedetails		Do not show line details
@@ -252,7 +252,6 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$parameters = ['file' => $file, 'object' => $object, 'outputlangs' => $outputlangs];
 		global $action;
 		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
-
 
 		require dol_buildpath('easydocgenerator/vendor/autoload.php');
 
@@ -362,11 +361,13 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 
 		// Line of free text
 		$newfreetext = '';
-		$paramfreetext = 'ORDER_FREE_TEXT';
+		$paramfreetext = 'INVOICE_FREE_TEXT';
 		if (!empty($conf->global->$paramfreetext)) {
 			$newfreetext = make_substitutions(getDolGlobalString($paramfreetext), $substitutionarray);
 		}
-
+		// todo
+		// $test = getEachVarObject($object, $outputlangs);
+		// var_dump($test);
 		$substitutions = [
 			'mysoc' => [
 				'name' => $mysoc->name,
@@ -426,6 +427,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			'labelpaymentconditions' => $label_payment_conditions,
 			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
 		];
+		$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
 		$subtotal_ht = 0;
 		$subtotal_ttc = 0;
 		$linenumber = 1;
@@ -487,7 +489,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$mpdf->Bookmark($outputlangs->trans('PdfOrderTitle'));
 		$mpdf->WriteHTML($html);
 
-		$dir = $conf->commande->multidir_output[$object->entity];
+		$dir = $conf->facture->multidir_output[$object->entity];
 		$objectref = dol_sanitizeFileName($object->ref);
 		if (!preg_match('/specimen/i', $objectref)) {
 			$dir .= "/" . $objectref;
@@ -508,8 +510,8 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 
 		return 1;
 
-		if (!empty($conf->commande->dir_output)) {
-			$dir = $conf->commande->multidir_output[$object->entity];
+		if (!empty($conf->facture->dir_output)) {
+			$dir = $conf->facture->multidir_output[$object->entity];
 			$objectref = dol_sanitizeFileName($object->ref);
 			if (!preg_match('/specimen/i', $objectref)) {
 				$dir .= "/" . $objectref;
@@ -544,9 +546,9 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				}
 				$file = $dir . '/' . $filename;
 
-				dol_mkdir($conf->commande->dir_temp);
-				if (!is_writable($conf->commande->dir_temp)) {
-					$this->error = $langs->transnoentities("ErrorFailedToWriteInTempDirectory", $conf->commande->dir_temp);
+				dol_mkdir($conf->facture->dir_temp);
+				if (!is_writable($conf->facture->dir_temp)) {
+					$this->error = $langs->transnoentities("ErrorFailedToWriteInTempDirectory", $conf->facture->dir_temp);
 					dol_syslog('Error in write_file: ' . $this->error, LOG_ERR);
 					return -1;
 				}

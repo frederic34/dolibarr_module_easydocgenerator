@@ -81,6 +81,44 @@ function easydocgeneratorAdminPrepareHead()
 }
 
 /**
+ * Define array with couple substitution key => substitution value
+ *
+ * @param   Object		$object    		Dolibarr Object
+ * @param   Translate	$outputlangs    Language object for output
+ * @param   boolean|int	$recursive    	Want to fetch child array or child object.
+ * @return	array						Array of substitution key->code
+ */
+function getEachVarObject($object, $outputlangs, $recursive = 1)
+{
+	$array_other = [];
+	if (!empty($object)) {
+		foreach ($object as $key => $value) {
+			if (in_array($key, ['db', 'fields', 'lines', 'modelpdf', 'model_pdf'])) {		// discard some properties
+				continue;
+			}
+			if (!empty($value)) {
+				if (!is_array($value) && !is_object($value)) {
+					$array_other['object'][$key] = $value;
+				} elseif (is_array($value) && $recursive) {
+					$tmparray = getEachVarObject($value, $outputlangs, 0);
+					foreach ($tmparray as $key2 => $value2) {
+						$array_other['object'][$key . '_' . preg_replace('/^object_/', '', $key2)] = $value2;
+					}
+				} elseif (is_object($value) && $recursive) {
+					$tmparray = getEachVarObject($value, $outputlangs, 0);
+					foreach ($tmparray as $key2 => $value2) {
+						$array_other['object'][$key . '_' . preg_replace('/^object_/', '', $key2)] = $value2;
+					}
+				}
+			}
+		}
+	}
+
+	return $array_other;
+}
+
+
+/**
  *  Return footer info of page for PDF generation
  *
  *  @param  Translate		$outputlangs	Object lang for output
