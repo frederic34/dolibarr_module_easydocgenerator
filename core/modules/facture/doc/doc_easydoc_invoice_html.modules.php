@@ -234,7 +234,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		if (getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE') && $outputlangs->defaultlang != getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE')) {
 			$outputlangsbis = new Translate('', $conf);
 			$outputlangsbis->setDefaultLang(getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE'));
-			$outputlangsbis->loadLangs(array('main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks'));
+			$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks']);
 		}
 
 		// add linked objects to note_public
@@ -459,8 +459,8 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		$sql = "SELECT re.rowid, re.amount_ht, re.multicurrency_amount_ht, re.amount_tva, re.multicurrency_amount_tva,  re.amount_ttc, re.multicurrency_amount_ttc,";
 		$sql .= " re.description, re.fk_facture_source,";
 		$sql .= " f.type, f.datef";
-		$sql .= " FROM ".MAIN_DB_PREFIX."societe_remise_except as re, ".MAIN_DB_PREFIX."facture as f";
-		$sql .= " WHERE re.fk_facture_source = f.rowid AND re.fk_facture = ".((int) $object->id);
+		$sql .= " FROM " . MAIN_DB_PREFIX . "societe_remise_except as re, " . MAIN_DB_PREFIX . "facture as f";
+		$sql .= " WHERE re.fk_facture_source = f.rowid AND re.fk_facture = " . ((int) $object->id);
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
@@ -494,12 +494,12 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		$sql = "SELECT p.datep as date, p.fk_paiement, p.num_paiement as num";
 		$sql .= ", pf.amount as amount, pf.multicurrency_amount,";
 		$sql .= " cp.code, ba.ref as bankref";
-		$sql .= " FROM ".MAIN_DB_PREFIX."paiement_facture as pf";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "paiement_facture as pf";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "paiement as p ON  pf.fk_paiement = p.rowid";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "c_paiement AS cp ON p.fk_paiement = cp.id AND cp.entity IN (" . getEntity('c_paiement') . ")";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "bank as b ON p.fk_bank = b.rowid";
 		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "bank_account as ba ON b.fk_account = ba.rowid";
-		$sql .= " WHERE pf.fk_facture = ".((int) $object->id);
+		$sql .= " WHERE pf.fk_facture = " . ((int) $object->id);
 		$sql .= " ORDER BY p.datep";
 
 		$resql = $this->db->query($sql);
@@ -509,7 +509,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			while ($i < $num) {
 				$obj = $this->db->fetch_object($resql);
 				$substitutions['payments'][] = [
-					'text' => "PaymentTypeShort".$obj->code,
+					'text' => "PaymentTypeShort" . $obj->code,
 					'date' => $this->db->jdate($obj->date),
 					'num' => $obj->num,
 					'total_ttc' => $obj->amount,
