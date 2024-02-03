@@ -17,3 +17,4 @@ EASYDOC_PDF_MARGIN_TOP=Margen superior en archivos PDF
 EASYDOC_PDF_MARGIN_BOTTOM=Margen bajo en archivos PDF
 EASYDOC_PDF_MARGIN_HEADER=Encabezado en archivos PDF
 EASYDOC_PDF_MARGIN_FOOTER=Pie de página en archivos PDF
+EASYDOC_PDF_FORMAT=Formato de papel
