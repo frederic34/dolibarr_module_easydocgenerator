@@ -44,4 +44,5 @@ EASYDOC_PDF_MARGIN_TOP=Marge haut sur les PDF
 EASYDOC_PDF_MARGIN_BOTTOM=Marge bas sur les PDF
 EASYDOC_PDF_MARGIN_HEADER=En-tête sur les PDF
 EASYDOC_PDF_MARGIN_FOOTER=Pied de page sur les PDF
+EASYDOC_PDF_FORMAT=Format papiers
 

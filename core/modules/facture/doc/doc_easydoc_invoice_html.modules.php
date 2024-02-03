@@ -478,9 +478,13 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		$mpdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
 		$mpdf->SetCreator('Dolibarr ' . DOL_VERSION);
 		$mpdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
-		$mpdf->SetWatermarkText(getDolGlobalString('COMMANDE_DRAFT_WATERMARK'));
-
-		$mpdf->showWatermarkText = ($object->statut == Commande::STATUS_DRAFT && getDolGlobalString('COMMANDE_DRAFT_WATERMARK'));
+		// Watermark
+		$text = getDolGlobalString('FACTURE_DRAFT_WATERMARK');
+		$substitutionarray = pdf_getSubstitutionArray($outputlangs, null, null);
+		complete_substitutions_array($substitutionarray, $outputlangs, null);
+		$text = make_substitutions($text, $substitutionarray, $outputlangs);
+		$mpdf->SetWatermarkText($outputlangs->convToOutputCharset($text));
+		$mpdf->showWatermarkText = ($object->statut == Commande::STATUS_DRAFT && getDolGlobalString('FACTURE_DRAFT_WATERMARK'));
 		$mpdf->watermark_font = 'DejaVuSansCondensed';
 		$mpdf->watermarkTextAlpha = 0.1;
 
