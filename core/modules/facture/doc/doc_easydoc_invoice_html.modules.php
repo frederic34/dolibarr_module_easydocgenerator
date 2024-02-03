@@ -304,13 +304,14 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			return price($price, 0);
 		});
 		$twig->addFunction($function);
-		// create twig function which return price formatted
+		// create twig function which return number to words
 		$function = new \Twig\TwigFunction('numbertowords', function ($number, $currency, $language) {
 			$numbertow = new NumberToWords();
 			$currencyTransformer = $numbertow->getCurrencyTransformer($language);
 			return $currencyTransformer->toWords($number * 100, $currency);
 		});
 		$twig->addFunction($function);
+		// Load template
 		try {
 			$template = $twig->load(basename($srctemplatepath));
 		} catch (\Twig\Error\SyntaxError $e) {
@@ -419,6 +420,37 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		$substitutions['thirdparty']['phone_formatted'] = dol_print_phone($object->thirdparty->phone, $object->thirdparty->country_code, 0, 0, '', ' ');
 		$substitutions['thirdparty']['fax_formatted'] = dol_print_phone($object->thirdparty->fax, $object->thirdparty->country_code, 0, 0, '', ' ');
 
+		$typescontact = [
+			'external' => [
+				'BILLING',
+				'SHIPPING',
+				'SALESREPFOLL',
+				'CUSTOMER',
+			],
+			'internal' => [
+				'BILLING',
+				'SHIPPING',
+				'SALESREPFOLL',
+				'CUSTOMER',
+			],
+		];
+		foreach ($typescontact as $key => $value) {
+			foreach ($value as $type) {
+				$arrayidcontact = $object->getIdContact($key, $type);
+				$contacts = [];
+				foreach ($arrayidcontact as $idc) {
+					if ($key == 'external') {
+						$contact = new Contact($this->db);
+					}else {
+						$contact = new User($this->db);
+					}
+					$contact->fetch($idc);
+					$contacts[] = $contact;
+				}
+				$substitutions = array_merge($substitutions, getEachVarObject($contacts, $outputlangs, 1, strtolower($type) . '_' . $key));
+			}
+		}
+
 		// other
 		$substitutions = array_merge($substitutions, [
 			'logo' => $logo,
@@ -500,7 +532,6 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		}
 		$substitutions['payments'] = [];
 		// Loop on each payment
-		// TODO Call getListOfPayments instead of hard coded sql
 		$sql = "SELECT p.datep as date, p.fk_paiement, p.num_paiement as num";
 		$sql .= ", pf.amount as amount, pf.multicurrency_amount,";
 		$sql .= " cp.code, ba.ref as bankref";
