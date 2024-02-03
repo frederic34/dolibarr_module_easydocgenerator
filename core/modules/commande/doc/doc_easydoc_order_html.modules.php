@@ -26,6 +26,7 @@
  *	\ingroup    commande
  *	\brief      File of class to build PDF documents for orders
  */
+use NumberToWords\NumberToWords;
 
 require_once DOL_DOCUMENT_ROOT . '/core/modules/commande/modules_commande.php';
 require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
@@ -222,10 +223,20 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			return -1;
 		}
 
+		$object->fetch_thirdparty();
+
 		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
 		}
-		$object->fetch_thirdparty();
+		$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
+
+		global $outputlangsbis;
+		$outputlangsbis = null;
+		if (getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE') && $outputlangs->defaultlang != getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE')) {
+			$outputlangsbis = new Translate('', $conf);
+			$outputlangsbis->setDefaultLang(getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE'));
+			$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks']);
+		}
 
 		// add linked objects to note_public
 		$linkedObjects = pdf_getLinkedObjects($object, $outputlangs);
@@ -240,8 +251,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			$outputlangs->charset_output = 'ISO-8859-1';
 		}
 
-		$outputlangs->loadLangs(["main", "dict", "companies", "bills", "products", "orders", "deliveries"]);
-		$currency = !empty($currency) ? $currency : $conf->currency;
+		$currency = !empty($object->multicurrency_code) ? $object->multicurrency_code : $conf->currency;
 
 		// Add pdfgeneration hook
 		if (!is_object($hookmanager)) {
@@ -262,12 +272,21 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			'autoescape' => false,
 		]);
 		// create twig function which translate with $outpulangs->trans()
-		$function = new \Twig\TwigFunction('trans', function ($value) {
+		$function = new \Twig\TwigFunction('trans', function ($value, $param1 = '', $param2 = '', $param3 = '') {
 			global $outputlangs, $langs;
 			if (!is_object($outputlangs)) {
 				$outputlangs = $langs;
 			}
-			return $outputlangs->trans($value);
+			return $outputlangs->trans($value, $param1, $param2, $param3);
+		});
+		$twig->addFunction($function);
+		// create twig function which translate with $outpulangsbis->trans()
+		$function = new \Twig\TwigFunction('transbis', function ($value, $param1 = '', $param2 = '', $param3 = '') {
+			global $outputlangsbis, $langs;
+			if (!is_object($outputlangsbis)) {
+				$outputlangsbis = $langs;
+			}
+			return $outputlangsbis->trans($value, $param1, $param2, $param3);
 		});
 		$twig->addFunction($function);
 		// create twig function which returns getDolGlobalString(
@@ -285,6 +304,14 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			return price($price, 0);
 		});
 		$twig->addFunction($function);
+		// create twig function which return number to words
+		$function = new \Twig\TwigFunction('numbertowords', function ($number, $currency, $language) {
+			$numbertow = new NumberToWords();
+			$currencyTransformer = $numbertow->getCurrencyTransformer($language);
+			return $currencyTransformer->toWords($number * 100, $currency);
+		});
+		$twig->addFunction($function);
+		// Load template
 		try {
 			$template = $twig->load(basename($srctemplatepath));
 		} catch (\Twig\Error\SyntaxError $e) {
@@ -378,68 +405,64 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		if (!empty($conf->global->$paramfreetext)) {
 			$newfreetext = make_substitutions(getDolGlobalString($paramfreetext), $substitutionarray);
 		}
+		// mysoc
+		$substitutions = getEachVarObject($mysoc, $outputlangs, 1, 'mysoc');
+		$substitutions['mysoc']['flag'] = DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($flagImage) . '.png';
+		$substitutions['mysoc']['phone_formatted'] = dol_print_phone($mysoc->phone, $mysoc->country_code, 0, 0, '', ' ');
+		$substitutions['mysoc']['fax_formatted'] = dol_print_phone($mysoc->fax, $mysoc->country_code, 0, 0, '', ' ');
 
-		$substitutions = [
-			'mysoc' => [
-				'name' => $mysoc->name,
-				'name_alias' => $mysoc->name_alias,
-				'address' => $mysoc->address,
-				'zip' => $mysoc->zip,
-				'town' => $mysoc->town,
-				'country' => $mysoc->country,
-				'flag' => DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($flagImage) . '.png',
-				'phone' => dol_print_phone($mysoc->phone, $mysoc->country_code, 0, 0, '', ' '),
-				'fax' => dol_print_phone($mysoc->fax, $mysoc->country_code, 0, 0, '', ' '),
-				'email' => $mysoc->email,
-				'idprof1' => $mysoc->idprof1,
-				'idprof2' => $mysoc->idprof2,
-				'idprof3' => $mysoc->idprof3,
-				'idprof4' => $mysoc->idprof4,
-				'idprof5' => $mysoc->idprof5,
-				'idprof6' => $mysoc->idprof6,
-				'capital' => $mysoc->capital,
-				'tvanumber' => $mysoc->tva_intra,
+		// object
+		$substitutions = array_merge($substitutions, getEachVarObject($object, $outputlangs, 0));
+
+		// thirdparty
+		$substitutions = array_merge($substitutions, getEachVarObject($object->thirdparty, $outputlangs, 1, 'thirdparty'));
+		$substitutions['thirdparty']['flag'] = DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($object->thirdparty->country_code) . '.png';
+		$substitutions['thirdparty']['phone_formatted'] = dol_print_phone($object->thirdparty->phone, $object->thirdparty->country_code, 0, 0, '', ' ');
+		$substitutions['thirdparty']['fax_formatted'] = dol_print_phone($object->thirdparty->fax, $object->thirdparty->country_code, 0, 0, '', ' ');
+
+		$typescontact = [
+			'external' => [
+				'BILLING',
+				'SHIPPING',
+				'SALESREPFOLL',
+				'CUSTOMER',
 			],
-			'thirdparty' => [
-				'name' => $object->thirdparty->name,
-				'name_alias' => $object->thirdparty->name_alias,
-				'address' => $object->thirdparty->address,
-				'zip' => $object->thirdparty->zip,
-				'town' => $object->thirdparty->town,
-				'country' => $object->thirdparty->country,
-				'flag' => DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($object->thirdparty->country_code) . '.png',
-				'phone' => dol_print_phone($object->thirdparty->phone, $object->thirdparty->country_code, 0, 0, '', ' '),
-				'fax' => dol_print_phone($object->thirdparty->fax, $object->thirdparty->country_code, 0, 0, '', ' '),
-				'email' => $object->thirdparty->email,
-				'idprof1' => $object->thirdparty->idprof1,
-				'idprof2' => $object->thirdparty->idprof2,
-				'idprof3' => $object->thirdparty->idprof3,
-				'idprof4' => $object->thirdparty->idprof4,
-				'idprof5' => $object->thirdparty->idprof5,
-				'idprof6' => $object->thirdparty->idprof6,
-				'capital' => $object->thirdparty->capital,
-				'code_client' => $object->thirdparty->code_client,
+			'internal' => [
+				'BILLING',
+				'SHIPPING',
+				'SALESREPFOLL',
+				'CUSTOMER',
 			],
-			'object' => [
-				'date' => dol_print_date($object->date, "day", false, $outputlangs, true),
-				'ref' => $object->ref,
-				'note_public' => $object->note_public,
-				'note_private' => $object->note_private,
-				'total_tva' => price($object->total_tva),
-				'total_ht' => price($object->total_ht),
-				'total_ttc' => price($object->total_ttc),
-				'ref_customer' => $outputlangs->convToOutputCharset($object->ref_client),
-			],
+		];
+		foreach ($typescontact as $key => $value) {
+			foreach ($value as $type) {
+				$arrayidcontact = $object->getIdContact($key, $type);
+				$contacts = [];
+				foreach ($arrayidcontact as $idc) {
+					if ($key == 'external') {
+						$contact = new Contact($this->db);
+					} else {
+						$contact = new User($this->db);
+					}
+					$contact->fetch($idc);
+					$contacts[] = $contact;
+				}
+				$substitutions = array_merge($substitutions, getEachVarObject($contacts, $outputlangs, 1, strtolower($type) . '_' . $key));
+			}
+		}
+
+		// other
+		$substitutions = array_merge($substitutions, [
 			'logo' => $logo,
 			'freetext' => $newfreetext,
 			'lines' => [],
 			'linkedObjects' => $linkedObjects,
 			'footerinfo' => getPdfPagefoot($outputlangs, $paramfreetext, $mysoc, $object),
 			'labelpaymentconditions' => $label_payment_conditions,
+			'currency' => $currency,
 			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
-		];
+		]);
 		// var_dump($substitutions);
-		$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
 		$subtotal_ht = 0;
 		$subtotal_ttc = 0;
 		$linenumber = 1;
@@ -475,8 +498,12 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		}
 
 		// var_dump($substitutions);
+		$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
 		try {
 			$html = $template->render($substitutions);
+		} catch (\Twig\Error\SyntaxError $e) {
+			$this->errors = $e->getMessage() . ' at line ' . $e->getLine() . ' in file ' . $e->getFile();
+			return -1;
 		} catch (Exception $e) {
 			$this->errors[] = $e->getMessage();
 			return -1;
@@ -495,6 +522,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$mpdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
 		$mpdf->SetCreator('Dolibarr ' . DOL_VERSION);
 		$mpdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
+		$mpdf->SetKeyWords($outputlangs->convToOutputCharset($object->ref) . " " . $outputlangs->transnoentities("PdfOrderTitle") . " " . $outputlangs->convToOutputCharset($object->thirdparty->name));
 		// Watermark
 		$text = getDolGlobalString('COMMANDE_DRAFT_WATERMARK');
 		$substitutionarray = pdf_getSubstitutionArray($outputlangs, null, null);

@@ -2,9 +2,9 @@
     "require": {
         "php": ">=7.4",
         "mpdf/mpdf": "^8.2",
+        "mpdf/qrcode": "^1.2",
         "twig/twig": "^3.0",
         "horstoeko/zugferd":"^1",
-        "mpdf/qrcode": "^1.2",
         "kwn/number-to-words": "^2.8"
     }
 }
