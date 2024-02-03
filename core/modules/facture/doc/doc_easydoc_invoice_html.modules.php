@@ -26,6 +26,7 @@
  *	\ingroup    facture
  *	\brief      File of class to build PDF documents for invoices
  */
+use NumberToWords\NumberToWords;
 
 require_once DOL_DOCUMENT_ROOT . '/core/modules/facture/modules_facture.php';
 require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
@@ -227,7 +228,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
 		}
-		$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks']);
+		$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
 
 		global $outputlangsbis;
 		$outputlangsbis = null;
@@ -250,7 +251,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			$outputlangs->charset_output = 'ISO-8859-1';
 		}
 
-		$currency = !empty($currency) ? $currency : $conf->currency;
+		$currency = !empty($object->multicurrency_code) ? $object->multicurrency_code : $conf->currency;
 
 		// Add pdfgeneration hook
 		if (!is_object($hookmanager)) {
@@ -271,21 +272,21 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			'autoescape' => false,
 		]);
 		// create twig function which translate with $outpulangs->trans()
-		$function = new \Twig\TwigFunction('trans', function ($value) {
+		$function = new \Twig\TwigFunction('trans', function ($value, $param1 = '', $param2 = '', $param3 = '') {
 			global $outputlangs, $langs;
 			if (!is_object($outputlangs)) {
 				$outputlangs = $langs;
 			}
-			return $outputlangs->trans($value);
+			return $outputlangs->trans($value, $param1, $param2, $param3);
 		});
 		$twig->addFunction($function);
 		// create twig function which translate with $outpulangsbis->trans()
-		$function = new \Twig\TwigFunction('transbis', function ($value) {
+		$function = new \Twig\TwigFunction('transbis', function ($value, $param1 = '', $param2 = '', $param3 = '') {
 			global $outputlangsbis, $langs;
 			if (!is_object($outputlangsbis)) {
 				$outputlangsbis = $langs;
 			}
-			return $outputlangsbis->trans($value);
+			return $outputlangsbis->trans($value, $param1, $param2, $param3);
 		});
 		$twig->addFunction($function);
 		// create twig function which returns getDolGlobalString(
@@ -303,6 +304,14 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			return price($price, 0);
 		});
 		$twig->addFunction($function);
+		// create twig function which return number to words
+		$function = new \Twig\TwigFunction('numbertowords', function ($number, $currency, $language) {
+			$numbertow = new NumberToWords();
+			$currencyTransformer = $numbertow->getCurrencyTransformer($language);
+			return $currencyTransformer->toWords($number * 100, $currency);
+		});
+		$twig->addFunction($function);
+		// Load template
 		try {
 			$template = $twig->load(basename($srctemplatepath));
 		} catch (\Twig\Error\SyntaxError $e) {
@@ -411,6 +420,37 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		$substitutions['thirdparty']['phone_formatted'] = dol_print_phone($object->thirdparty->phone, $object->thirdparty->country_code, 0, 0, '', ' ');
 		$substitutions['thirdparty']['fax_formatted'] = dol_print_phone($object->thirdparty->fax, $object->thirdparty->country_code, 0, 0, '', ' ');
 
+		$typescontact = [
+			'external' => [
+				'BILLING',
+				'SHIPPING',
+				'SALESREPFOLL',
+				'CUSTOMER',
+			],
+			'internal' => [
+				'BILLING',
+				'SHIPPING',
+				'SALESREPFOLL',
+				'CUSTOMER',
+			],
+		];
+		foreach ($typescontact as $key => $value) {
+			foreach ($value as $type) {
+				$arrayidcontact = $object->getIdContact($key, $type);
+				$contacts = [];
+				foreach ($arrayidcontact as $idc) {
+					if ($key == 'external') {
+						$contact = new Contact($this->db);
+					} else {
+						$contact = new User($this->db);
+					}
+					$contact->fetch($idc);
+					$contacts[] = $contact;
+				}
+				$substitutions = array_merge($substitutions, getEachVarObject($contacts, $outputlangs, 1, strtolower($type) . '_' . $key));
+			}
+		}
+
 		// other
 		$substitutions = array_merge($substitutions, [
 			'logo' => $logo,
@@ -419,8 +459,10 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			'linkedObjects' => $linkedObjects,
 			'footerinfo' => getPdfPagefoot($outputlangs, $paramfreetext, $mysoc, $object),
 			'labelpaymentconditions' => $label_payment_conditions,
+			'currency' => $currency,
 			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
 		]);
+		// var_dump(getEachVarObject($object->lines, $outputlangs, 1, 'lines'));
 		$subtotal_ht = 0;
 		$subtotal_ttc = 0;
 		$linenumber = 1;
@@ -490,7 +532,6 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		}
 		$substitutions['payments'] = [];
 		// Loop on each payment
-		// TODO Call getListOfPayments instead of hard coded sql
 		$sql = "SELECT p.datep as date, p.fk_paiement, p.num_paiement as num";
 		$sql .= ", pf.amount as amount, pf.multicurrency_amount,";
 		$sql .= " cp.code, ba.ref as bankref";
@@ -544,6 +585,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		$mpdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
 		$mpdf->SetCreator('Dolibarr ' . DOL_VERSION);
 		$mpdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
+		$mpdf->SetKeyWords($outputlangs->convToOutputCharset($object->ref) . " " . $outputlangs->transnoentities("PdfInvoiceTitle") . " " . $outputlangs->convToOutputCharset($object->thirdparty->name));
 		// Watermark
 		$text = getDolGlobalString('FACTURE_DRAFT_WATERMARK');
 		$substitutionarray = pdf_getSubstitutionArray($outputlangs, null, null);

@@ -26,6 +26,7 @@
  *	\ingroup    propal
  *	\brief      File of class to build PDF documents for propales
  */
+use NumberToWords\NumberToWords;
 
 require_once DOL_DOCUMENT_ROOT . '/core/modules/propale/modules_propale.php';
 require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
@@ -222,10 +223,20 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 			return -1;
 		}
 
+		$object->fetch_thirdparty();
+
 		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
 		}
-		$object->fetch_thirdparty();
+		$outputlangs->loadLangs(['main', 'dict', 'companies', 'propal', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
+
+		global $outputlangsbis;
+		$outputlangsbis = null;
+		if (getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE') && $outputlangs->defaultlang != getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE')) {
+			$outputlangsbis = new Translate('', $conf);
+			$outputlangsbis->setDefaultLang(getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE'));
+			$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'propal', 'bills', 'products', 'orders', 'deliveries', 'banks']);
+		}
 
 		// add linked objects to note_public
 		$linkedObjects = pdf_getLinkedObjects($object, $outputlangs);
@@ -240,8 +251,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 			$outputlangs->charset_output = 'ISO-8859-1';
 		}
 
-		$outputlangs->loadLangs(["main", "dict", "companies", "bills", "products", "propal", "deliveries"]);
-		$currency = !empty($currency) ? $currency : $conf->currency;
+		$currency = !empty($object->multicurrency_code) ? $object->multicurrency_code : $conf->currency;
 
 		// Add pdfgeneration hook
 		if (!is_object($hookmanager)) {
@@ -253,7 +263,6 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		global $action;
 		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
-
 		require dol_buildpath('easydocgenerator/vendor/autoload.php');
 
 		$loader = new \Twig\Loader\FilesystemLoader(dirname($srctemplatepath));
@@ -263,16 +272,46 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 			'autoescape' => false,
 		]);
 		// create twig function which translate with $outpulangs->trans()
-		$function = new \Twig\TwigFunction('trans', function ($value) {
-			global $outputlangs;
-			return $outputlangs->trans($value);
+		$function = new \Twig\TwigFunction('trans', function ($value, $param1 = '', $param2 = '', $param3 = '') {
+			global $outputlangs, $langs;
+			if (!is_object($outputlangs)) {
+				$outputlangs = $langs;
+			}
+			return $outputlangs->trans($value, $param1, $param2, $param3);
 		});
 		$twig->addFunction($function);
-		// create twig function which translate with getDolGlobalString(
+		// create twig function which translate with $outpulangsbis->trans()
+		$function = new \Twig\TwigFunction('transbis', function ($value, $param1 = '', $param2 = '', $param3 = '') {
+			global $outputlangsbis, $langs;
+			if (!is_object($outputlangsbis)) {
+				$outputlangsbis = $langs;
+			}
+			return $outputlangsbis->trans($value, $param1, $param2, $param3);
+		});
+		$twig->addFunction($function);
+		// create twig function which returns getDolGlobalString(
 		$function = new \Twig\TwigFunction('getDolGlobalString', function ($value, $default = '') {
 			return getDolGlobalString($value, $default);
 		});
 		$twig->addFunction($function);
+		// create twig function which return date formatted
+		$function = new \Twig\TwigFunction('date', function ($time, $format = '') {
+			return dol_print_date($time, $format);
+		});
+		$twig->addFunction($function);
+		// create twig function which return price formatted
+		$function = new \Twig\TwigFunction('price', function ($price) {
+			return price($price, 0);
+		});
+		$twig->addFunction($function);
+		// create twig function which return number to words
+		$function = new \Twig\TwigFunction('numbertowords', function ($number, $currency, $language) {
+			$numbertow = new NumberToWords();
+			$currencyTransformer = $numbertow->getCurrencyTransformer($language);
+			return $currencyTransformer->toWords($number * 100, $currency);
+		});
+		$twig->addFunction($function);
+		// Load template
 		try {
 			$template = $twig->load(basename($srctemplatepath));
 		} catch (\Twig\Error\SyntaxError $e) {
@@ -395,6 +434,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 			'linkedObjects' => $linkedObjects,
 			'footerinfo' => getPdfPagefoot($outputlangs, $paramfreetext, $mysoc, $object),
 			'labelpaymentconditions' => $label_payment_conditions,
+			'currency' => $currency,
 			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
 		];
 		$subtotal_ht = 0;
@@ -432,10 +472,19 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		}
 
 		// var_dump($substitutions);
-
-		$html = $template->render($substitutions);
+		$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
+		try {
+			$html = $template->render($substitutions);
+		} catch (\Twig\Error\SyntaxError $e) {
+			$this->errors = $e->getMessage() . ' at line ' . $e->getLine() . ' in file ' . $e->getFile();
+			return -1;
+		} catch (Exception $e) {
+			$this->errors[] = $e->getMessage();
+			return -1;
+		}
 		// print $html;
 		$mpdf = new \Mpdf\Mpdf([
+			'format' => [210, 297],
 			'margin_left' => getDolGlobalInt('EASYDOC_PDF_MARGIN_LEFT', 10),
 			'margin_right' => getDolGlobalInt('EASYDOC_PDF_MARGIN_RIGHT', 10),
 			'margin_top' => getDolGlobalInt('EASYDOC_PDF_MARGIN_TOP', 48),
@@ -448,8 +497,12 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		$mpdf->SetCreator('Dolibarr ' . DOL_VERSION);
 		$mpdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
 		$mpdf->SetKeyWords($outputlangs->convToOutputCharset($object->ref) . " " . $outputlangs->transnoentities("PdfCommercialProposalTitle") . " " . $outputlangs->convToOutputCharset($object->thirdparty->name));
-		$mpdf->SetWatermarkText(getDolGlobalString('PROPALE_DRAFT_WATERMARK'));
-
+		// Watermark
+		$text = getDolGlobalString('PROPALE_DRAFT_WATERMARK');
+		$substitutionarray = pdf_getSubstitutionArray($outputlangs, null, null);
+		complete_substitutions_array($substitutionarray, $outputlangs, null);
+		$text = make_substitutions($text, $substitutionarray, $outputlangs);
+		$mpdf->SetWatermarkText($text);
 		$mpdf->showWatermarkText = ($object->status == Propal::STATUS_DRAFT && getDolGlobalString('PROPALE_DRAFT_WATERMARK'));
 		$mpdf->watermark_font = 'DejaVuSansCondensed';
 		$mpdf->watermarkTextAlpha = 0.1;
