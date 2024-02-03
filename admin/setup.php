@@ -44,7 +44,7 @@ $action = GETPOST('action', 'aZ09');
 $backtopage = GETPOST('backtopage', 'alpha');
 // paper formats
 $sql = "SELECT code, label, width, height, unit";
-$sql .= " FROM ".$db->prefix()."c_paper_format";
+$sql .= " FROM " . $db->prefix() . "c_paper_format";
 $sql .= " WHERE active=1";
 $paperformats = [];
 $resql = $db->query($sql);
@@ -53,8 +53,8 @@ if ($resql) {
 	$i = 0;
 	while ($i < $num) {
 		$obj = $db->fetch_object($resql);
-		$unitKey = $langs->trans('SizeUnit'.$obj->unit);
-		$paperformats[$obj->code] = $langs->trans('PaperFormat'.strtoupper($obj->code)).' - '.round($obj->width).'x'.round($obj->height).' '.($unitKey == 'SizeUnit'.$obj->unit ? $obj->unit : $unitKey);
+		$unitKey = $langs->trans('SizeUnit' . $obj->unit);
+		$paperformats[$obj->code] = $langs->trans('PaperFormat' . strtoupper($obj->code)) . ' - ' . round($obj->width) . 'x' . round($obj->height) . ' ' . ($unitKey == 'SizeUnit' . $obj->unit ? $obj->unit : $unitKey);
 		$i++;
 	}
 }
