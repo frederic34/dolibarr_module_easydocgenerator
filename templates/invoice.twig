@@ -75,8 +75,19 @@ table thead th {
 	{{ trans('VATIntraShort') }}: {{ mysoc.tvanumber }}<br />
 </td>
 <td width="45%" style="text-align: right;">
-<span style="font-weight: bold; font-size: 14pt;"><b>{{ trans('PdfOrderTitle') }}</b></span>
-<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('Ref') }}: {{ object.ref }}</span>
+<span style="font-weight: bold; font-size: 14pt;"><b>
+{% if object.type == 1 %}
+{{ trans('InvoiceReplacement') }}
+{% elseif object.type == 2 %}
+{{ trans('InvoiceAvoir') }}
+{% elseif object.type == 3 %}
+{{ trans('InvoiceDeposit') }}
+{% elseif object.type == 4 %}
+{{ trans('InvoiceProForma') }}
+{% else %}
+{{ trans('PdfInvoiceTitle') }}
+{% endif %}
+ {{ object.ref }}</span>
 <br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('OrderDate') }}: {{ object.date }}</span>
 {% if object.ref_customer %}
 	<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('RefCustomer') }}: {{ object.ref_customer }}</span>

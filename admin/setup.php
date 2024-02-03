@@ -25,15 +25,14 @@
 // Load Dolibarr environment
 include '../config.php';
 
-global $langs, $user;
+global $db, $langs, $user;
 
 // Libraries
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
-//require_once DOL_DOCUMENT_ROOT.'/core/lib/oauth.lib.php';
 require_once '../lib/easydocgenerator.lib.php';
 
 // Translations
-$langs->loadLangs(["admin", 'oauth', "Easydocgenerator@easydocgenerator"]);
+$langs->loadLangs(['admin', 'companies', 'languages', 'members', 'other', 'products', 'stocks', 'trips', 'easydocgenerator@easydocgenerator']);
 
 // Access control
 if (!$user->admin) {
@@ -43,15 +42,30 @@ if (!$user->admin) {
 // Parameters
 $action = GETPOST('action', 'aZ09');
 $backtopage = GETPOST('backtopage', 'alpha');
-
-// Define $urlwithroot
-// $urlwithouturlroot = preg_replace('/' . preg_quote(DOL_URL_ROOT, '/') . '$/i', '', trim($dolibarr_main_url_root));
-// $urlwithouturlroot = str_replace('http://', 'https://', $urlwithouturlroot);
-// This is to use external domain name found into config file
-// $urlwithroot = $urlwithouturlroot . DOL_URL_ROOT;
-// $urlwithroot = DOL_MAIN_URL_ROOT;               // This is to use same domain name than current
+// paper formats
+$sql = "SELECT code, label, width, height, unit";
+$sql .= " FROM " . $db->prefix() . "c_paper_format";
+$sql .= " WHERE active=1";
+$paperformats = [];
+$resql = $db->query($sql);
+if ($resql) {
+	$num = $db->num_rows($resql);
+	$i = 0;
+	while ($i < $num) {
+		$obj = $db->fetch_object($resql);
+		$unitKey = $langs->trans('SizeUnit' . $obj->unit);
+		$paperformats[$obj->code] = $langs->trans('PaperFormat' . strtoupper($obj->code)) . ' - ' . round($obj->width) . 'x' . round($obj->height) . ' ' . ($unitKey == 'SizeUnit' . $obj->unit ? $obj->unit : $unitKey);
+		$i++;
+	}
+}
 
 $arrayofparameters = [
+	'EASYDOC_PDF_FORMAT' => [
+		'css' => 'minwidth500',
+		'type' => 'selectarray',
+		'array' => $paperformats,
+		'default' => dol_getDefaultFormat(),
+	],
 	'EASYDOC_PDF_MARGIN_LEFT' => [
 		'css' => 'minwidth500',
 		'type' => 'number',
@@ -184,14 +198,19 @@ if ($action == 'edit') {
 	print '<tr class="liste_titre"><td class="titlefield">' . $langs->trans("Parameter") . '</td><td>' . $langs->trans("Value") . '</td></tr>';
 
 	foreach ($arrayofparameters as $key => $val) {
-		print '<tr class="oddeven">';
-		print '<td>';
-		$tooltiphelp = (($langs->trans($key . 'Tooltip') != $key . 'Tooltip') ? $langs->trans($key . 'Tooltip') : '');
-		print $form->textwithpicto($langs->trans($key), $tooltiphelp);
 		$type = empty($val['type']) ? 'text' : $val['type'];
 		$value = !empty($conf->global->$key) ? $conf->global->$key : (isset($val['default']) ? $val['default'] : '');
-		print '</td>';
-		print '<td><input name="' . $key . '" type="' . $type . '" class="flat ' . (empty($val['css']) ? 'minwidth200' : $val['css']) . '" value="' . $value . '"></td>';
+		print '<tr class="oddeven">';
+		if ($type == 'selectarray') {
+			print '<td>' . $langs->trans('EASYDOC_PDF_FORMAT') . '</td>';
+			print '<td>' . $form->selectarray('EASYDOC_PDF_FORMAT', $val['array'], $value) . '</td>';
+		} else {
+			print '<td>';
+			$tooltiphelp = (($langs->trans($key . 'Tooltip') != $key . 'Tooltip') ? $langs->trans($key . 'Tooltip') : '');
+			print $form->textwithpicto($langs->trans($key), $tooltiphelp);
+			print '</td>';
+			print '<td><input name="' . $key . '" type="' . $type . '" class="flat ' . (empty($val['css']) ? 'minwidth200' : $val['css']) . '" value="' . $value . '"></td>';
+		}
 		print '</tr>';
 	}
 	print '</table>';
@@ -214,9 +233,12 @@ if ($action == 'edit') {
 		$tooltiphelp = (($langs->trans($key . 'Tooltip') != $key . 'Tooltip') ? $langs->trans($key . 'Tooltip') : '');
 		print $form->textwithpicto($langs->trans($key), $tooltiphelp);
 		print '</td><td>';
-		$value = getDolGlobalString('$key', $val['default']);
+		$value = getDolGlobalString($key, $val['default']);
 		if (isset($val['type']) && $val['type'] == 'password') {
 			$value = preg_replace('/./i', '*', $value);
+		}
+		if (isset($val['type']) && $val['type'] == 'selectarray') {
+			$value = $val['array'][$value];
 		}
 		print $value;
 		print '</td></tr>';
