@@ -253,7 +253,6 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		global $action;
 		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
-
 		require dol_buildpath('easydocgenerator/vendor/autoload.php');
 
 		$loader = new \Twig\Loader\FilesystemLoader(dirname($srctemplatepath));
@@ -264,13 +263,26 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		]);
 		// create twig function which translate with $outpulangs->trans()
 		$function = new \Twig\TwigFunction('trans', function ($value) {
-			global $outputlangs;
+			global $outputlangs, $langs;
+			if (!is_object($outputlangs)) {
+				$outputlangs = $langs;
+			}
 			return $outputlangs->trans($value);
 		});
 		$twig->addFunction($function);
-		// create twig function which translate with getDolGlobalString(
+		// create twig function which returns getDolGlobalString(
 		$function = new \Twig\TwigFunction('getDolGlobalString', function ($value, $default = '') {
 			return getDolGlobalString($value, $default);
+		});
+		$twig->addFunction($function);
+		// create twig function which return date formatted
+		$function = new \Twig\TwigFunction('date', function ($time, $format = '') {
+			return dol_print_date($time, $format);
+		});
+		$twig->addFunction($function);
+		// create twig function which return price formatted
+		$function = new \Twig\TwigFunction('price', function ($price) {
+			return price($price, 0);
 		});
 		$twig->addFunction($function);
 		try {
@@ -426,6 +438,8 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			'labelpaymentconditions' => $label_payment_conditions,
 			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
 		];
+		// var_dump($substitutions);
+		$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
 		$subtotal_ht = 0;
 		$subtotal_ttc = 0;
 		$linenumber = 1;
@@ -461,10 +475,15 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		}
 
 		// var_dump($substitutions);
-
-		$html = $template->render($substitutions);
+		try {
+			$html = $template->render($substitutions);
+		} catch (Exception $e) {
+			$this->errors[] = $e->getMessage();
+			return -1;
+		}
 		// print $html;
 		$mpdf = new \Mpdf\Mpdf([
+			'format' => [210, 297],
 			'margin_left' => getDolGlobalInt('EASYDOC_PDF_MARGIN_LEFT', 10),
 			'margin_right' => getDolGlobalInt('EASYDOC_PDF_MARGIN_RIGHT', 10),
 			'margin_top' => getDolGlobalInt('EASYDOC_PDF_MARGIN_TOP', 48),
@@ -476,8 +495,12 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$mpdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
 		$mpdf->SetCreator('Dolibarr ' . DOL_VERSION);
 		$mpdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
-		$mpdf->SetWatermarkText(getDolGlobalString('COMMANDE_DRAFT_WATERMARK'));
-
+		// Watermark
+		$text = getDolGlobalString('COMMANDE_DRAFT_WATERMARK');
+		$substitutionarray = pdf_getSubstitutionArray($outputlangs, null, null);
+		complete_substitutions_array($substitutionarray, $outputlangs, null);
+		$text = make_substitutions($text, $substitutionarray, $outputlangs);
+		$mpdf->SetWatermarkText($text);
 		$mpdf->showWatermarkText = ($object->statut == Commande::STATUS_DRAFT && getDolGlobalString('COMMANDE_DRAFT_WATERMARK'));
 		$mpdf->watermark_font = 'DejaVuSansCondensed';
 		$mpdf->watermarkTextAlpha = 0.1;

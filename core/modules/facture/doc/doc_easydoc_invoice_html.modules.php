@@ -22,7 +22,7 @@
  */
 
 /**
- *	\file       htdocs/core/modules/facture/doc/doc_easydoc_order_html.modules.php
+ *	\file       htdocs/core/modules/facture/doc/doc_easydoc_invoice_html.modules.php
  *	\ingroup    facture
  *	\brief      File of class to build PDF documents for invoices
  */
@@ -218,14 +218,24 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 
 		if (empty($srctemplatepath)) {
-			dol_syslog("doc_easydoc_order_html::write_file parameter srctemplatepath empty", LOG_WARNING);
+			dol_syslog("doc_easydoc_invoice_html::write_file parameter srctemplatepath empty", LOG_WARNING);
 			return -1;
 		}
+
+		$object->fetch_thirdparty();
 
 		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
 		}
-		$object->fetch_thirdparty();
+		$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks']);
+
+		global $outputlangsbis;
+		$outputlangsbis = null;
+		if (getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE') && $outputlangs->defaultlang != getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE')) {
+			$outputlangsbis = new Translate('', $conf);
+			$outputlangsbis->setDefaultLang(getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE'));
+			$outputlangsbis->loadLangs(array('main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks'));
+		}
 
 		// add linked objects to note_public
 		$linkedObjects = pdf_getLinkedObjects($object, $outputlangs);
@@ -240,7 +250,6 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			$outputlangs->charset_output = 'ISO-8859-1';
 		}
 
-		$outputlangs->loadLangs(["main", "dict", "companies", "bills", "products", "orders", "deliveries"]);
 		$currency = !empty($currency) ? $currency : $conf->currency;
 
 		// Add pdfgeneration hook
@@ -263,13 +272,35 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		]);
 		// create twig function which translate with $outpulangs->trans()
 		$function = new \Twig\TwigFunction('trans', function ($value) {
-			global $outputlangs;
+			global $outputlangs, $langs;
+			if (!is_object($outputlangs)) {
+				$outputlangs = $langs;
+			}
 			return $outputlangs->trans($value);
 		});
 		$twig->addFunction($function);
-		// create twig function which translate with getDolGlobalString(
+		// create twig function which translate with $outpulangsbis->trans()
+		$function = new \Twig\TwigFunction('transbis', function ($value) {
+			global $outputlangsbis, $langs;
+			if (!is_object($outputlangsbis)) {
+				$outputlangsbis = $langs;
+			}
+			return $outputlangsbis->trans($value);
+		});
+		$twig->addFunction($function);
+		// create twig function which returns getDolGlobalString(
 		$function = new \Twig\TwigFunction('getDolGlobalString', function ($value, $default = '') {
 			return getDolGlobalString($value, $default);
+		});
+		$twig->addFunction($function);
+		// create twig function which return date formatted
+		$function = new \Twig\TwigFunction('date', function ($time, $format = '') {
+			return dol_print_date($time, $format);
+		});
+		$twig->addFunction($function);
+		// create twig function which return price formatted
+		$function = new \Twig\TwigFunction('price', function ($price) {
+			return price($price, 0);
 		});
 		$twig->addFunction($function);
 		try {
@@ -319,7 +350,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 				$label_payment_conditions = str_replace('__DEPOSIT_PERCENT__', $object->deposit_percent, $label_payment_conditions);
 			}
 		}
-		// If CUSTOMER contact defined on order, we use it
+		// If CUSTOMER contact defined on invoice, we use it
 		$usecontact = false;
 		$arrayidcontact = $object->getIdContact('external', 'CUSTOMER');
 		if (count($arrayidcontact) > 0) {
@@ -365,60 +396,23 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		if (!empty($conf->global->$paramfreetext)) {
 			$newfreetext = make_substitutions(getDolGlobalString($paramfreetext), $substitutionarray);
 		}
-		// todo
-		// $test = getEachVarObject($object, $outputlangs);
-		// var_dump($test);
-		$substitutions = [
-			'mysoc' => [
-				'name' => $mysoc->name,
-				'name_alias' => $mysoc->name_alias,
-				'address' => $mysoc->address,
-				'zip' => $mysoc->zip,
-				'town' => $mysoc->town,
-				'country' => $mysoc->country,
-				'flag' => DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($flagImage) . '.png',
-				'phone' => dol_print_phone($mysoc->phone, $mysoc->country_code, 0, 0, '', ' '),
-				'fax' => dol_print_phone($mysoc->fax, $mysoc->country_code, 0, 0, '', ' '),
-				'email' => $mysoc->email,
-				'idprof1' => $mysoc->idprof1,
-				'idprof2' => $mysoc->idprof2,
-				'idprof3' => $mysoc->idprof3,
-				'idprof4' => $mysoc->idprof4,
-				'idprof5' => $mysoc->idprof5,
-				'idprof6' => $mysoc->idprof6,
-				'capital' => $mysoc->capital,
-				'tvanumber' => $mysoc->tva_intra,
-			],
-			'thirdparty' => [
-				'name' => $object->thirdparty->name,
-				'name_alias' => $object->thirdparty->name_alias,
-				'address' => $object->thirdparty->address,
-				'zip' => $object->thirdparty->zip,
-				'town' => $object->thirdparty->town,
-				'country' => $object->thirdparty->country,
-				'flag' => DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($object->thirdparty->country_code) . '.png',
-				'phone' => dol_print_phone($object->thirdparty->phone, $object->thirdparty->country_code, 0, 0, '', ' '),
-				'fax' => dol_print_phone($object->thirdparty->fax, $object->thirdparty->country_code, 0, 0, '', ' '),
-				'email' => $object->thirdparty->email,
-				'idprof1' => $object->thirdparty->idprof1,
-				'idprof2' => $object->thirdparty->idprof2,
-				'idprof3' => $object->thirdparty->idprof3,
-				'idprof4' => $object->thirdparty->idprof4,
-				'idprof5' => $object->thirdparty->idprof5,
-				'idprof6' => $object->thirdparty->idprof6,
-				'capital' => $object->thirdparty->capital,
-				'code_client' => $object->thirdparty->code_client,
-			],
-			'object' => [
-				'date' => dol_print_date($object->date, "day", false, $outputlangs, true),
-				'ref' => $object->ref,
-				'note_public' => $object->note_public,
-				'note_private' => $object->note_private,
-				'total_tva' => price($object->total_tva),
-				'total_ht' => price($object->total_ht),
-				'total_ttc' => price($object->total_ttc),
-				'ref_customer' => $outputlangs->convToOutputCharset($object->ref_client),
-			],
+		// mysoc
+		$substitutions = getEachVarObject($mysoc, $outputlangs, 1, 'mysoc');
+		$substitutions['mysoc']['flag'] = DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($flagImage) . '.png';
+		$substitutions['mysoc']['phone_formatted'] = dol_print_phone($mysoc->phone, $mysoc->country_code, 0, 0, '', ' ');
+		$substitutions['mysoc']['fax_formatted'] = dol_print_phone($mysoc->fax, $mysoc->country_code, 0, 0, '', ' ');
+
+		// object
+		$substitutions = array_merge($substitutions, getEachVarObject($object, $outputlangs, 0));
+
+		// thirdparty
+		$substitutions = array_merge($substitutions, getEachVarObject($object->thirdparty, $outputlangs, 1, 'thirdparty'));
+		$substitutions['thirdparty']['flag'] = DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($object->thirdparty->country_code) . '.png';
+		$substitutions['thirdparty']['phone_formatted'] = dol_print_phone($object->thirdparty->phone, $object->thirdparty->country_code, 0, 0, '', ' ');
+		$substitutions['thirdparty']['fax_formatted'] = dol_print_phone($object->thirdparty->fax, $object->thirdparty->country_code, 0, 0, '', ' ');
+
+		// other
+		$substitutions = array_merge($substitutions, [
 			'logo' => $logo,
 			'freetext' => $newfreetext,
 			'lines' => [],
@@ -426,8 +420,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			'footerinfo' => getPdfPagefoot($outputlangs, $paramfreetext, $mysoc, $object),
 			'labelpaymentconditions' => $label_payment_conditions,
 			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
-		];
-		$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
+		]);
 		$subtotal_ht = 0;
 		$subtotal_ttc = 0;
 		$linenumber = 1;
@@ -461,12 +454,85 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 				$linenumber++;
 			}
 		}
+		$substitutions['discounts'] = [];
+		// Loop on each discount available (deposits and credit notes and excess of payment included)
+		$sql = "SELECT re.rowid, re.amount_ht, re.multicurrency_amount_ht, re.amount_tva, re.multicurrency_amount_tva,  re.amount_ttc, re.multicurrency_amount_ttc,";
+		$sql .= " re.description, re.fk_facture_source,";
+		$sql .= " f.type, f.datef";
+		$sql .= " FROM ".MAIN_DB_PREFIX."societe_remise_except as re, ".MAIN_DB_PREFIX."facture as f";
+		$sql .= " WHERE re.fk_facture_source = f.rowid AND re.fk_facture = ".((int) $object->id);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+			$invoice = new Facture($this->db);
+			while ($i < $num) {
+				$obj = $this->db->fetch_object($resql);
+				if ($obj->type == 2) {
+					$text = "CreditNote";
+				} elseif ($obj->type == 3) {
+					$text = "Deposit";
+				} elseif ($obj->type == 0) {
+					$text = "ExcessReceived";
+				} else {
+					$text = "UnknownType";
+				}
+				$invoice->fetch($obj->fk_facture_source);
+				$substitutions['discounts'][] = [
+					'text' => $text,
+					'date' => $this->db->jdate($obj->datef),
+					'ref' => $invoice->ref,
+					'total_ttc' => $obj->amount_ttc,
+					'multicurrency_total_ttc' => $obj->multicurrency_amount_ttc,
+				];
+				$i++;
+			}
+		}
+		$substitutions['payments'] = [];
+		// Loop on each payment
+		// TODO Call getListOfPayments instead of hard coded sql
+		$sql = "SELECT p.datep as date, p.fk_paiement, p.num_paiement as num";
+		$sql .= ", pf.amount as amount, pf.multicurrency_amount,";
+		$sql .= " cp.code, ba.ref as bankref";
+		$sql .= " FROM ".MAIN_DB_PREFIX."paiement_facture as pf";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "paiement as p ON  pf.fk_paiement = p.rowid";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "c_paiement AS cp ON p.fk_paiement = cp.id AND cp.entity IN (" . getEntity('c_paiement') . ")";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "bank as b ON p.fk_bank = b.rowid";
+		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "bank_account as ba ON b.fk_account = ba.rowid";
+		$sql .= " WHERE pf.fk_facture = ".((int) $object->id);
+		$sql .= " ORDER BY p.datep";
 
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+			while ($i < $num) {
+				$obj = $this->db->fetch_object($resql);
+				$substitutions['payments'][] = [
+					'text' => "PaymentTypeShort".$obj->code,
+					'date' => $this->db->jdate($obj->date),
+					'num' => $obj->num,
+					'total_ttc' => $obj->amount,
+					'multicurrency_total_ttc' => $obj->multicurrency_amount,
+					'bankref' => $obj->bankref,
+				];
+				$i++;
+			}
+		}
 		// var_dump($substitutions);
-
-		$html = $template->render($substitutions);
+		$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
+		try {
+			$html = $template->render($substitutions);
+		} catch (\Twig\Error\SyntaxError $e) {
+			$this->errors = $e->getMessage() . ' at line ' . $e->getLine() . ' in file ' . $e->getFile();
+			return -1;
+		} catch (Exception $e) {
+			$this->errors[] = $e->getMessage();
+			return -1;
+		}
 		// print $html;
 		$mpdf = new \Mpdf\Mpdf([
+			'format' => [210, 297],
 			'margin_left' => getDolGlobalInt('EASYDOC_PDF_MARGIN_LEFT', 10),
 			'margin_right' => getDolGlobalInt('EASYDOC_PDF_MARGIN_RIGHT', 10),
 			'margin_top' => getDolGlobalInt('EASYDOC_PDF_MARGIN_TOP', 48),
@@ -483,14 +549,14 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		$substitutionarray = pdf_getSubstitutionArray($outputlangs, null, null);
 		complete_substitutions_array($substitutionarray, $outputlangs, null);
 		$text = make_substitutions($text, $substitutionarray, $outputlangs);
-		$mpdf->SetWatermarkText($outputlangs->convToOutputCharset($text));
-		$mpdf->showWatermarkText = ($object->statut == Commande::STATUS_DRAFT && getDolGlobalString('FACTURE_DRAFT_WATERMARK'));
+		$mpdf->SetWatermarkText($text);
+		$mpdf->showWatermarkText = ($object->status == Facture::STATUS_DRAFT && getDolGlobalString('FACTURE_DRAFT_WATERMARK'));
 		$mpdf->watermark_font = 'DejaVuSansCondensed';
 		$mpdf->watermarkTextAlpha = 0.1;
 
 		$mpdf->SetDisplayMode('fullpage');
 
-		$mpdf->Bookmark($outputlangs->trans('PdfOrderTitle'));
+		$mpdf->Bookmark($outputlangs->trans('PdfInvoiceTitle'));
 		$mpdf->WriteHTML($html);
 
 		$dir = $conf->facture->multidir_output[$object->entity];
