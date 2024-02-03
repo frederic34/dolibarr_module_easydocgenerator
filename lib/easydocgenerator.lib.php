@@ -86,9 +86,10 @@ function easydocgeneratorAdminPrepareHead()
  * @param   Object		$object    		Dolibarr Object
  * @param   Translate	$outputlangs    Language object for output
  * @param   boolean|int	$recursive    	Want to fetch child array or child object.
+ * @param   string      $objectname     Name of object
  * @return	array						Array of substitution key->code
  */
-function getEachVarObject($object, $outputlangs, $recursive = 1)
+function getEachVarObject($object, $outputlangs, $recursive = 1, $objectname = 'object')
 {
 	$array_other = [];
 	if (!empty($object)) {
@@ -98,16 +99,16 @@ function getEachVarObject($object, $outputlangs, $recursive = 1)
 			}
 			if (!empty($value)) {
 				if (!is_array($value) && !is_object($value)) {
-					$array_other['object'][$key] = $value;
+					$array_other[$objectname][$key] = $value;
 				} elseif (is_array($value) && $recursive) {
 					$tmparray = getEachVarObject($value, $outputlangs, 0);
 					foreach ($tmparray as $key2 => $value2) {
-						$array_other['object'][$key . '_' . preg_replace('/^object_/', '', $key2)] = $value2;
+						$array_other[$objectname][$key] = $value2;
 					}
 				} elseif (is_object($value) && $recursive) {
 					$tmparray = getEachVarObject($value, $outputlangs, 0);
 					foreach ($tmparray as $key2 => $value2) {
-						$array_other['object'][$key . '_' . preg_replace('/^object_/', '', $key2)] = $value2;
+						$array_other[$objectname][$key] = $value2;
 					}
 				}
 			}
