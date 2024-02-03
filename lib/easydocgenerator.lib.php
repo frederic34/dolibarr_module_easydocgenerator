@@ -100,7 +100,7 @@ function getEachVarObject($object, $outputlangs, $recursive = 1, $objectname = '
 			if (!empty($value)) {
 				if (!is_array($value) && !is_object($value)) {
 					$array_other[$objectname][$key] = $value;
-				} elseif (is_array($value) && $recursive) {
+				} elseif (is_array($value) && ($recursive || $key == 'array_options')) {
 					$tmparray = getEachVarObject($value, $outputlangs, 0);
 					foreach ($tmparray as $key2 => $value2) {
 						$array_other[$objectname][$key] = $value2;

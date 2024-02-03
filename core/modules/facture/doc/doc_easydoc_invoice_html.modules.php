@@ -26,6 +26,7 @@
  *	\ingroup    facture
  *	\brief      File of class to build PDF documents for invoices
  */
+use NumberToWords\NumberToWords;
 
 require_once DOL_DOCUMENT_ROOT . '/core/modules/facture/modules_facture.php';
 require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
@@ -227,7 +228,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
 		}
-		$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks']);
+		$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
 
 		global $outputlangsbis;
 		$outputlangsbis = null;
@@ -250,7 +251,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			$outputlangs->charset_output = 'ISO-8859-1';
 		}
 
-		$currency = !empty($currency) ? $currency : $conf->currency;
+		$currency = !empty($object->multicurrency_code) ? $object->multicurrency_code : $conf->currency;
 
 		// Add pdfgeneration hook
 		if (!is_object($hookmanager)) {
@@ -271,21 +272,21 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			'autoescape' => false,
 		]);
 		// create twig function which translate with $outpulangs->trans()
-		$function = new \Twig\TwigFunction('trans', function ($value) {
+		$function = new \Twig\TwigFunction('trans', function ($value, $param1 = '', $param2 = '', $param3 = '') {
 			global $outputlangs, $langs;
 			if (!is_object($outputlangs)) {
 				$outputlangs = $langs;
 			}
-			return $outputlangs->trans($value);
+			return $outputlangs->trans($value, $param1, $param2, $param3);
 		});
 		$twig->addFunction($function);
 		// create twig function which translate with $outpulangsbis->trans()
-		$function = new \Twig\TwigFunction('transbis', function ($value) {
+		$function = new \Twig\TwigFunction('transbis', function ($value, $param1 = '', $param2 = '', $param3 = '') {
 			global $outputlangsbis, $langs;
 			if (!is_object($outputlangsbis)) {
 				$outputlangsbis = $langs;
 			}
-			return $outputlangsbis->trans($value);
+			return $outputlangsbis->trans($value, $param1, $param2, $param3);
 		});
 		$twig->addFunction($function);
 		// create twig function which returns getDolGlobalString(
@@ -301,6 +302,13 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		// create twig function which return price formatted
 		$function = new \Twig\TwigFunction('price', function ($price) {
 			return price($price, 0);
+		});
+		$twig->addFunction($function);
+		// create twig function which return price formatted
+		$function = new \Twig\TwigFunction('numbertowords', function ($number, $currency, $language) {
+			$numbertow = new NumberToWords();
+			$currencyTransformer = $numbertow->getCurrencyTransformer($language);
+			return $currencyTransformer->toWords($number * 100, $currency);
 		});
 		$twig->addFunction($function);
 		try {
@@ -419,8 +427,10 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			'linkedObjects' => $linkedObjects,
 			'footerinfo' => getPdfPagefoot($outputlangs, $paramfreetext, $mysoc, $object),
 			'labelpaymentconditions' => $label_payment_conditions,
+			'currency' => $currency,
 			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
 		]);
+		// var_dump(getEachVarObject($object->lines, $outputlangs, 1, 'lines'));
 		$subtotal_ht = 0;
 		$subtotal_ttc = 0;
 		$linenumber = 1;
