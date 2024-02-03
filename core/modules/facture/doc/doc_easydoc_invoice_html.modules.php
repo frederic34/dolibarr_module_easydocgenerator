@@ -441,7 +441,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 				foreach ($arrayidcontact as $idc) {
 					if ($key == 'external') {
 						$contact = new Contact($this->db);
-					}else {
+					} else {
 						$contact = new User($this->db);
 					}
 					$contact->fetch($idc);
