@@ -18,3 +18,4 @@ EASYDOC_PDF_MARGIN_BOTTOM=Low margin on PDFs
 EASYDOC_PDF_MARGIN_HEADER=Header on PDFs
 EASYDOC_PDF_MARGIN_FOOTER=Footer on PDFs
 EASYDOC_PDF_FORMAT=Paper format
+EasydocStopTheBillAtSumOf=Arrested the invoice at the sum of: %s

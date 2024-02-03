@@ -18,3 +18,4 @@ EASYDOC_PDF_MARGIN_BOTTOM=Margem baixa em PDFs
 EASYDOC_PDF_MARGIN_HEADER=Cabeçalho em PDFs
 EASYDOC_PDF_MARGIN_FOOTER=Rodapé em PDFs
 EASYDOC_PDF_FORMAT=Formato de papel
+EasydocStopTheBillAtSumOf=Preso a fatura no valor de: %s

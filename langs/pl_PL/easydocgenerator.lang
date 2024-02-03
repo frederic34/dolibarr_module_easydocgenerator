@@ -18,3 +18,4 @@ EASYDOC_PDF_MARGIN_BOTTOM=Niska marża na plikach PDF
 EASYDOC_PDF_MARGIN_HEADER=Nagłówek w plikach PDF
 EASYDOC_PDF_MARGIN_FOOTER=Stopka w plikach PDF
 EASYDOC_PDF_FORMAT=Format papierowy
+EasydocStopTheBillAtSumOf=Zatrzymano fakturę na kwotę: %s
