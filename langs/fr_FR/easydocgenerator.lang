@@ -13,29 +13,22 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#
-# Generic
-#
 
 # Module label 'ModuleEasydocgeneratorName'
-ModuleEasydocgeneratorName = Easydocgenerator
+ModuleEasydocgeneratorName=Easydocgenerator
 # Module description 'ModuleEasydocgeneratorDesc'
-ModuleEasydocgeneratorDesc = Easydocgenerator description
+ModuleEasydocgeneratorDesc=Easydocgenerator description
 
-#
-# Admin page
-#
-EasydocgeneratorSetup = Paramètres Easydocgenerator
-EasydocgeneratorSetupPage = Paramètres Easydocgenerator
+EasydocgeneratorSetup=Paramètres Easydocgenerator
+EasydocgeneratorSetupPage=Paramètres Easydocgenerator
 
-
-#
-# About page
-#
-
-EasydocgeneratorAbout = A propos d'Easydocgenerator
-EasydocgeneratorAboutPage = Easydocgenerator about page
+EasydocgeneratorAbout=A propos d'Easydocgenerator
+EasydocgeneratorAboutPage=Easydocgenerator about page
 EasydocgeneratorEnableDevelopperMode=Activer le mode développeur
+DocumentModelEasydocgeneratorTemplate=Génération depuis des modèles Easydoc
+NumberOfModelHTMLFilesFound=Nombre de modèles Easydoc trouvés
+ListOfDirectoriesForHtmlTemplates=Liste des répertoires des modèles Easydoc
+ListOfDirectoriesForModelGenHTML=Liste des répertoires contenant des documents modèles au format Easydoc.
 CHECKLASTVERSION_EXTERNALMODULE=Forcer la vérification des versions des modules externes (déconseillé, cette option peux avoir été activée par un autre module)
 MAIN_ENABLE_AJAX_TOOLTIP=Activer les tooltips ajax (nécéssite une version de Dolibar >= 18)
 EASYDOC_PDF_MARGIN_LEFT=Marge gauche sur les PDF
@@ -46,4 +39,6 @@ EASYDOC_PDF_MARGIN_HEADER=En-tête sur les PDF
 EASYDOC_PDF_MARGIN_FOOTER=Pied de page sur les PDF
 EASYDOC_PDF_FORMAT=Format papiers
 EasydocStopTheBillAtSumOf=Arrêté la facture à la somme de : %s
+EasydocStopTheOrderAtSumOf=Arrêté la commande à la somme de : %s
+EasydocStopThePropalAtSumOf=Arrêté la proposition commerciale à la somme de : %s
 

@@ -22,13 +22,13 @@
  */
 
 /**
- *	\file       htdocs/core/modules/facture/doc/doc_easydoc_invoice_html.modules.php
- *	\ingroup    facture
- *	\brief      File of class to build PDF documents for invoices
+ *	\file       htdocs/core/modules/commande/doc/doc_easydoc_product_html.modules.php
+ *	\ingroup    commande
+ *	\brief      File of class to build PDF documents for products
  */
 use NumberToWords\NumberToWords;
 
-require_once DOL_DOCUMENT_ROOT . '/core/modules/facture/modules_facture.php';
+require_once DOL_DOCUMENT_ROOT . '/core/modules/commande/modules_commande.php';
 require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
@@ -41,7 +41,7 @@ dol_include_once('/easydocgenerator/lib/easydocgenerator.lib.php');
 /**
  *	Class to build documents using HTML templates
  */
-class doc_easydoc_invoice_html extends ModelePDFFactures
+class doc_easydoc_product_html extends ModelePDFCommandes
 {
 	// phpcs:enable
 	/**
@@ -64,10 +64,10 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		$langs->loadLangs(["main", "companies", "easydocgenerator@easydocgenerator"]);
 
 		$this->db = $db;
-		$this->name = "HTML templates";
+		$this->name = "Easydoc templates";
 		$this->description = $langs->trans("DocumentModelEasydocgeneratorTemplate");
 		// Name of constant that is used to save list of directories to scan
-		$this->scandir = 'INVOICE_ADDON_EASYDOC_TEMPLATES_PATH';
+		$this->scandir = 'PRODUCT_ADDON_EASYDOC_TEMPLATES_PATH';
 		// Save the name of generated file as the main doc when generating a doc with this template
 		$this->update_main_doc_field = 1;
 
@@ -119,13 +119,13 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		$text .= '<input type="hidden" name="token" value="' . newToken() . '">';
 		$text .= '<input type="hidden" name="page_y" value="">';
 		$text .= '<input type="hidden" name="action" value="setModuleOptions">';
-		$text .= '<input type="hidden" name="param1" value="INVOICE_ADDON_EASYDOC_TEMPLATES_PATH">';
+		$text .= '<input type="hidden" name="param1" value="PRODUCT_ADDON_EASYDOC_TEMPLATES_PATH">';
 		$text .= '<table class="nobordernopadding" width="100%">';
 
 		// List of directories area
 		$text .= '<tr><td>';
 		$texttitle = $langs->trans("ListOfDirectoriesForHtmlTemplates");
-		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim($conf->global->INVOICE_ADDON_EASYDOC_TEMPLATES_PATH)));
+		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim($conf->global->PRODUCT_ADDON_EASYDOC_TEMPLATES_PATH)));
 		$listoffiles = [];
 		foreach ($listofdir as $key => $tmpdir) {
 			$tmpdir = trim($tmpdir);
@@ -146,13 +146,13 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		$texthelp = $langs->trans("ListOfDirectoriesForModelGenHTML");
 		$texthelp .= '<br><br><span class="opacitymedium">' . $langs->trans("ExampleOfDirectoriesForModelGen") . '</span>';
 		// Add list of substitution keys
-		$texthelp .= '<br>' . $langs->trans("FollowingSubstitutionKeysCanBeUsed") . '<br>';
-		$texthelp .= $langs->transnoentitiesnoconv("FullListOnOnlineDocumentation"); // This contains an url, we don't modify it
+		// $texthelp .= '<br>' . $langs->trans("FollowingSubstitutionKeysCanBeUsed") . '<br>';
+		// $texthelp .= $langs->transnoentitiesnoconv("FullListOnOnlineDocumentation"); // This contains an url, we don't modify it
 
 		$text .= $form->textwithpicto($texttitle, $texthelp, 1, 'help', '', 1, 3, $this->name);
 		$text .= '<div><div style="display: inline-block; min-width: 100px; vertical-align: middle;">';
 		$text .= '<textarea class="flat" cols="60" name="value1">';
-		$text .= getDolGlobalString('INVOICE_ADDON_EASYDOC_TEMPLATES_PATH');
+		$text .= getDolGlobalString('PRODUCT_ADDON_EASYDOC_TEMPLATES_PATH');
 		$text .= '</textarea>';
 		$text .= '</div><div style="display: inline-block; vertical-align: middle;">';
 		$text .= '<input type="submit" class="button button-edit reposition smallpaddingimp" name="modify" value="' . dol_escape_htmltag($langs->trans("Modify")) . '">';
@@ -160,7 +160,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 
 		// Scan directories
 		$nbofiles = count($listoffiles);
-		if (getDolGlobalString('INVOICE_ADDON_EASYDOC_TEMPLATES_PATH')) {
+		if (getDolGlobalString('PRODUCT_ADDON_EASYDOC_TEMPLATES_PATH')) {
 			$text .= $langs->trans("NumberOfModelHTMLFilesFound") . ': <b>';
 			//$text.=$nbofiles?'<a id="a_'.get_class($this).'" href="#">':'';
 			$text .= count($listoffiles);
@@ -172,8 +172,8 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			$text .= '<div id="div_' . get_class($this) . '" class="hiddenx">';
 			// Show list of found files
 			foreach ($listoffiles as $file) {
-				$text .= '- ' . $file['name'] . ' <a href="' . DOL_URL_ROOT . '/document.php?modulepart=doctemplates&file=invoices/' . urlencode(basename($file['name'])) . '">' . img_picto('', 'listlight') . '</a>';
-				$text .= ' &nbsp; <a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=INVOICE_ADDON_EASYDOC_TEMPLATES_PATH&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name'])) . '">' . img_picto('', 'delete') . '</a>';
+				$text .= '- ' . $file['name'] . ' <a href="' . DOL_URL_ROOT . '/document.php?modulepart=doctemplates&file=products/' . urlencode(basename($file['name'])) . '">' . img_picto('', 'listlight') . '</a>';
+				$text .= ' &nbsp; <a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=PRODUCT_ADDON_EASYDOC_TEMPLATES_PATH&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name'])) . '">' . img_picto('', 'delete') . '</a>';
 				$text .= '<br>';
 			}
 			$text .= '</div>';
@@ -187,7 +187,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			$text .= '<input type="hidden" name="MAX_FILE_SIZE" value="' . ($maxmin * 1024) . '">';
 		}
 		$text .= ' <input type="file" name="uploadfile">';
-		$text .= '<input type="hidden" value="INVOICE_ADDON_EASYDOC_TEMPLATES_PATH" name="keyforuploaddir">';
+		$text .= '<input type="hidden" value="PRODUCT_ADDON_EASYDOC_TEMPLATES_PATH" name="keyforuploaddir">';
 		$text .= '<input type="submit" class="button reposition smallpaddingimp" value="' . dol_escape_htmltag($langs->trans("Upload")) . '" name="upload">';
 		$text .= '</div>';
 
@@ -205,7 +205,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 	/**
 	 *  Function to build a document on disk using the generic odt module.
 	 *
-	 *	@param		Facture 	$object				Object source to build document
+	 *	@param		Commande	$object				Object source to build document
 	 *	@param		Translate	$outputlangs		Lang output object
 	 * 	@param		string		$srctemplatepath	Full path of source filename for generator using a template file
 	 *  @param		int			$hidedetails		Do not show line details
@@ -219,7 +219,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		global $user, $langs, $conf, $mysoc, $hookmanager;
 
 		if (empty($srctemplatepath)) {
-			dol_syslog("doc_easydoc_invoice_html::write_file parameter srctemplatepath empty", LOG_WARNING);
+			dol_syslog("doc_easydoc_product_html::write_file parameter srctemplatepath empty", LOG_WARNING);
 			return -1;
 		}
 
@@ -352,20 +352,6 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			$tmparray = explode('_', $mysoc->country_code);
 			$flagImage = empty($tmparray[1]) ? $tmparray[0] : $tmparray[1];
 		}
-		if ($object->cond_reglement_code) {
-			$label_payment_conditions = ($outputlangs->transnoentities("PaymentCondition" . $object->cond_reglement_code) != 'PaymentCondition' . $object->cond_reglement_code) ? $outputlangs->transnoentities("PaymentCondition" . $object->cond_reglement_code) : $outputlangs->convToOutputCharset($object->cond_reglement_doc ? $object->cond_reglement_doc : $object->cond_reglement_label);
-			$label_payment_conditions = str_replace('\n', "\n", $label_payment_conditions);
-			if ($object->deposit_percent > 0) {
-				$label_payment_conditions = str_replace('__DEPOSIT_PERCENT__', $object->deposit_percent, $label_payment_conditions);
-			}
-		}
-		// If CUSTOMER contact defined on invoice, we use it
-		$usecontact = false;
-		$arrayidcontact = $object->getIdContact('external', 'CUSTOMER');
-		if (count($arrayidcontact) > 0) {
-			$usecontact = true;
-			$result = $object->fetch_contact($arrayidcontact[0]);
-		}
 
 		// Recipient name
 		$contactobject = null;
@@ -401,7 +387,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 
 		// Line of free text
 		$newfreetext = '';
-		$paramfreetext = 'INVOICE_FREE_TEXT';
+		$paramfreetext = 'PRODUCT_FREE_TEXT';
 		if (!empty($conf->global->$paramfreetext)) {
 			$newfreetext = make_substitutions(getDolGlobalString($paramfreetext), $substitutionarray);
 		}
@@ -414,43 +400,6 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		// object
 		$substitutions = array_merge($substitutions, getEachVarObject($object, $outputlangs, 0));
 
-		// thirdparty
-		$substitutions = array_merge($substitutions, getEachVarObject($object->thirdparty, $outputlangs, 1, 'thirdparty'));
-		$substitutions['thirdparty']['flag'] = DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($object->thirdparty->country_code) . '.png';
-		$substitutions['thirdparty']['phone_formatted'] = dol_print_phone($object->thirdparty->phone, $object->thirdparty->country_code, 0, 0, '', ' ');
-		$substitutions['thirdparty']['fax_formatted'] = dol_print_phone($object->thirdparty->fax, $object->thirdparty->country_code, 0, 0, '', ' ');
-
-		$typescontact = [
-			'external' => [
-				'BILLING',
-				'SHIPPING',
-				'SALESREPFOLL',
-				'CUSTOMER',
-			],
-			'internal' => [
-				'BILLING',
-				'SHIPPING',
-				'SALESREPFOLL',
-				'CUSTOMER',
-			],
-		];
-		foreach ($typescontact as $key => $value) {
-			foreach ($value as $type) {
-				$arrayidcontact = $object->getIdContact($key, $type);
-				$contacts = [];
-				foreach ($arrayidcontact as $idc) {
-					if ($key == 'external') {
-						$contact = new Contact($this->db);
-					} else {
-						$contact = new User($this->db);
-					}
-					$contact->fetch($idc);
-					$contacts[] = $contact;
-				}
-				$substitutions = array_merge($substitutions, getEachVarObject($contacts, $outputlangs, 1, strtolower($type) . '_' . $key));
-			}
-		}
-
 		// other
 		$substitutions = array_merge($substitutions, [
 			'logo' => $logo,
@@ -462,7 +411,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			'currency' => $currency,
 			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
 		]);
-		// var_dump(getEachVarObject($object->lines, $outputlangs, 1, 'lines'));
+		// var_dump($substitutions);
 		$subtotal_ht = 0;
 		$subtotal_ttc = 0;
 		$linenumber = 1;
@@ -496,70 +445,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 				$linenumber++;
 			}
 		}
-		$substitutions['discounts'] = [];
-		// Loop on each discount available (deposits and credit notes and excess of payment included)
-		$sql = "SELECT re.rowid, re.amount_ht, re.multicurrency_amount_ht, re.amount_tva, re.multicurrency_amount_tva,  re.amount_ttc, re.multicurrency_amount_ttc,";
-		$sql .= " re.description, re.fk_facture_source,";
-		$sql .= " f.type, f.datef";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "societe_remise_except as re, " . MAIN_DB_PREFIX . "facture as f";
-		$sql .= " WHERE re.fk_facture_source = f.rowid AND re.fk_facture = " . ((int) $object->id);
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			$num = $this->db->num_rows($resql);
-			$i = 0;
-			$invoice = new Facture($this->db);
-			while ($i < $num) {
-				$obj = $this->db->fetch_object($resql);
-				if ($obj->type == 2) {
-					$text = "CreditNote";
-				} elseif ($obj->type == 3) {
-					$text = "Deposit";
-				} elseif ($obj->type == 0) {
-					$text = "ExcessReceived";
-				} else {
-					$text = "UnknownType";
-				}
-				$invoice->fetch($obj->fk_facture_source);
-				$substitutions['discounts'][] = [
-					'text' => $text,
-					'date' => $this->db->jdate($obj->datef),
-					'ref' => $invoice->ref,
-					'total_ttc' => $obj->amount_ttc,
-					'multicurrency_total_ttc' => $obj->multicurrency_amount_ttc,
-				];
-				$i++;
-			}
-		}
-		$substitutions['payments'] = [];
-		// Loop on each payment
-		$sql = "SELECT p.datep as date, p.fk_paiement, p.num_paiement as num";
-		$sql .= ", pf.amount as amount, pf.multicurrency_amount,";
-		$sql .= " cp.code, ba.ref as bankref";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "paiement_facture as pf";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "paiement as p ON  pf.fk_paiement = p.rowid";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "c_paiement AS cp ON p.fk_paiement = cp.id AND cp.entity IN (" . getEntity('c_paiement') . ")";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "bank as b ON p.fk_bank = b.rowid";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "bank_account as ba ON b.fk_account = ba.rowid";
-		$sql .= " WHERE pf.fk_facture = " . ((int) $object->id);
-		$sql .= " ORDER BY p.datep";
 
-		$resql = $this->db->query($sql);
-		if ($resql) {
-			$num = $this->db->num_rows($resql);
-			$i = 0;
-			while ($i < $num) {
-				$obj = $this->db->fetch_object($resql);
-				$substitutions['payments'][] = [
-					'text' => "PaymentTypeShort" . $obj->code,
-					'date' => $this->db->jdate($obj->date),
-					'num' => $obj->num,
-					'total_ttc' => $obj->amount,
-					'multicurrency_total_ttc' => $obj->multicurrency_amount,
-					'bankref' => $obj->bankref,
-				];
-				$i++;
-			}
-		}
 		// var_dump($substitutions);
 		$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
 		try {
@@ -585,23 +471,23 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		$mpdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
 		$mpdf->SetCreator('Dolibarr ' . DOL_VERSION);
 		$mpdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
-		$mpdf->SetKeyWords($outputlangs->convToOutputCharset($object->ref) . " " . $outputlangs->transnoentities("PdfInvoiceTitle") . " " . $outputlangs->convToOutputCharset($object->thirdparty->name));
+		$mpdf->SetKeyWords($outputlangs->convToOutputCharset($object->ref) . " " . $outputlangs->transnoentities("PdfOrderTitle") . " " . $outputlangs->convToOutputCharset($object->thirdparty->name));
 		// Watermark
-		$text = getDolGlobalString('FACTURE_DRAFT_WATERMARK');
+		$text = getDolGlobalString('PRODUCT_DRAFT_WATERMARK');
 		$substitutionarray = pdf_getSubstitutionArray($outputlangs, null, null);
 		complete_substitutions_array($substitutionarray, $outputlangs, null);
 		$text = make_substitutions($text, $substitutionarray, $outputlangs);
 		$mpdf->SetWatermarkText($text);
-		$mpdf->showWatermarkText = ($object->status == Facture::STATUS_DRAFT && getDolGlobalString('FACTURE_DRAFT_WATERMARK'));
+		$mpdf->showWatermarkText = ($object->statut == Commande::STATUS_DRAFT && getDolGlobalString('PRODUCT_DRAFT_WATERMARK'));
 		$mpdf->watermark_font = 'DejaVuSansCondensed';
 		$mpdf->watermarkTextAlpha = 0.1;
 
 		$mpdf->SetDisplayMode('fullpage');
 
-		$mpdf->Bookmark($outputlangs->trans('PdfInvoiceTitle'));
+		$mpdf->Bookmark($outputlangs->trans('PdfOrderTitle'));
 		$mpdf->WriteHTML($html);
 
-		$dir = $conf->facture->multidir_output[$object->entity];
+		$dir = $conf->commande->multidir_output[$object->entity];
 		$objectref = dol_sanitizeFileName($object->ref);
 		if (!preg_match('/specimen/i', $objectref)) {
 			$dir .= "/" . $objectref;
@@ -621,122 +507,5 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		$this->result = ['fullpath' => $file];
 
 		return 1;
-
-		if (!empty($conf->facture->dir_output)) {
-			$dir = $conf->facture->multidir_output[$object->entity];
-			$objectref = dol_sanitizeFileName($object->ref);
-			if (!preg_match('/specimen/i', $objectref)) {
-				$dir .= "/" . $objectref;
-			}
-			$file = $dir . "/" . $objectref . ".odt";
-
-			if (!file_exists($dir)) {
-				if (dol_mkdir($dir) < 0) {
-					$this->error = $langs->transnoentities("ErrorCanNotCreateDir", $dir);
-					return -1;
-				}
-			}
-
-			if (file_exists($dir)) {
-				//print "srctemplatepath=".$srctemplatepath;	// Src filename
-				$newfile = basename($srctemplatepath);
-				$newfiletmp = preg_replace('/\.od[ts]/i', '', $newfile);
-				$newfiletmp = preg_replace('/template_/i', '', $newfiletmp);
-				$newfiletmp = preg_replace('/modele_/i', '', $newfiletmp);
-				$newfiletmp = $objectref . '_' . $newfiletmp;
-
-				// Get extension (ods or odt)
-				$newfileformat = substr($newfile, strrpos($newfile, '.') + 1);
-				if (getDolGlobalInt('MAIN_DOC_USE_TIMING')) {
-					$format = getDolGlobalInt('MAIN_DOC_USE_TIMING');
-					if ($format == '1') {
-						$format = '%Y%m%d%H%M%S';
-					}
-					$filename = $newfiletmp . '-' . dol_print_date(dol_now(), $format) . '.' . $newfileformat;
-				} else {
-					$filename = $newfiletmp . '.' . $newfileformat;
-				}
-				$file = $dir . '/' . $filename;
-
-				dol_mkdir($conf->facture->dir_temp);
-				if (!is_writable($conf->facture->dir_temp)) {
-					$this->error = $langs->transnoentities("ErrorFailedToWriteInTempDirectory", $conf->facture->dir_temp);
-					dol_syslog('Error in write_file: ' . $this->error, LOG_ERR);
-					return -1;
-				}
-
-				// Define substitution array
-				$substitutionarray = getCommonSubstitutionArray($outputlangs, 0, null, $object);
-				$array_object_from_properties = $this->get_substitutionarray_each_var_object($object, $outputlangs);
-				$array_objet = $this->get_substitutionarray_object($object, $outputlangs);
-				$array_user = $this->get_substitutionarray_user($user, $outputlangs);
-				$array_soc = $this->get_substitutionarray_mysoc($mysoc, $outputlangs);
-				$array_thirdparty = $this->get_substitutionarray_thirdparty($socobject, $outputlangs);
-				$array_other = $this->get_substitutionarray_other($outputlangs);
-				// retrieve contact information for use in object as contact_xxx tags
-				$array_thirdparty_contact = [];
-
-				if ($usecontact && is_object($contactobject)) {
-					$array_thirdparty_contact = $this->get_substitutionarray_contact($contactobject, $outputlangs, 'contact');
-				}
-
-				$tmparray = array_merge($substitutionarray, $array_object_from_properties, $array_user, $array_soc, $array_thirdparty, $array_objet, $array_other, $array_thirdparty_contact);
-				complete_substitutions_array($tmparray, $outputlangs, $object);
-
-				// Call the ODTSubstitution hook
-				$parameters = ['odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray];
-				$reshook = $hookmanager->executeHooks('ODTSubstitution', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
-
-				foreach ($tmparray as $key => $value) {
-				}
-				// Replace tags of lines
-				try {
-					$foundtagforlines = 1;
-
-					if ($foundtagforlines) {
-						$linenumber = 0;
-						foreach ($object->lines as $line) {
-							$linenumber++;
-							$tmparray = $this->get_substitutionarray_lines($line, $outputlangs, $linenumber);
-							complete_substitutions_array($tmparray, $outputlangs, $object, $line, "completesubstitutionarray_lines");
-							// Call the ODTSubstitutionLine hook
-							$parameters = ['odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray, 'line' => $line];
-							$reshook = $hookmanager->executeHooks('ODTSubstitutionLine', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
-							foreach ($tmparray as $key => $val) {
-							}
-						}
-					}
-				} catch (OdfException $e) {
-					$this->error = $e->getMessage();
-					dol_syslog($this->error, LOG_WARNING);
-					return -1;
-				}
-
-				// Replace labels translated
-				$tmparray = $outputlangs->get_translations_for_substitutions();
-
-				// Call the beforeODTSave hook
-				$parameters = ['odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray];
-				$reshook = $hookmanager->executeHooks('beforeODTSave', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
-
-				$parameters = [
-					'file' => $file,
-					'object' => $object,
-					'outputlangs' => $outputlangs,
-					'substitutionarray' => &$tmparray
-				];
-				// Note that $action and $object may have been modified by some hooks
-				$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action);
-
-				$this->result = ['fullpath' => $file];
-
-				return 1; // Success
-			} else {
-				$this->error = $langs->transnoentities("ErrorCanNotCreateDir", $dir);
-				return -1;
-			}
-		}
-
-		return -1;
 	}
 }

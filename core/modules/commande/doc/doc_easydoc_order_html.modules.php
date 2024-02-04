@@ -61,10 +61,10 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		global $langs, $mysoc;
 
 		// Load translation files required by the page
-		$langs->loadLangs(["main", "companies"]);
+		$langs->loadLangs(['main', 'companies', 'easydocgenerator@easydocgenerator']);
 
 		$this->db = $db;
-		$this->name = "HTML templates";
+		$this->name = "Easydoc templates";
 		$this->description = $langs->trans("DocumentModelEasydocgeneratorTemplate");
 		// Name of constant that is used to save list of directories to scan
 		$this->scandir = 'ORDER_ADDON_EASYDOC_TEMPLATES_PATH';
