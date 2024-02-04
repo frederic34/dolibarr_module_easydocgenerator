@@ -22,13 +22,13 @@
  */
 
 /**
- *	\file       htdocs/core/modules/commande/doc/doc_easydoc_product_html.modules.php
- *	\ingroup    commande
+ *	\file       htdocs/core/modules/product/doc/doc_easydoc_product_html.modules.php
+ *	\ingroup    product
  *	\brief      File of class to build PDF documents for products
  */
 use NumberToWords\NumberToWords;
 
-require_once DOL_DOCUMENT_ROOT . '/core/modules/commande/modules_commande.php';
+require_once DOL_DOCUMENT_ROOT . '/core/modules/product/modules_product.php';
 require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
@@ -41,7 +41,7 @@ dol_include_once('/easydocgenerator/lib/easydocgenerator.lib.php');
 /**
  *	Class to build documents using HTML templates
  */
-class doc_easydoc_product_html extends ModelePDFCommandes
+class doc_easydoc_product_html extends ModelePDFProduct
 {
 	// phpcs:enable
 	/**
@@ -487,7 +487,7 @@ class doc_easydoc_product_html extends ModelePDFCommandes
 		$mpdf->Bookmark($outputlangs->trans('PdfOrderTitle'));
 		$mpdf->WriteHTML($html);
 
-		$dir = $conf->commande->multidir_output[$object->entity];
+		$dir = $conf->product->multidir_output[$object->entity];
 		$objectref = dol_sanitizeFileName($object->ref);
 		if (!preg_match('/specimen/i', $objectref)) {
 			$dir .= "/" . $objectref;
