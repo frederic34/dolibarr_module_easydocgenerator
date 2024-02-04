@@ -127,6 +127,8 @@ $modules = [
 	'EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE' => 'EasydocgeneratorEnableDevelopperMode',
 	// tweak dolibarr
 	'CHECKLASTVERSION_EXTERNALMODULE' => 'CHECKLASTVERSION_EXTERNALMODULE',
+	'BANK_ASK_PAYMENT_BANK_DURING_PROPOSAL' => 'BANK_ASK_PAYMENT_BANK_DURING_PROPOSAL',
+	'BANK_ASK_PAYMENT_BANK_DURING_ORDER' => 'BANK_ASK_PAYMENT_BANK_DURING_ORDER',
 ];
 if ((int) DOL_VERSION > 17) {
 	// tweak dolibarr
@@ -259,7 +261,7 @@ if ($action == 'edit') {
 		print '<tr class="oddeven">';
 		print '<td>' . $langs->trans($desc) . '</td>';
 		print '<td align="center" width="100">';
-		$value = (isset($conf->global->$constant) ? $conf->global->$constant : 0);
+		$value = getDolGlobalInt($constant);
 		if ($value == 0) {
 			print '<a href="' . $_SERVER['PHP_SELF'] . '?action=enable_' . strtolower($constant) . '&amp;token=' . $_SESSION['newtoken'] . '">';
 			print img_picto($langs->trans("Disabled"), 'switch_off');

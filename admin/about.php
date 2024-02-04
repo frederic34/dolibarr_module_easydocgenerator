@@ -29,7 +29,7 @@ include '../config.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/admin.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 require_once '../lib/easydocgenerator.lib.php';
-
+require_once '../vendor/autoload.php';
 // Translations
 $langs->loadLangs(["errors", "admin", "easydocgenerator@easydocgenerator"]);
 
