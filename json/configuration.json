@@ -40,9 +40,11 @@
     "boxes": [],
     "const": [
         ["ORDER_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/orders", "Directory for orders templates", 1],
+        ["CONTRACT_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/contracts", "Directory for contracts templates", 1],
         ["INVOICE_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/invoices", "Directory for invoices templates", 1],
         ["PROPALE_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/propales", "Directory for propales templates", 1],
         ["PRODUCT_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/products", "Directory for products templates", 1],
-        ["SHIPPING_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/shippings", "Directory for shippings templates", 1]
+        ["SHIPPING_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/shippings", "Directory for shippings templates", 1],
+        ["TICKET_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/tickets", "Directory for tickets templates", 1],
     ]
 }
