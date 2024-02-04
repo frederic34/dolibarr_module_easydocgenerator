@@ -64,7 +64,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		$langs->loadLangs(["main", "companies", "easydocgenerator@easydocgenerator"]);
 
 		$this->db = $db;
-		$this->name = "HTML templates";
+		$this->name = "Easydoc templates";
 		$this->description = $langs->trans("DocumentModelEasydocgeneratorTemplate");
 		// Name of constant that is used to save list of directories to scan
 		$this->scandir = 'INVOICE_ADDON_EASYDOC_TEMPLATES_PATH';
@@ -146,8 +146,8 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		$texthelp = $langs->trans("ListOfDirectoriesForModelGenHTML");
 		$texthelp .= '<br><br><span class="opacitymedium">' . $langs->trans("ExampleOfDirectoriesForModelGen") . '</span>';
 		// Add list of substitution keys
-		$texthelp .= '<br>' . $langs->trans("FollowingSubstitutionKeysCanBeUsed") . '<br>';
-		$texthelp .= $langs->transnoentitiesnoconv("FullListOnOnlineDocumentation"); // This contains an url, we don't modify it
+		// $texthelp .= '<br>' . $langs->trans("FollowingSubstitutionKeysCanBeUsed") . '<br>';
+		// $texthelp .= $langs->transnoentitiesnoconv("FullListOnOnlineDocumentation"); // This contains an url, we don't modify it
 
 		$text .= $form->textwithpicto($texttitle, $texthelp, 1, 'help', '', 1, 3, $this->name);
 		$text .= '<div><div style="display: inline-block; min-width: 100px; vertical-align: middle;">';
