@@ -69,7 +69,7 @@ print load_fiche_titre($langs->trans($page_name), $linkback, 'title_setup');
 
 // Configuration header
 $head = easydocgeneratorAdminPrepareHead();
-print dol_get_fiche_head($head, 'changelog', $langs->trans($page_name), 0, 'easydocgenerator@easydocgenerator');
+print dol_get_fiche_head($head, 'changelog', $langs->trans($page_name), 0, 'technic');
 
 dol_include_once('/easydocgenerator/core/modules/modEasydocgenerator.class.php');
 $tmpmodule = new modEasydocgenerator($db);
