@@ -1,5 +1,5 @@
 
-## Unreleased (2024-02-04)
+## Unreleased (2024-02-05)
 
 #### :rocket: Enhancement
 * [#12](https://github.com/frederic34/dolibarr_module_easydocgenerator/pull/12) better use of twig and catch errors ([@frederic34](https://github.com/frederic34))
