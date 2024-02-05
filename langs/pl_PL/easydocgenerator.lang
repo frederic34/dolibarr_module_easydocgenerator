@@ -25,3 +25,4 @@ ListOfDirectoriesForHtmlTemplates=Lista katalogów szablonów Easydoc
 ListOfDirectoriesForModelGenHTML=Lista katalogów zawierających dokumenty wzorcowe w formacie Easydoc.
 EasydocStopTheOrderAtSumOf=Zatrzymałem zamówienie na kwotę: %s
 EasydocStopThePropalAtSumOf=Sfinalizowano ofertę handlową na sumę: %s
+EasydocgeneratorConfig=Konfiguracja Easydocgeneratora

@@ -25,3 +25,4 @@ ListOfDirectoriesForHtmlTemplates=List of Easydoc template directories
 ListOfDirectoriesForModelGenHTML=List of directories containing model documents in Easydoc format.
 EasydocStopTheOrderAtSumOf=Stopped the order at the sum of: %s
 EasydocStopThePropalAtSumOf=Finalized the commercial proposal in the sum of: %s
+EasydocgeneratorConfig=Configuring Easydocgenerator

@@ -26,3 +26,4 @@ ListOfDirectoriesForHtmlTemplates=Elenco delle directory dei modelli Easydoc
 ListOfDirectoriesForModelGenHTML=Elenco delle directory contenenti documenti modello in formato Easydoc.
 EasydocStopTheOrderAtSumOf=Interrotto l'ordine alla somma di: %s
 EasydocStopThePropalAtSumOf=Finalizzata la proposta commerciale nella somma di: %s
+EasydocgeneratorConfig=Configurazione di Easydocgenerator
