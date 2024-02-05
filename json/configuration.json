@@ -47,5 +47,6 @@
         ["SHIPPING_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/shippings", "Directory for shippings templates", 1],
         ["TICKET_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/tickets", "Directory for tickets templates", 1],
         ["STOCK_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/stocks", "Directory for stocks templates", 1],
+        ["INTERVENTION_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/interventions", "Directory for interventions templates", 1]
     ]
 }
