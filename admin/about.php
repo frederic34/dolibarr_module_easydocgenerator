@@ -62,11 +62,11 @@ llxHeader('', $langs->trans("EasydocgeneratorAbout"));
 $linkback = '<a href="' . ($backtopage ? $backtopage : DOL_URL_ROOT . '/admin/modules.php?restore_lastsearch_values=1') . '">';
 $linkback .= $langs->trans("BackToModuleList") . '</a>';
 
-print load_fiche_titre($langs->trans("EasydocgeneratorAbout"), $linkback, 'object_easydocgenerator-32x32@easydocgenerator');
+print load_fiche_titre($langs->trans("EasydocgeneratorAbout"), $linkback, 'tools');
 
 // Configuration header
 $head = easydocgeneratorAdminPrepareHead();
-print dol_get_fiche_head($head, 'about', '', -1, 'easydocgenerator@easydocgenerator');
+print dol_get_fiche_head($head, 'about', $langs->trans('About'), -1, 'technic');
 
 dol_include_once('/easydocgenerator/core/modules/modEasydocgenerator.class.php');
 $tmpmodule = new modEasydocgenerator($db);

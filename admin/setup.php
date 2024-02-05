@@ -129,6 +129,7 @@ $modules = [
 	'CHECKLASTVERSION_EXTERNALMODULE' => 'CHECKLASTVERSION_EXTERNALMODULE',
 	'BANK_ASK_PAYMENT_BANK_DURING_PROPOSAL' => 'BANK_ASK_PAYMENT_BANK_DURING_PROPOSAL',
 	'BANK_ASK_PAYMENT_BANK_DURING_ORDER' => 'BANK_ASK_PAYMENT_BANK_DURING_ORDER',
+	'BANK_ASK_PAYMENT_BANK_DURING_SUPPLIER_ORDER' => 'BANK_ASK_PAYMENT_BANK_DURING_SUPPLIER_ORDER',
 ];
 if ((int) DOL_VERSION > 17) {
 	// tweak dolibarr
@@ -185,11 +186,11 @@ $form = new Form($db);
 
 $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php?restore_lastsearch_values=1">';
 $linkback .= $langs->trans("BackToModuleList") . '</a>';
-print load_fiche_titre($langs->trans('ConfigOAuth'), $linkback, 'object_easydocgenerator@easydocgenerator');
+print load_fiche_titre($langs->trans('EasydocgeneratorConfig'), $linkback, 'tools');
 
 $head = easydocgeneratorAdminPrepareHead();
 
-print dol_get_fiche_head($head, 'settings', '', -1, 'technic');
+print dol_get_fiche_head($head, 'settings', $langs->trans('Settings'), -1, 'technic');
 
 if ($action == 'edit') {
 	print '<form action="' . $_SERVER["PHP_SELF"] . '" method="POST">';

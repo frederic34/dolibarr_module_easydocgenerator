@@ -18,7 +18,7 @@
 ModuleEasydocgeneratorName=Easydocgenerator
 # Module description 'ModuleEasydocgeneratorDesc'
 ModuleEasydocgeneratorDesc=Easydocgenerator description
-
+EasydocgeneratorConfig=Configuration de Easydocgenerator
 EasydocgeneratorSetup=Paramètres Easydocgenerator
 EasydocgeneratorSetupPage=Paramètres Easydocgenerator
 
