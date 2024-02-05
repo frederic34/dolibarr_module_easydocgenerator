@@ -17,10 +17,11 @@
 # Module label 'ModuleEasydocgeneratorName'
 ModuleEasydocgeneratorName=Easydocgenerator
 # Module description 'ModuleEasydocgeneratorDesc'
-ModuleEasydocgeneratorDesc=Easydocgenerator description
-EasydocgeneratorConfig=Configuration de Easydocgenerator
+ModuleEasydocgeneratorDesc=Générer vos pdf avec Easydocgenerator. Modifiez facilement vos templates.
+EasydocgeneratorConfig=Configuration d'Easydocgenerator
 EasydocgeneratorSetup=Paramètres Easydocgenerator
 EasydocgeneratorSetupPage=Paramètres Easydocgenerator
+EasydocgeneratorChangelog=Changelog d'Easydocgenerator
 
 EasydocgeneratorAbout=A propos d'Easydocgenerator
 EasydocgeneratorAboutPage=Easydocgenerator about page
