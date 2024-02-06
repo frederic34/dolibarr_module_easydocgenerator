@@ -508,13 +508,7 @@ class doc_easydoc_stock_html extends ModelePDFStock
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
 			$i = 0;
-			$nblines = $num;
-
-			$nexY = $tab_top + $this->tabTitleHeight;
-
-			for ($i = 0; $i < $nblines; $i++) {
-				$curY = $nexY;
-
+			for ($i = 0; $i < $num; $i++) {
 				$objp = $this->db->fetch_array($resql);
 				$substitutions['lines'][] = $objp;
 			}
