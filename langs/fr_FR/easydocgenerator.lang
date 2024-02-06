@@ -43,4 +43,5 @@ EASYDOC_PDF_FORMAT=Format papiers
 EasydocStopTheBillAtSumOf=Arrêté la facture à la somme de : %s
 EasydocStopTheOrderAtSumOf=Arrêté la commande à la somme de : %s
 EasydocStopThePropalAtSumOf=Arrêté la proposition commerciale à la somme de : %s
+EasydoCantAddPdfToDoc=Easydocgenerator ne peux pas ajouter le fichier %s au document
 
