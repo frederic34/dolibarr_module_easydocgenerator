@@ -137,7 +137,7 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 			if (!is_dir($tmpdir)) {
 				$texttitle .= img_warning($langs->trans("ErrorDirNotFound", $tmpdir), 0);
 			} else {
-				$tmpfiles = dol_dir_list($tmpdir, 'files', 0, '\.(twig)');
+				$tmpfiles = dol_dir_list($tmpdir, 'files', 0, '');
 				if (count($tmpfiles)) {
 					$listoffiles = array_merge($listoffiles, $tmpfiles);
 				}
