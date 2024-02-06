@@ -125,7 +125,7 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 		// List of directories area
 		$text .= '<tr><td>';
 		$texttitle = $langs->trans("ListOfDirectoriesForHtmlTemplates");
-		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim($conf->global->TICKET_ADDON_EASYDOC_TEMPLATES_PATH)));
+		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim(getDolGlobalString('TICKET_ADDON_EASYDOC_TEMPLATES_PATH'))));
 		$listoffiles = [];
 		foreach ($listofdir as $key => $tmpdir) {
 			$tmpdir = trim($tmpdir);

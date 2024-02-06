@@ -26,6 +26,7 @@
  *	\ingroup    propal
  *	\brief      File of class to build PDF documents for propales
  */
+
 use NumberToWords\NumberToWords;
 
 require_once DOL_DOCUMENT_ROOT . '/core/modules/propale/modules_propale.php';
@@ -559,28 +560,33 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 
 								$infile = $filetomerge_dir . $linefile->file_name;
 								if (file_exists($infile) && is_readable($infile)) {
-									// stop adding header on every page
-									$mpdf->SetHeader();
-									$mpdf->Bookmark($linefile->file_name);
-									// This PDF document probably uses a compression technique which is not supported by the free parser shipped with FPDI
-									// Alternatively the document you're trying to import has to be resaved without the use of compressed cross-reference streams
-									// and objects by an external programm (e.g. by lowering the PDF version to 1.4).
-									$pagecount = $mpdf->setSourceFile($infile);
-									for ($i = 1; $i <= $pagecount; $i++) {
-										$tplIdx = $mpdf->importPage($i);
-										if ($tplIdx !== false) {
-											$s = $mpdf->getTemplatesize($tplIdx);
-											// array (size=5)
-											//   'width' => float 210.00155555556
-											//   'height' => float 296.99655555556
-											//   0 => float 210.00155555556
-											//   1 => float 296.99655555556
-											//   'orientation' => string 'P' (length=1)
-											$mpdf->AddPage($s['height'] > $s['width'] ? 'P' : 'L');
-											$mpdf->useTemplate($tplIdx);
-										} else {
-											setEventMessages(null, [$infile . ' cannot be added, probably protected PDF'], 'warnings');
+									try {
+										$pagecount = $mpdf->setSourceFile($infile);
+										// stop adding header on every page
+										$mpdf->SetHeader();
+										$mpdf->Bookmark($linefile->file_name);
+										// This PDF document probably uses a compression technique which is not supported by the free parser shipped with FPDI
+										// Alternatively the document you're trying to import has to be resaved without the use of compressed cross-reference streams
+										// and objects by an external programm (e.g. by lowering the PDF version to 1.4).
+										for ($i = 1; $i <= $pagecount; $i++) {
+											$tplIdx = $mpdf->importPage($i);
+											if ($tplIdx !== false) {
+												$s = $mpdf->getTemplatesize($tplIdx);
+												// array (size=5)
+												//   'width' => float 210.00155555556
+												//   'height' => float 296.99655555556
+												//   0 => float 210.00155555556
+												//   1 => float 296.99655555556
+												//   'orientation' => string 'P' (length=1)
+												$mpdf->AddPage($s['height'] > $s['width'] ? 'P' : 'L');
+												$mpdf->useTemplate($tplIdx);
+											} else {
+												setEventMessages(null, [$infile . ' cannot be added, probably protected PDF'], 'warnings');
+											}
 										}
+									} catch (Exception $e) {
+										setEventMessage($langs->trans('EasydoCantAddPdfToDoc', $linefile->file_name), 'errors');
+										setEventMessage($e->getMessage(), 'errors');
 									}
 								}
 							}
