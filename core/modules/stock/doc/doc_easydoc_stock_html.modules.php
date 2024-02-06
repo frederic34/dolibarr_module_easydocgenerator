@@ -125,7 +125,7 @@ class doc_easydoc_stock_html extends ModelePDFStock
 		// List of directories area
 		$text .= '<tr><td>';
 		$texttitle = $langs->trans("ListOfDirectoriesForHtmlTemplates");
-		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim($conf->global->STOCK_ADDON_EASYDOC_TEMPLATES_PATH)));
+		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim(getDolGlobalString('STOCK_ADDON_EASYDOC_TEMPLATES_PATH'))));
 		$listoffiles = [];
 		foreach ($listofdir as $key => $tmpdir) {
 			$tmpdir = trim($tmpdir);
@@ -228,7 +228,7 @@ class doc_easydoc_stock_html extends ModelePDFStock
 		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
 		}
-		$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
+		$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'stocks', 'easydocgenerator@easydocgenerator']);
 
 		global $outputlangsbis;
 		$outputlangsbis = null;
@@ -352,13 +352,6 @@ class doc_easydoc_stock_html extends ModelePDFStock
 			$tmparray = explode('_', $mysoc->country_code);
 			$flagImage = empty($tmparray[1]) ? $tmparray[0] : $tmparray[1];
 		}
-		if ($object->cond_reglement_code) {
-			$label_payment_conditions = ($outputlangs->transnoentities("PaymentCondition" . $object->cond_reglement_code) != 'PaymentCondition' . $object->cond_reglement_code) ? $outputlangs->transnoentities("PaymentCondition" . $object->cond_reglement_code) : $outputlangs->convToOutputCharset($object->cond_reglement_doc ? $object->cond_reglement_doc : $object->cond_reglement_label);
-			$label_payment_conditions = str_replace('\n', "\n", $label_payment_conditions);
-			if ($object->deposit_percent > 0) {
-				$label_payment_conditions = str_replace('__DEPOSIT_PERCENT__', $object->deposit_percent, $label_payment_conditions);
-			}
-		}
 		// If CUSTOMER contact defined on stock, we use it
 		$usecontact = false;
 		$arrayidcontact = $object->getIdContact('external', 'CUSTOMER');
@@ -458,45 +451,73 @@ class doc_easydoc_stock_html extends ModelePDFStock
 			'lines' => [],
 			'linkedObjects' => $linkedObjects,
 			'footerinfo' => getPdfPagefoot($outputlangs, $paramfreetext, $mysoc, $object),
-			'labelpaymentconditions' => $label_payment_conditions,
 			'currency' => $currency,
 			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
 		]);
 		// var_dump($substitutions);
-		$subtotal_ht = 0;
-		$subtotal_ttc = 0;
-		$linenumber = 1;
-		foreach ($object->lines as $key => $line) {
-			$subtotal_ht += $line->total_ht;
-			$subtotal_ttc += $line->total_ttc;
-			if ($line->special_code == 104777 && $line->qty == 99) {
-				$line->total_ht = $subtotal_ht;
-				$line->total_ttc = $subtotal_ttc;
-				$subtotal_ht = 0;
-				$subtotal_ttc = 0;
-			}
-			$substitutions['lines'][$key] = [
-				'linenumber' => $linenumber,
-				'qty' => $line->qty,
-				'ref' => $line->product_ref,
-				'label' => $line->label,
-				'description' => $line->desc,
-				'product_label' => $line->product_label,
-				'product_description' => $line->product_desc,
-				'subprice' => price($line->subprice),
-				'total_ht' => price($line->total_ht),
-				'total_ttc' => price($line->total_ttc),
-				'vatrate' => price($line->tva_tx) . '%',
-				'special_code' => $line->special_code,
-				'product_type' => $line->product_type,
-				'line_options' => [],
-				'product_options' => [],
-			];
-			if (empty($line->special_code)) {
-				$linenumber++;
+		// $subtotal_ht = 0;
+		// $subtotal_ttc = 0;
+		// $linenumber = 1;
+		// foreach ($object->lines as $key => $line) {
+		// 	$subtotal_ht += $line->total_ht;
+		// 	$subtotal_ttc += $line->total_ttc;
+		// 	if ($line->special_code == 104777 && $line->qty == 99) {
+		// 		$line->total_ht = $subtotal_ht;
+		// 		$line->total_ttc = $subtotal_ttc;
+		// 		$subtotal_ht = 0;
+		// 		$subtotal_ttc = 0;
+		// 	}
+		// 	$substitutions['lines'][$key] = [
+		// 		'linenumber' => $linenumber,
+		// 		'qty' => $line->qty,
+		// 		'ref' => $line->product_ref,
+		// 		'label' => $line->label,
+		// 		'description' => $line->desc,
+		// 		'product_label' => $line->product_label,
+		// 		'product_description' => $line->product_desc,
+		// 		'subprice' => price($line->subprice),
+		// 		'total_ht' => price($line->total_ht),
+		// 		'total_ttc' => price($line->total_ttc),
+		// 		'vatrate' => price($line->tva_tx) . '%',
+		// 		'special_code' => $line->special_code,
+		// 		'product_type' => $line->product_type,
+		// 		'line_options' => [],
+		// 		'product_options' => [],
+		// 	];
+		// 	if (empty($line->special_code)) {
+		// 		$linenumber++;
+		// 	}
+		// }
+		$totalunit = 0;
+		$totalvalue = $totalvaluesell = 0;
+		$substitutions['lines'] = [];
+		$sortfield = 'p.ref';
+		$sortorder = 'ASC';
+
+		$sql = "SELECT p.rowid as rowid, p.ref, p.label as produit, p.tobatch, p.fk_product_type as type, p.pmp as ppmp, p.price, p.price_ttc, p.entity,";
+		$sql .= " ps.reel as value";
+		$sql .= " FROM ".MAIN_DB_PREFIX."product_stock as ps, ".MAIN_DB_PREFIX."product as p";
+		$sql .= " WHERE ps.fk_product = p.rowid";
+		$sql .= " AND ps.reel <> 0"; // We do not show if stock is 0 (no product in this warehouse)
+		$sql .= " AND ps.fk_entrepot = ".((int) $object->id);
+		$sql .= $this->db->order($sortfield, $sortorder);
+
+		//dol_syslog('List products', LOG_DEBUG);
+		$resql = $this->db->query($sql);
+		if ($resql) {
+			$num = $this->db->num_rows($resql);
+			$i = 0;
+			$nblines = $num;
+
+			$nexY = $tab_top + $this->tabTitleHeight;
+
+			for ($i = 0; $i < $nblines; $i++) {
+				$curY = $nexY;
+
+				$objp = $this->db->fetch_array($resql);
+				$substitutions['lines'][] = $objp;
 			}
 		}
-
 		// var_dump($substitutions);
 		$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
 		try {
