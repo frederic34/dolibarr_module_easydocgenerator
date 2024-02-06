@@ -29,3 +29,4 @@ EasydocgeneratorConfig=Configurando Easydocgenerator
 EasydocgeneratorChangelog=Registro de cambios de Easydocgenerator
 PRODUIT_PDF_MERGE_PROPAL=Seleccione archivos PDF de productos para agregarlos a los documentos
 EasydoCantAddPdfToDoc=Easydocgenerator no puede agregar el archivo %s al documento
+EASYDOC_ADD_TEMPLATE_SUFFIX_TO_FILENAME=Agregue el nombre de la plantilla al nombre del archivo PDF generado
