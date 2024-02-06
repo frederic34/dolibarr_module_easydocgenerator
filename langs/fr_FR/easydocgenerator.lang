@@ -32,6 +32,7 @@ ListOfDirectoriesForHtmlTemplates=Liste des répertoires des modèles Easydoc
 ListOfDirectoriesForModelGenHTML=Liste des répertoires contenant des documents modèles au format Easydoc.
 CHECKLASTVERSION_EXTERNALMODULE=Forcer la vérification des versions des modules externes (déconseillé, cette option peux avoir été activée par un autre module)
 MAIN_ENABLE_AJAX_TOOLTIP=Activer les tooltips ajax (nécéssite une version de Dolibar >= 18)
+PRODUIT_PDF_MERGE_PROPAL=Selectionner les PDF des produits à ajouter aux documents
 EASYDOC_PDF_MARGIN_LEFT=Marge gauche sur les PDF
 EASYDOC_PDF_MARGIN_RIGHT=Marge droite sur les PDF
 EASYDOC_PDF_MARGIN_TOP=Marge haut sur les PDF
