@@ -206,7 +206,7 @@ mpdf-->
 </table>
 
 
-<div style="text-align: center;">{{ trans('PaymentConditions') }}: {{ labelpaymentconditions }}</div>
+<div style="text-align: center; ">{{ trans('PaymentConditions') }}: {{ labelpaymentconditions }}</div>
 <div>{{ freetext }}</div>
 
 </body>

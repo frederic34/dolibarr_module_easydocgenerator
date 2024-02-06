@@ -99,7 +99,9 @@ function getEachVarObject($object, $outputlangs, $recursive = 1, $objectname = '
 			}
 			if (!empty($value)) {
 				if (!is_array($value) && !is_object($value)) {
-					$array_other[$objectname][$key] = $value;
+					$toreplace  = ["\r\n", "\n", "\r"];
+					$value = str_replace($toreplace, "<br>", $value);
+					$array_other[$objectname][$key] = str_replace("\n", "<br>", $value);
 				} elseif (is_array($value) && ($recursive || $key == 'array_options')) {
 					$tmparray = getEachVarObject($value, $outputlangs, 0);
 					foreach ($tmparray as $key2 => $value2) {
