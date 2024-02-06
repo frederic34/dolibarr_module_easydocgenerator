@@ -29,3 +29,4 @@ EasydocStopThePropalAtSumOf=Finalizzata la proposta commerciale nella somma di: 
 EasydocgeneratorConfig=Configurazione di Easydocgenerator
 EasydocgeneratorChangelog=Registro delle modifiche di Easydocgenerator
 PRODUIT_PDF_MERGE_PROPAL=Seleziona i PDF dei prodotti da aggiungere ai documenti
+EasydoCantAddPdfToDoc=Easydocgenerator non può aggiungere il file %s al documento

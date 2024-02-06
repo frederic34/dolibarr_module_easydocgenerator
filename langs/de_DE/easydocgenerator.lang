@@ -28,3 +28,4 @@ EasydocStopThePropalAtSumOf=Das kommerzielle Angebot wurde in der Summe fertigge
 EasydocgeneratorConfig=Easydocgenerator konfigurieren
 EasydocgeneratorChangelog=Easydocgenerator-Änderungsprotokoll
 PRODUIT_PDF_MERGE_PROPAL=Wählen Sie Produkt-PDFs aus, die Sie zu Dokumenten hinzufügen möchten
+EasydoCantAddPdfToDoc=Easydocgenerator kann keine %s-Datei zum Dokument hinzufügen
