@@ -455,40 +455,7 @@ class doc_easydoc_stock_html extends ModelePDFStock
 			'currency' => $currency,
 			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
 		]);
-		// var_dump($substitutions);
-		// $subtotal_ht = 0;
-		// $subtotal_ttc = 0;
-		// $linenumber = 1;
-		// foreach ($object->lines as $key => $line) {
-		// 	$subtotal_ht += $line->total_ht;
-		// 	$subtotal_ttc += $line->total_ttc;
-		// 	if ($line->special_code == 104777 && $line->qty == 99) {
-		// 		$line->total_ht = $subtotal_ht;
-		// 		$line->total_ttc = $subtotal_ttc;
-		// 		$subtotal_ht = 0;
-		// 		$subtotal_ttc = 0;
-		// 	}
-		// 	$substitutions['lines'][$key] = [
-		// 		'linenumber' => $linenumber,
-		// 		'qty' => $line->qty,
-		// 		'ref' => $line->product_ref,
-		// 		'label' => $line->label,
-		// 		'description' => $line->desc,
-		// 		'product_label' => $line->product_label,
-		// 		'product_description' => $line->product_desc,
-		// 		'subprice' => price($line->subprice),
-		// 		'total_ht' => price($line->total_ht),
-		// 		'total_ttc' => price($line->total_ttc),
-		// 		'vatrate' => price($line->tva_tx) . '%',
-		// 		'special_code' => $line->special_code,
-		// 		'product_type' => $line->product_type,
-		// 		'line_options' => [],
-		// 		'product_options' => [],
-		// 	];
-		// 	if (empty($line->special_code)) {
-		// 		$linenumber++;
-		// 	}
-		// }
+
 		$totalunit = 0;
 		$totalvalue = $totalvaluesell = 0;
 		$substitutions['lines'] = [];
@@ -513,7 +480,7 @@ class doc_easydoc_stock_html extends ModelePDFStock
 				$substitutions['lines'][] = $objp;
 			}
 		}
-		// var_dump($substitutions);
+
 		$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
 		try {
 			$html = $template->render($substitutions);
