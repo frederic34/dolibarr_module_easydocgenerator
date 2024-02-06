@@ -26,6 +26,7 @@
  *	\ingroup    stock
  *	\brief      File of class to build PDF documents for stocks
  */
+
 use NumberToWords\NumberToWords;
 
 require_once DOL_DOCUMENT_ROOT . '/core/modules/stock/modules_stock.php';
@@ -496,10 +497,10 @@ class doc_easydoc_stock_html extends ModelePDFStock
 
 		$sql = "SELECT p.rowid as rowid, p.ref, p.label as produit, p.tobatch, p.fk_product_type as type, p.pmp as ppmp, p.price, p.price_ttc, p.entity,";
 		$sql .= " ps.reel as value";
-		$sql .= " FROM ".MAIN_DB_PREFIX."product_stock as ps, ".MAIN_DB_PREFIX."product as p";
+		$sql .= " FROM " . MAIN_DB_PREFIX . "product_stock as ps, " . MAIN_DB_PREFIX . "product as p";
 		$sql .= " WHERE ps.fk_product = p.rowid";
 		$sql .= " AND ps.reel <> 0"; // We do not show if stock is 0 (no product in this warehouse)
-		$sql .= " AND ps.fk_entrepot = ".((int) $object->id);
+		$sql .= " AND ps.fk_entrepot = " . ((int) $object->id);
 		$sql .= $this->db->order($sortfield, $sortorder);
 
 		//dol_syslog('List products', LOG_DEBUG);
