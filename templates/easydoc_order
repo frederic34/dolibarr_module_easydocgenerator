@@ -50,6 +50,34 @@ table thead th {
 .items td.cost {
 	text-align: "." right;
 }
+.barcode {
+	padding: 1.5mm;
+	margin: 0;
+	vertical-align: top;
+	color: #000000;
+}
+.barcodecell {
+	text-align: center;
+	vertical-align: middle;
+	padding: 0;
+}
+.myfixed1 {
+	position: absolute;
+	overflow: visible;
+	left: 0;
+	bottom: 0;
+	border: 1px solid #880000;
+	background-color: #FFEEDD;
+	background-gradient: linear #dec7cd #fff0f2 0 1 0 0.5;
+	padding: 1.5em;
+	font-family:sans;
+	margin: 0;
+	border-radius: 2mm;
+}
+.freetext {
+	page-break-inside: avoid;
+}
+
 </style>
 </head>
 <body>
@@ -72,7 +100,9 @@ table thead th {
 	{% endif %}
 	<br />
 	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ mysoc.email }}<br />
-	{{ trans('VATIntraShort') }}: {{ mysoc.tvanumber }}<br />
+	{% if mysoc.tva_intra %}
+		{{ trans('VATIntraShort') }}: {{ mysoc.tva_intra }}<br />
+	{% endif %}
 </td>
 <td width="45%" style="text-align: right;">
 <span style="font-weight: bold; font-size: 14pt;"><b>{{ trans('PdfOrderTitle') }}</b></span>
@@ -176,7 +206,10 @@ mpdf-->
 			{% endif %}
 		{% else %}
 			<td align="center">{{ line.ref }}</td>
-			<td>{{ line.product_label }}<br />{{ line.product_description }}</td>
+			<td>
+			{{ line.product_label }}<br />
+			{{ line.product_description }}
+			</td>
 			<td align="right">{{ line.vatrate }}</td>
 			<td align="center">{{ line.qty }}</td>
 			<td class="cost">{{ line.subprice }}</td>
@@ -190,24 +223,28 @@ mpdf-->
 {% endif %}
 <!-- END ITEMS HERE -->
 <tr>
-<td class="blanktotal" colspan="4" rowspan="3"></td>
-<td class="totals">{{ trans('TotalHT') }}</td>
-<td class="totals cost">{{ object.total_ht }}</td>
+<td class="blanktotal" colspan="4" rowspan="3">
+{% if labelpaymentconditions %}
+	{{ trans('PaymentConditions') }}: {{ labelpaymentconditions }}
+{% endif %}
+<div class="freetext">{{ trans('EasydocStopTheBillAtSumOf', numbertowords(object.total_ttc, currency, 'fr')) }}.</div>
+</td>
+<td class="totals">{{ trans('TotalHT') }}<br>{{ transbis('TotalHT') }}</td>
+<td class="totals cost">{{ price(object.total_ht) }}</td>
 </tr>
 <tr>
-<td class="totals">{{ trans('TotalVAT') }}</td>
-<td class="totals cost">{{ object.total_tva }}</td>
+<td class="totals">{{ trans('TotalVAT') }}<br>{{ transbis('TotalVAT') }}</td>
+<td class="totals cost">{{ price(object.total_tva) }}</td>
 </tr>
 <tr>
-<td class="totals"><b>{{ trans('TotalTTC') }}</b></td>
-<td class="totals cost"><b>{{ object.total_ttc }}</b></td>
+<td class="totals"><b>{{ trans('TotalTTC') }}<br>{{ transbis('TotalTTC') }}</b></td>
+<td class="totals cost"><b>{{ price(object.total_ttc) }}</b></td>
 </tr>
 </tbody>
 </table>
 
-
 <div style="text-align: center; ">{{ trans('PaymentConditions') }}: {{ labelpaymentconditions }}</div>
-<div>{{ freetext }}</div>
+<div class="freetext">{{ freetext }}</div>
 
 </body>
 </html>
