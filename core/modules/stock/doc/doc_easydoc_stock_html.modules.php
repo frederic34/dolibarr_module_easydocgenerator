@@ -69,7 +69,7 @@ class doc_easydoc_stock_html extends ModelePDFStock
 		// Name of constant that is used to save list of directories to scan
 		$this->scandir = 'STOCK_ADDON_EASYDOC_TEMPLATES_PATH';
 		// Save the name of generated file as the main doc when generating a doc with this template
-		$this->update_main_doc_field = 1;
+		$this->update_main_doc_field = 0;
 
 		// Page size for A4 format
 		$this->type = 'pdf';
@@ -529,7 +529,7 @@ class doc_easydoc_stock_html extends ModelePDFStock
 		complete_substitutions_array($substitutionarray, $outputlangs, null);
 		$text = make_substitutions($text, $substitutionarray, $outputlangs);
 		$mpdf->SetWatermarkText($text);
-		$mpdf->showWatermarkText = ($object->statut == Commande::STATUS_DRAFT && getDolGlobalString('STOCK_DRAFT_WATERMARK'));
+		$mpdf->showWatermarkText = ($object->status == Entrepot::STATUS_CLOSED && getDolGlobalString('STOCK_DRAFT_WATERMARK'));
 		$mpdf->watermark_font = 'DejaVuSansCondensed';
 		$mpdf->watermarkTextAlpha = 0.1;
 

@@ -28,7 +28,7 @@
  */
 use NumberToWords\NumberToWords;
 
-require_once DOL_DOCUMENT_ROOT . '/core/modules/product/modules_product.php';
+require_once DOL_DOCUMENT_ROOT . '/core/modules/product/modules_product.class.php';
 require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
@@ -69,7 +69,7 @@ class doc_easydoc_product_html extends ModelePDFProduct
 		// Name of constant that is used to save list of directories to scan
 		$this->scandir = 'PRODUCT_ADDON_EASYDOC_TEMPLATES_PATH';
 		// Save the name of generated file as the main doc when generating a doc with this template
-		$this->update_main_doc_field = 1;
+		$this->update_main_doc_field = ((int) DOL_VERSION < 20) ? 0 : 1;
 
 		// Page size for A4 format
 		$this->type = 'pdf';
@@ -125,7 +125,7 @@ class doc_easydoc_product_html extends ModelePDFProduct
 		// List of directories area
 		$text .= '<tr><td>';
 		$texttitle = $langs->trans("ListOfDirectoriesForHtmlTemplates");
-		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim($conf->global->PRODUCT_ADDON_EASYDOC_TEMPLATES_PATH)));
+		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim(getDolGlobalString('PRODUCT_ADDON_EASYDOC_TEMPLATES_PATH'))));
 		$listoffiles = [];
 		foreach ($listofdir as $key => $tmpdir) {
 			$tmpdir = trim($tmpdir);
@@ -468,10 +468,10 @@ class doc_easydoc_product_html extends ModelePDFProduct
 			'margin_footer' =>  getDolGlobalInt('EASYDOC_PDF_MARGIN_FOOTER', 10),
 		]);
 		$mpdf->SetProtection(['print']);
-		$mpdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
+		$mpdf->SetTitle($outputlangs->convToOutputCharset("Product"));
 		$mpdf->SetCreator('Dolibarr ' . DOL_VERSION);
 		$mpdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
-		$mpdf->SetKeyWords($outputlangs->convToOutputCharset($object->ref) . " " . $outputlangs->transnoentities("PdfOrderTitle") . " " . $outputlangs->convToOutputCharset($object->thirdparty->name));
+		$mpdf->SetKeyWords($outputlangs->convToOutputCharset($object->ref) . " " . $outputlangs->transnoentities("Product"));
 		// Watermark
 		$text = getDolGlobalString('PRODUCT_DRAFT_WATERMARK');
 		$substitutionarray = pdf_getSubstitutionArray($outputlangs, null, null);

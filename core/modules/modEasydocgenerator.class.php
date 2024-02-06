@@ -150,62 +150,7 @@ class modEasydocgenerator extends DolibarrModules
 
 		// Array to add new pages in new tabs
 		$this->tabs = $this->configuration['tabs'];
-		// Example:
-		// $this->tabs[] = [
-		// 	// To add a new tab identified by code tabname1
-		// 	'data'=>'objecttype:+tabname1:Title1:mylangfile@easydocgenerator:$user->rights->easydocgenerator->read:/easydocgenerator/mynewtab1.php?id=__ID__'
-		// ];
-		// // To add another new tab identified by code tabname2. Label will be result of calling all substitution functions on 'Title2' key.
-		// $this->tabs[] = array('data'=>'objecttype:+tabname2:SUBSTITUTION_Title2:mylangfile@easydocgenerator:$user->rights->othermodule->read:/easydocgenerator/mynewtab2.php?id=__ID__');
-		// $this->tabs[] = array('data'=>'objecttype:-tabname:NU:conditiontoremove');                                                     										// To remove an existing tab identified by code tabname
-		//
-		// Where objecttype can be
-		// 'categories_x'	  to add a tab in category view (replace 'x' by type of category (0=product, 1=supplier, 2=customer, 3=member)
-		// 'contact'          to add a tab in contact view
-		// 'contract'         to add a tab in contract view
-		// 'group'            to add a tab in group view
-		// 'intervention'     to add a tab in intervention view
-		// 'invoice'          to add a tab in customer invoice view
-		// 'invoice_supplier' to add a tab in supplier invoice view
-		// 'member'           to add a tab in fundation member view
-		// 'opensurveypoll'	  to add a tab in opensurvey poll view
-		// 'order'            to add a tab in sale order view
-		// 'order_supplier'   to add a tab in supplier order view
-		// 'payment'		  to add a tab in payment view
-		// 'payment_supplier' to add a tab in supplier payment view
-		// 'product'          to add a tab in product view
-		// 'propal'           to add a tab in propal view
-		// 'project'          to add a tab in project view
-		// 'stock'            to add a tab in stock view
-		// 'thirdparty'       to add a tab in third party view
-		// 'user'             to add a tab in user view
 
-		// Dictionaries
-		/* Example:
-		 $this->dictionaries=array(
-		 'langs'=>'easydocgenerator@easydocgenerator',
-		 // List of tables we want to see into dictonnary editor
-		 'tabname'=>array("table1", "table2", "table3"),
-		 // Label of tables
-		 'tablib'=>array("Table1", "Table2", "Table3"),
-		 // Request to select fields
-		 'tabsql'=>array('SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'table1 as f', 'SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'table2 as f', 'SELECT f.rowid as rowid, f.code, f.label, f.active FROM '.MAIN_DB_PREFIX.'table3 as f'),
-		 // Sort order
-		 'tabsqlsort'=>array("label ASC", "label ASC", "label ASC"),
-		 // List of fields (result of select to show dictionary)
-		 'tabfield'=>array("code,label", "code,label", "code,label"),
-		 // List of fields (list of fields to edit a record)
-		 'tabfieldvalue'=>array("code,label", "code,label", "code,label"),
-		 // List of fields (list of fields for insert)
-		 'tabfieldinsert'=>array("code,label", "code,label", "code,label"),
-		 // Name of columns with primary key (try to always name it 'rowid')
-		 'tabrowid'=>array("rowid", "rowid", "rowid"),
-		 // Condition to show each dictionary
-		 'tabcond'=>array(isModEnabled('easydocgenerator'), isModEnabled('easydocgenerator'), isModEnabled('easydocgenerator')),
-		 // Tooltip for every fields of dictionaries: DO NOT PUT AN EMPTY ARRAY
-		 'tabhelp'=>array(array('code'=>$langs->trans('CodeTooltipHelp'), 'field2' => 'field2tooltip'), array('code'=>$langs->trans('CodeTooltipHelp'), 'field2' => 'field2tooltip'), ...),
-		 );
-		 */
 		$this->dictionaries = $this->configuration['dictionaries'];
 
 		// Boxes/Widgets
@@ -233,94 +178,9 @@ class modEasydocgenerator extends DolibarrModules
 
 		// Permissions provided by this module
 		$this->rights = [];
-		$r = 0;
-		// Add here entries to declare new permissions
-		/* BEGIN MODULEBUILDER PERMISSIONS */
-		/*
-		$o = 1;
-		$this->rights[$r][0] = $this->numero . sprintf("%02d", ($o * 10) + 1); // Permission id (must not be already used)
-		$this->rights[$r][1] = 'Read objects of Easydocgenerator'; // Permission label
-		$this->rights[$r][4] = 'myobject';
-		$this->rights[$r][5] = 'read'; // In php code, permission will be checked by test if ($user->hasRight('easydocgenerator', 'myobject', 'read'))
-		$r++;
-		$this->rights[$r][0] = $this->numero . sprintf("%02d", ($o * 10) + 2); // Permission id (must not be already used)
-		$this->rights[$r][1] = 'Create/Update objects of Easydocgenerator'; // Permission label
-		$this->rights[$r][4] = 'myobject';
-		$this->rights[$r][5] = 'write'; // In php code, permission will be checked by test if ($user->hasRight('easydocgenerator', 'myobject', 'write'))
-		$r++;
-		$this->rights[$r][0] = $this->numero . sprintf("%02d", ($o * 10) + 3); // Permission id (must not be already used)
-		$this->rights[$r][1] = 'Delete objects of Easydocgenerator'; // Permission label
-		$this->rights[$r][4] = 'myobject';
-		$this->rights[$r][5] = 'delete'; // In php code, permission will be checked by test if ($user->rights->easydocgenerator->myobject->delete)
-		$r++;
-		*/
-		/* END MODULEBUILDER PERMISSIONS */
 
 		// Main menu entries to add
 		$this->menu = [];
-		// $r = 0;
-		// // Add here entries to declare new menus
-		// /* BEGIN MODULEBUILDER TOPMENU */
-		// $this->menu[$r++] = [
-		// 	'fk_menu'=>'', // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-		// 	'type'=>'top', // This is a Top menu entry
-		// 	'titre'=>'ModuleEasydocgeneratorName',
-		// 	'prefix' => img_picto('', $this->picto, 'class="pictofixedwidth valignmiddle"'),
-		// 	'mainmenu'=>'easydocgenerator',
-		// 	'leftmenu'=>'',
-		// 	'url'=>'/easydocgenerator/easydocgeneratorindex.php',
-		// 	'langs'=>'easydocgenerator@easydocgenerator', // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-		// 	'position'=>1000 + $r,
-		// 	'enabled'=>'isModEnabled("easydocgenerator")', // Define condition to show or hide menu entry. Use 'isModEnabled("easydocgenerator")' if entry must be visible if module is enabled.
-		// 	'perms'=>'1', // Use 'perms'=>'$user->hasRight("easydocgenerator", "myobject", "read")' if you want your menu with a permission rules
-		// 	'target'=>'',
-		// 	'user'=>2, // 0=Menu for internal users, 1=external users, 2=both
-		// ];
-		/* END MODULEBUILDER TOPMENU */
-		/* BEGIN MODULEBUILDER LEFTMENU MYOBJECT */
-		/*$this->menu[$r++]=array(
-			'fk_menu'=>'fk_mainmenu=easydocgenerator',      // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-			'type'=>'left',                          // This is a Left menu entry
-			'titre'=>'MyObject',
-			'prefix' => img_picto('', $this->picto, 'class="pictofixedwidth valignmiddle paddingright"'),
-			'mainmenu'=>'easydocgenerator',
-			'leftmenu'=>'myobject',
-			'url'=>'/easydocgenerator/easydocgeneratorindex.php',
-			'langs'=>'easydocgenerator@easydocgenerator',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-			'position'=>1000+$r,
-			'enabled'=>'isModEnabled("easydocgenerator")', // Define condition to show or hide menu entry. Use 'isModEnabled("easydocgenerator")' if entry must be visible if module is enabled.
-			'perms'=>'$user->hasRight("easydocgenerator", "myobject", "read")',
-			'target'=>'',
-			'user'=>2,				                // 0=Menu for internal users, 1=external users, 2=both
-		);
-		$this->menu[$r++]=array(
-			'fk_menu'=>'fk_mainmenu=easydocgenerator,fk_leftmenu=myobject',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-			'type'=>'left',			                // This is a Left menu entry
-			'titre'=>'List_MyObject',
-			'mainmenu'=>'easydocgenerator',
-			'leftmenu'=>'easydocgenerator_myobject_list',
-			'url'=>'/easydocgenerator/myobject_list.php',
-			'langs'=>'easydocgenerator@easydocgenerator',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-			'position'=>1000+$r,
-			'enabled'=>'isModEnabled("easydocgenerator")', // Define condition to show or hide menu entry. Use 'isModEnabled("easydocgenerator")' if entry must be visible if module is enabled.
-			'perms'=>'$user->hasRight("easydocgenerator", "myobject", "read")'
-			'target'=>'',
-			'user'=>2,				                // 0=Menu for internal users, 1=external users, 2=both
-		);
-		$this->menu[$r++]=array(
-			'fk_menu'=>'fk_mainmenu=easydocgenerator,fk_leftmenu=myobject',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-			'type'=>'left',			                // This is a Left menu entry
-			'titre'=>'New_MyObject',
-			'mainmenu'=>'easydocgenerator',
-			'leftmenu'=>'easydocgenerator_myobject_new',
-			'url'=>'/easydocgenerator/myobject_card.php?action=create',
-			'langs'=>'easydocgenerator@easydocgenerator',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-			'position'=>1000+$r,
-			'enabled'=>'isModEnabled("easydocgenerator")', // Define condition to show or hide menu entry. Use 'isModEnabled("easydocgenerator")' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-			'perms'=>'$user->hasRight("easydocgenerator", "myobject", "write")'
-			'target'=>'',
-			'user'=>2,				                // 0=Menu for internal users, 1=external users, 2=both
-		);*/
 	}
 
 	/**
@@ -382,33 +242,37 @@ class modEasydocgenerator extends DolibarrModules
 		$moduledir = dol_sanitizeFileName('easydocgenerator');
 		$modules = [];
 		$modules = [
+			'propale',
 			'order',
 			'invoice',
+			'product',
+			'contracts',
+			'stock',
 		];
 
-		// foreach ($modules as $module) {
-		// 	$src = dol_buildpath('/easydocgenerator/templates/');
-		// 	$dirtwig = DOL_DATA_ROOT . '/doctemplates/' . $moduledir;
-		// 	$dest = $dirtwig . '/' . $module . '/template_myobjects.twig';
+		foreach ($modules as $module) {
+			$src = dol_buildpath('/easydocgenerator/templates/') . 'easydoc_' . $module;
+			$dirtemplate = DOL_DATA_ROOT . '/ecm/easydocgenerator/' . $module . 's';
+			$dest = $dirtemplate . '/easydoc_' . $module;
 
-		// 	if (file_exists($src) && !file_exists($dest)) {
-		// 		require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
-		// 		dol_mkdir($dirtwig);
-		// 		$result = dol_copy($src, $dest, 0, 0);
-		// 		if ($result < 0) {
-		// 			$langs->load("errors");
-		// 			$this->error = $langs->trans('ErrorFailToCopyFile', $src, $dest);
-		// 			return 0;
-		// 		}
-		// 	}
+			if (file_exists($src) && !file_exists($dest)) {
+				require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
+				dol_mkdir($dirtemplate);
+				$result = dol_copy($src, $dest, 0, 0);
+				if ($result < 0) {
+					$langs->load("errors");
+					$this->error = $langs->trans('ErrorFailToCopyFile', $src, $dest);
+					return 0;
+				}
+			}
 
-		// 	$sql = array_merge($sql, [
-		// 		"DELETE FROM " . MAIN_DB_PREFIX . "document_model WHERE nom = 'standard_" . strtolower($myTmpObjectKey) . "' AND type = '" . $this->db->escape(strtolower($myTmpObjectKey)) . "' AND entity = " . ((int) $conf->entity),
-		// 		"INSERT INTO " . MAIN_DB_PREFIX . "document_model (nom, type, entity) VALUES('standard_" . strtolower($myTmpObjectKey) . "', '" . $this->db->escape(strtolower($myTmpObjectKey)) . "', " . ((int) $conf->entity) . ")",
-		// 		"DELETE FROM " . MAIN_DB_PREFIX . "document_model WHERE nom = 'generic_" . strtolower($myTmpObjectKey) . "_twig' AND type = '" . $this->db->escape(strtolower($myTmpObjectKey)) . "' AND entity = " . ((int) $conf->entity),
-		// 		"INSERT INTO " . MAIN_DB_PREFIX . "document_model (nom, type, entity) VALUES('generic_" . strtolower($myTmpObjectKey) . "_twig', '" . $this->db->escape(strtolower($myTmpObjectKey)) . "', " . ((int) $conf->entity) . ")"
-		// 	]);
-		// }
+			$sql = array_merge($sql, [
+				// 	"DELETE FROM " . MAIN_DB_PREFIX . "document_model WHERE nom = 'standard_" . strtolower($myTmpObjectKey) . "' AND type = '" . $this->db->escape(strtolower($myTmpObjectKey)) . "' AND entity = " . ((int) $conf->entity),
+				// 	"INSERT INTO " . MAIN_DB_PREFIX . "document_model (nom, type, entity) VALUES('standard_" . strtolower($myTmpObjectKey) . "', '" . $this->db->escape(strtolower($myTmpObjectKey)) . "', " . ((int) $conf->entity) . ")",
+				// 	"DELETE FROM " . MAIN_DB_PREFIX . "document_model WHERE nom = 'generic_" . strtolower($myTmpObjectKey) . "_twig' AND type = '" . $this->db->escape(strtolower($myTmpObjectKey)) . "' AND entity = " . ((int) $conf->entity),
+				// 	"INSERT INTO " . MAIN_DB_PREFIX . "document_model (nom, type, entity) VALUES('generic_" . strtolower($myTmpObjectKey) . "_twig', '" . $this->db->escape(strtolower($myTmpObjectKey)) . "', " . ((int) $conf->entity) . ")"
+			]);
+		}
 
 		return $this->_init($sql, $options);
 	}
