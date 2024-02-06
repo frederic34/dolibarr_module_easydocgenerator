@@ -27,3 +27,4 @@ EasydocStopTheOrderAtSumOf=Interrompeu o pedido no valor de: %s
 EasydocStopThePropalAtSumOf=Finalizada a proposta comercial no valor de: %s
 EasydocgeneratorConfig=Configurando o Easydocgenerator
 EasydocgeneratorChangelog=Log de alterações do Easydocgenerator
+PRODUIT_PDF_MERGE_PROPAL=Selecione PDFs de produtos para adicionar aos documentos
