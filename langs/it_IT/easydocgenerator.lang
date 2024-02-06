@@ -27,3 +27,4 @@ ListOfDirectoriesForModelGenHTML=Elenco delle directory contenenti documenti mod
 EasydocStopTheOrderAtSumOf=Interrotto l'ordine alla somma di: %s
 EasydocStopThePropalAtSumOf=Finalizzata la proposta commerciale nella somma di: %s
 EasydocgeneratorConfig=Configurazione di Easydocgenerator
+EasydocgeneratorChangelog=Registro delle modifiche di Easydocgenerator

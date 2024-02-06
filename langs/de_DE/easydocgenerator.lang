@@ -26,3 +26,4 @@ ListOfDirectoriesForModelGenHTML=Liste der Verzeichnisse mit Modelldokumenten im
 EasydocStopTheOrderAtSumOf=Die Bestellung wurde bei der Summe von: %s gestoppt
 EasydocStopThePropalAtSumOf=Das kommerzielle Angebot wurde in der Summe fertiggestellt: %s
 EasydocgeneratorConfig=Easydocgenerator konfigurieren
+EasydocgeneratorChangelog=Easydocgenerator-Änderungsprotokoll

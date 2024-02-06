@@ -26,3 +26,4 @@ ListOfDirectoriesForModelGenHTML=Lista katalogów zawierających dokumenty wzorc
 EasydocStopTheOrderAtSumOf=Zatrzymałem zamówienie na kwotę: %s
 EasydocStopThePropalAtSumOf=Sfinalizowano ofertę handlową na sumę: %s
 EasydocgeneratorConfig=Konfiguracja Easydocgeneratora
+EasydocgeneratorChangelog=Dziennik zmian Easydocgeneratora
