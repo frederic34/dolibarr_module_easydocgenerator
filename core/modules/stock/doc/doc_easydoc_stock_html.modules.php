@@ -445,25 +445,15 @@ class doc_easydoc_stock_html extends ModelePDFStock
 			}
 		}
 
-		// other
-		$substitutions = array_merge($substitutions, [
-			'logo' => $logo,
-			'freetext' => $newfreetext,
-			'lines' => [],
-			'linkedObjects' => $linkedObjects,
-			'footerinfo' => getPdfPagefoot($outputlangs, $paramfreetext, $mysoc, $object),
-			'currency' => $currency,
-			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
-		]);
-
 		$totalunit = 0;
-		$totalvalue = $totalvaluesell = 0;
+		$totalvalue = 0;
+		$totalvaluesell = 0;
 		$substitutions['lines'] = [];
 		$sortfield = 'p.ref';
 		$sortorder = 'ASC';
 
-		$sql = "SELECT p.rowid as rowid, p.ref, p.label as produit, p.tobatch, p.fk_product_type as type, p.pmp as ppmp, p.price, p.price_ttc, p.entity,";
-		$sql .= " ps.reel as value";
+		$sql = "SELECT p.rowid as rowid, p.ref, p.label as label, p.tobatch, p.fk_product_type as type, p.pmp as ppmp, p.price, p.price_ttc, p.entity,";
+		$sql .= " ps.reel as real_qty";
 		$sql .= " FROM " . MAIN_DB_PREFIX . "product_stock as ps, " . MAIN_DB_PREFIX . "product as p";
 		$sql .= " WHERE ps.fk_product = p.rowid";
 		$sql .= " AND ps.reel <> 0"; // We do not show if stock is 0 (no product in this warehouse)
@@ -474,12 +464,25 @@ class doc_easydoc_stock_html extends ModelePDFStock
 		$resql = $this->db->query($sql);
 		if ($resql) {
 			$num = $this->db->num_rows($resql);
+			$totalunique = $num;
 			$i = 0;
 			for ($i = 0; $i < $num; $i++) {
 				$objp = $this->db->fetch_array($resql);
 				$substitutions['lines'][] = $objp;
+				$totalunit += (int) $objp['real_qty'];
 			}
 		}
+		// other
+		$substitutions = array_merge($substitutions, [
+			'logo' => $logo,
+			'freetext' => $newfreetext,
+			'linkedObjects' => $linkedObjects,
+			'footerinfo' => getPdfPagefoot($outputlangs, $paramfreetext, $mysoc, $object),
+			'currency' => $currency,
+			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
+			'totalunit' => $totalunit,
+			'totalunique' => $totalunique,
+		]);
 
 		$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
 		try {
@@ -545,122 +548,5 @@ class doc_easydoc_stock_html extends ModelePDFStock
 		$this->result = ['fullpath' => $file];
 
 		return 1;
-
-		if (!empty($conf->stock->dir_output)) {
-			$dir = $conf->stock->multidir_output[$object->entity];
-			$objectref = dol_sanitizeFileName($object->ref);
-			if (!preg_match('/specimen/i', $objectref)) {
-				$dir .= "/" . $objectref;
-			}
-			$file = $dir . "/" . $objectref . ".odt";
-
-			if (!file_exists($dir)) {
-				if (dol_mkdir($dir) < 0) {
-					$this->error = $langs->transnoentities("ErrorCanNotCreateDir", $dir);
-					return -1;
-				}
-			}
-
-			if (file_exists($dir)) {
-				//print "srctemplatepath=".$srctemplatepath;	// Src filename
-				$newfile = basename($srctemplatepath);
-				$newfiletmp = preg_replace('/\.od[ts]/i', '', $newfile);
-				$newfiletmp = preg_replace('/template_/i', '', $newfiletmp);
-				$newfiletmp = preg_replace('/modele_/i', '', $newfiletmp);
-				$newfiletmp = $objectref . '_' . $newfiletmp;
-
-				// Get extension (ods or odt)
-				$newfileformat = substr($newfile, strrpos($newfile, '.') + 1);
-				if (getDolGlobalInt('MAIN_DOC_USE_TIMING')) {
-					$format = getDolGlobalInt('MAIN_DOC_USE_TIMING');
-					if ($format == '1') {
-						$format = '%Y%m%d%H%M%S';
-					}
-					$filename = $newfiletmp . '-' . dol_print_date(dol_now(), $format) . '.' . $newfileformat;
-				} else {
-					$filename = $newfiletmp . '.' . $newfileformat;
-				}
-				$file = $dir . '/' . $filename;
-
-				dol_mkdir($conf->stock->dir_temp);
-				if (!is_writable($conf->stock->dir_temp)) {
-					$this->error = $langs->transnoentities("ErrorFailedToWriteInTempDirectory", $conf->stock->dir_temp);
-					dol_syslog('Error in write_file: ' . $this->error, LOG_ERR);
-					return -1;
-				}
-
-				// Define substitution array
-				$substitutionarray = getCommonSubstitutionArray($outputlangs, 0, null, $object);
-				$array_object_from_properties = $this->get_substitutionarray_each_var_object($object, $outputlangs);
-				$array_objet = $this->get_substitutionarray_object($object, $outputlangs);
-				$array_user = $this->get_substitutionarray_user($user, $outputlangs);
-				$array_soc = $this->get_substitutionarray_mysoc($mysoc, $outputlangs);
-				$array_thirdparty = $this->get_substitutionarray_thirdparty($socobject, $outputlangs);
-				$array_other = $this->get_substitutionarray_other($outputlangs);
-				// retrieve contact information for use in object as contact_xxx tags
-				$array_thirdparty_contact = [];
-
-				if ($usecontact && is_object($contactobject)) {
-					$array_thirdparty_contact = $this->get_substitutionarray_contact($contactobject, $outputlangs, 'contact');
-				}
-
-				$tmparray = array_merge($substitutionarray, $array_object_from_properties, $array_user, $array_soc, $array_thirdparty, $array_objet, $array_other, $array_thirdparty_contact);
-				complete_substitutions_array($tmparray, $outputlangs, $object);
-
-				// Call the ODTSubstitution hook
-				$parameters = ['odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray];
-				$reshook = $hookmanager->executeHooks('ODTSubstitution', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
-
-				foreach ($tmparray as $key => $value) {
-				}
-				// Replace tags of lines
-				try {
-					$foundtagforlines = 1;
-
-					if ($foundtagforlines) {
-						$linenumber = 0;
-						foreach ($object->lines as $line) {
-							$linenumber++;
-							$tmparray = $this->get_substitutionarray_lines($line, $outputlangs, $linenumber);
-							complete_substitutions_array($tmparray, $outputlangs, $object, $line, "completesubstitutionarray_lines");
-							// Call the ODTSubstitutionLine hook
-							$parameters = ['odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray, 'line' => $line];
-							$reshook = $hookmanager->executeHooks('ODTSubstitutionLine', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
-							foreach ($tmparray as $key => $val) {
-							}
-						}
-					}
-				} catch (OdfException $e) {
-					$this->error = $e->getMessage();
-					dol_syslog($this->error, LOG_WARNING);
-					return -1;
-				}
-
-				// Replace labels translated
-				$tmparray = $outputlangs->get_translations_for_substitutions();
-
-				// Call the beforeODTSave hook
-				$parameters = ['odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray];
-				$reshook = $hookmanager->executeHooks('beforeODTSave', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
-
-				$parameters = [
-					'file' => $file,
-					'object' => $object,
-					'outputlangs' => $outputlangs,
-					'substitutionarray' => &$tmparray
-				];
-				// Note that $action and $object may have been modified by some hooks
-				$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action);
-
-				$this->result = ['fullpath' => $file];
-
-				return 1; // Success
-			} else {
-				$this->error = $langs->transnoentities("ErrorCanNotCreateDir", $dir);
-				return -1;
-			}
-		}
-
-		return -1;
 	}
 }
