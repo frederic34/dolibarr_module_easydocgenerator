@@ -82,7 +82,7 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 		$this->marge_basse = 0;
 
 		$this->option_logo = 1; // Display logo
-		$this->option_tva = 0; // Manage the vat option COMMANDE_TVAOPTION
+		$this->option_tva = 0; // Manage the vat option TICKET_TVAOPTION
 		$this->option_modereg = 0; // Display payment mode
 		$this->option_condreg = 0; // Display payment terms
 		$this->option_multilang = 1; // Available in several languages
@@ -205,7 +205,7 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 	/**
 	 *  Function to build a document on disk using the generic odt module.
 	 *
-	 *	@param		Commande	$object				Object source to build document
+	 *	@param		Ticket	$object				Object source to build document
 	 *	@param		Translate	$outputlangs		Lang output object
 	 * 	@param		string		$srctemplatepath	Full path of source filename for generator using a template file
 	 *  @param		int			$hidedetails		Do not show line details
@@ -352,13 +352,6 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 			$tmparray = explode('_', $mysoc->country_code);
 			$flagImage = empty($tmparray[1]) ? $tmparray[0] : $tmparray[1];
 		}
-		if ($object->cond_reglement_code) {
-			$label_payment_conditions = ($outputlangs->transnoentities("PaymentCondition" . $object->cond_reglement_code) != 'PaymentCondition' . $object->cond_reglement_code) ? $outputlangs->transnoentities("PaymentCondition" . $object->cond_reglement_code) : $outputlangs->convToOutputCharset($object->cond_reglement_doc ? $object->cond_reglement_doc : $object->cond_reglement_label);
-			$label_payment_conditions = str_replace('\n', "\n", $label_payment_conditions);
-			if ($object->deposit_percent > 0) {
-				$label_payment_conditions = str_replace('__DEPOSIT_PERCENT__', $object->deposit_percent, $label_payment_conditions);
-			}
-		}
 		// If CUSTOMER contact defined on ticket, we use it
 		$usecontact = false;
 		$arrayidcontact = $object->getIdContact('external', 'CUSTOMER');
@@ -458,7 +451,6 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 			'lines' => [],
 			'linkedObjects' => $linkedObjects,
 			'footerinfo' => getPdfPagefoot($outputlangs, $paramfreetext, $mysoc, $object),
-			'labelpaymentconditions' => $label_payment_conditions,
 			'currency' => $currency,
 			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
 		]);
@@ -524,12 +516,12 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 		$mpdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
 		$mpdf->SetKeyWords($outputlangs->convToOutputCharset($object->ref) . " " . $outputlangs->transnoentities("PdfTicketTitle") . " " . $outputlangs->convToOutputCharset($object->thirdparty->name));
 		// Watermark
-		$text = getDolGlobalString('COMMANDE_DRAFT_WATERMARK');
+		$text = getDolGlobalString('TICKET_DRAFT_WATERMARK');
 		$substitutionarray = pdf_getSubstitutionArray($outputlangs, null, null);
 		complete_substitutions_array($substitutionarray, $outputlangs, null);
 		$text = make_substitutions($text, $substitutionarray, $outputlangs);
 		$mpdf->SetWatermarkText($text);
-		$mpdf->showWatermarkText = ($object->statut == Commande::STATUS_DRAFT && getDolGlobalString('COMMANDE_DRAFT_WATERMARK'));
+		$mpdf->showWatermarkText = ($object->statut == Ticket::STATUS_WAITING && getDolGlobalString('TICKET_DRAFT_WATERMARK'));
 		$mpdf->watermark_font = 'DejaVuSansCondensed';
 		$mpdf->watermarkTextAlpha = 0.1;
 
@@ -544,7 +536,11 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 			$dir .= "/" . $objectref;
 		}
 		$filename = str_replace('.twig', '', basename($srctemplatepath));
-		$file = $dir . "/" . $objectref . '_' . $filename . ".pdf";
+		if (getDolGlobalInt('EASYDOC_ADD_TEMPLATE_SUFFIX_TO_FILENAME')) {
+			$file = $dir . "/" . $objectref . '_' . $filename . ".pdf";
+		} else {
+			$file = $dir . "/" . $objectref . ".pdf";
+		}
 
 		if (!file_exists($dir)) {
 			if (dol_mkdir($dir) < 0) {
