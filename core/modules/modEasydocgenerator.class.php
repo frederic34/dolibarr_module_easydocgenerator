@@ -246,7 +246,7 @@ class modEasydocgenerator extends DolibarrModules
 			'order',
 			'invoice',
 			'product',
-			'contracts',
+			'contract',
 			'stock',
 			'ticket',
 		];
