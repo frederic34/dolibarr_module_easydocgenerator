@@ -493,7 +493,11 @@ class doc_easydoc_product_html extends ModelePDFProduct
 			$dir .= "/" . $objectref;
 		}
 		$filename = str_replace('.twig', '', basename($srctemplatepath));
-		$file = $dir . "/" . $objectref . '_' . $filename . ".pdf";
+		if (getDolGlobalInt('EASYDOC_ADD_TEMPLATE_SUFFIX_TO_FILENAME')) {
+			$file = $dir . "/" . $objectref . '_' . $filename . ".pdf";
+		} else {
+			$file = $dir . "/" . $objectref . ".pdf";
+		}
 
 		if (!file_exists($dir)) {
 			if (dol_mkdir($dir) < 0) {
