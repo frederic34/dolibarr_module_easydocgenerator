@@ -105,13 +105,12 @@ table thead th {
 	{% endif %}
 </td>
 <td width="45%" style="text-align: right;">
-{% if (object.type == 1) %}
-	<span style="font-weight: bold; font-size: 14pt;"><b>{{ trans('ServiceSheet') }}</b></span>
-{% else %}
-	<span style="font-weight: bold; font-size: 14pt;"><b>{{ trans('ProductSheet') }}</b></span>
-{% endif %}
 
-<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('Ref') }}: {{ object.ref }}</span>
+<span style="font-weight: bold; font-size: 14pt;"><b>{{ trans('Warehouse') }} {{ object.ref }}</b></span>
+
+<br /><span style="font-weight: bold; font-size: 8pt;">{{ trans('Label') }}: {{ object.lieu }}</span>
+<br /><span style="font-weight: bold; font-size: 8pt;">{{ trans('Address') }}: {{ object.address }}</span>
+<br /><span style="font-weight: bold; font-size: 8pt;">{{ object.zip }}: {{ object.town }}</span>
 
 </td>
 </tr>
@@ -130,14 +129,36 @@ table thead th {
 <sethtmlpagefooter name="myfooter" value="on" />
 mpdf-->
 
-{% if object.description %}
+<div style="text-align: right">{{ currencyinfo }}</div>
 <table class="items" width="100%" style="font-size: 7pt; border-collapse: collapse; " cellpadding="8">
+<thead>
+	<tr>
+		<th>{{ trans('Ref')}} </th>
+		<th>{{ trans('Label')}} </th>
+		<th>{{ trans('Qty')}} </th>
+		<th>{{ trans('Pmp')}} </th>
+	</tr>
+</thead>
+	{% if lines is iterable %}
+		{% for line in lines %}
+			<tr>
+				<td>{{ line.ref }}</td>
+				<td>{{ line.label }}</td>
+				<td align="right">{{ price(line.real_qty) }}</td>
+				<td align="right">{{ price(line.ppmp) }}</td>
+			</tr>
+		{% endfor %}
+	{% else %}
+		{# lines is empty #}
+		No lines
+	{% endif %}
 <tr>
-<td>{{ object.description }}</td>
+	<td align="left" class="totals" colspan="2">{{ trans('Total') }}</td>
+	<td class="totals">{{ totalunit }}</td>
+	<td class="totals"></td>
 </tr>
 </table>
 <br />
-{% endif %}
 
 <br />
 {% if object.note_public %}
