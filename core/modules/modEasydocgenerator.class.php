@@ -248,6 +248,7 @@ class modEasydocgenerator extends DolibarrModules
 			'product',
 			'contracts',
 			'stock',
+			'ticket',
 		];
 
 		foreach ($modules as $module) {

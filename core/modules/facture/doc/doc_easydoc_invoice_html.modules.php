@@ -397,7 +397,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		$substitutionarray = array_merge(getCommonSubstitutionArray($outputlangs, 0, null, $object), $substitutionarray);
 
 		// Call the ODTSubstitution hook
-		$parameters = ['file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$substitutionarray];
+		$parameters = ['object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$substitutionarray];
 		$reshook = $hookmanager->executeHooks('ODTSubstitution', $parameters, $this, $action);
 
 		// Line of free text
