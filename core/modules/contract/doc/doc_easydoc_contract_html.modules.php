@@ -544,7 +544,11 @@ class doc_easydoc_contract_html extends ModelePDFContract
 			$dir .= "/" . $objectref;
 		}
 		$filename = str_replace('.twig', '', basename($srctemplatepath));
-		$file = $dir . "/" . $objectref . '_' . $filename . ".pdf";
+		if (getDolGlobalInt('EASYDOC_ADD_TEMPLATE_SUFFIX_TO_FILENAME')) {
+			$file = $dir . "/" . $objectref . '_' . $filename . ".pdf";
+		} else {
+			$file = $dir . "/" . $objectref . ".pdf";
+		}
 
 		if (!file_exists($dir)) {
 			if (dol_mkdir($dir) < 0) {

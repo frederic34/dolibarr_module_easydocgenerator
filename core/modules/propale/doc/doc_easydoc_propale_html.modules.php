@@ -519,7 +519,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 			$already_merged = [];
 			foreach ($object->lines as $line) {
 				if (!empty($line->fk_product) && !(in_array($line->fk_product, $already_merged))) {
-					// Find the desire PDF
+					// Find the desired PDF
 					$filetomerge = new Propalmergepdfproduct($this->db);
 
 					if (getDolGlobalInt('MAIN_MULTILANGS')) {
