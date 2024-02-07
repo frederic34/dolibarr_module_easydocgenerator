@@ -249,6 +249,8 @@ class modEasydocgenerator extends DolibarrModules
 			'contract',
 			'stock',
 			'ticket',
+			'fichinter',
+			'supplier_order',
 		];
 
 		foreach ($modules as $module) {
@@ -259,7 +261,7 @@ class modEasydocgenerator extends DolibarrModules
 			if (file_exists($src) && !file_exists($dest)) {
 				require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 				dol_mkdir($dirtemplate);
-				$result = dol_copy($src, $dest, 0, 0);
+				$result = dol_copy($src, $dest, '0', 0, 0, 1);
 				if ($result < 0) {
 					$langs->load("errors");
 					$this->error = $langs->trans('ErrorFailToCopyFile', $src, $dest);
