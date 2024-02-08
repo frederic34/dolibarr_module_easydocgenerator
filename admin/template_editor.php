@@ -60,14 +60,14 @@ if ($action == 'savefile' && empty($cancel)) {
 
 	// Save old version
 	if (dol_is_file($pathoffile)) {
-		dol_copy($pathoffile, $pathoffile . '.back', 0, 1);
+		dol_copy($pathoffile, $pathoffile . '.back', 0, 1, 0, 1);
 	}
 
 	$content = GETPOST('editfilecontent', 'none');
 
 	// Save file on disk
 	if ($content) {
-		dol_delete_file($pathoffile);
+		dol_delete_file($pathoffile, 0, 0, 0, null, false, 1);
 		$result = file_put_contents($pathoffile, $content);
 		if ($result) {
 			dolChmod($pathoffile, $newmask);
@@ -78,8 +78,7 @@ if ($action == 'savefile' && empty($cancel)) {
 		}
 	} else {
 		setEventMessages($langs->trans("ContentCantBeEmpty"), null, 'errors');
-		//$action='editfile';
-		$error++;
+		$action = '';
 	}
 }
 
