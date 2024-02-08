@@ -21,7 +21,7 @@
  * \brief   Easydocgenerator setup page.
  */
 
- if (!defined('NOSCANPOSTFORINJECTION')) {
+if (!defined('NOSCANPOSTFORINJECTION')) {
 	define('NOSCANPOSTFORINJECTION', '1'); // Do not check anti SQL+XSS injection attack test
 }
 // Load Dolibarr environment
@@ -30,7 +30,7 @@ include '../config.php';
 global $db, $langs, $user;
 
 // Libraries
-require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
+require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT . "/core/lib/admin.lib.php";
 require_once DOL_DOCUMENT_ROOT . '/core/class/doleditor.class.php';
 require_once '../lib/easydocgenerator.lib.php';
@@ -86,13 +86,13 @@ if ($action == 'savefile' && empty($cancel)) {
 /*
  * View
  */
-$morejs = array(
+$morejs = [
 	'/includes/ace/src/ace.js',
 	'/includes/ace/src/ext-statusbar.js',
 	'/includes/ace/src/ext-language_tools.js',
 	//'/includes/ace/src/ext-chromevox.js'
-);
-$morecss = array();
+];
+$morecss = [];
 llxHeader('', $langs->trans("TemplateEditor"), '', '', 0, 0, $morejs, $morecss, '', 'classforhorizontalscrolloftabs');
 $form = new Form($db);
 
