@@ -44,6 +44,11 @@ function easydocgeneratorAdminPrepareHead()
 	$head[$h][2] = 'settings';
 	$h++;
 
+	$head[$h][0] = dol_buildpath("/easydocgenerator/admin/template_editor.php", 1);
+	$head[$h][1] = $langs->trans("EasydocEditor");
+	$head[$h][2] = 'editor';
+	$h++;
+
 	$head[$h][0] = dol_buildpath("/easydocgenerator/admin/changelog.php", 1);
 	$head[$h][1] = $langs->trans("Changelog");
 	$head[$h][2] = 'changelog';
