@@ -98,7 +98,7 @@ $form = new Form($db);
 
 $linkback = '<a href="' . DOL_URL_ROOT . '/admin/modules.php?restore_lastsearch_values=1">';
 $linkback .= $langs->trans("BackToModuleList") . '</a>';
-print load_fiche_titre($langs->trans('EasydocgeneratorConfig'), $linkback, 'tools');
+//print load_fiche_titre($langs->trans('EasydocgeneratorConfig'), $linkback, 'tools');
 
 $head = easydocgeneratorAdminPrepareHead();
 
@@ -120,7 +120,7 @@ print '<input type="hidden" name="file" value="' . dol_escape_htmltag($file) . '
 
 print dol_get_fiche_head($head, 'editor', $langs->trans('Settings'), -1, 'technic');
 
-$doleditor = new DolEditor('editfilecontent', $content, '', '300', 'Full', 'In', true, false, 'ace', 0, '99%', '');
+$doleditor = new DolEditor('editfilecontent', $content, '', '500', 'Full', 'In', true, false, 'ace', 0, '99%', '');
 print $doleditor->Create(1, '', false, $langs->trans("File") . ' : ' . $file, (GETPOST('format', 'aZ09') ? GETPOST('format', 'aZ09') : 'html'));
 
 print dol_get_fiche_end();
