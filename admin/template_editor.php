@@ -120,7 +120,7 @@ print '<input type="hidden" name="file" value="' . dol_escape_htmltag($file) . '
 print dol_get_fiche_head($head, 'editor', $langs->trans('Settings'), -1, 'technic');
 
 $doleditor = new DolEditor('editfilecontent', $content, '', '500', 'Full', 'In', true, false, 'ace', 0, '99%', '');
-print $doleditor->Create(1, '', false, $langs->trans("File") . ' : ' . $file, (GETPOST('format', 'aZ09') ? GETPOST('format', 'aZ09') : 'html'));
+print $doleditor->Create(1, '', false, $langs->trans("File") . ' : ' . $file, (GETPOST('format', 'aZ09') ? GETPOST('format', 'aZ09') : 'twig'));
 
 print dol_get_fiche_end();
 
