@@ -1,7 +1,8 @@
 
-## Unreleased (2024-02-08)
+## v1.0.1 (2024-02-08)
 
 #### :rocket: Enhancement
+* [#44](https://github.com/frederic34/dolibarr_module_easydocgenerator/pull/44) add ace editor ([@frederic34](https://github.com/frederic34))
 * [#12](https://github.com/frederic34/dolibarr_module_easydocgenerator/pull/12) better use of twig and catch errors ([@frederic34](https://github.com/frederic34))
 
 #### Committers: 1
