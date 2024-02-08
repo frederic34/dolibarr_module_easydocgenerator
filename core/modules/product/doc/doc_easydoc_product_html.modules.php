@@ -69,7 +69,7 @@ class doc_easydoc_product_html extends ModelePDFProduct
 		// Name of constant that is used to save list of directories to scan
 		$this->scandir = 'PRODUCT_ADDON_EASYDOC_TEMPLATES_PATH';
 		// Save the name of generated file as the main doc when generating a doc with this template
-		$this->update_main_doc_field = ((int) DOL_VERSION < 20) ? 0 : 1;
+		$this->update_main_doc_field = ((int) DOL_VERSION < 21) ? 0 : 1;
 
 		// Page size for A4 format
 		$this->type = 'pdf';
@@ -259,7 +259,7 @@ class doc_easydoc_product_html extends ModelePDFProduct
 			$hookmanager = new HookManager($this->db);
 		}
 		$hookmanager->initHooks(['pdfgeneration']);
-		$parameters = ['file' => $file, 'object' => $object, 'outputlangs' => $outputlangs];
+		$parameters = ['object' => $object, 'outputlangs' => $outputlangs];
 		global $action;
 		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
@@ -321,7 +321,7 @@ class doc_easydoc_product_html extends ModelePDFProduct
 			$this->errors = $e->getMessage();
 			return -1;
 		}
-
+		$logo = '';
 		if ($this->emetteur->logo) {
 			$logodir = $conf->mycompany->dir_output;
 			if (!getDolGlobalInt('MAIN_PDF_USE_LARGE_LOGO')) {
@@ -382,7 +382,7 @@ class doc_easydoc_product_html extends ModelePDFProduct
 		$substitutionarray = array_merge(getCommonSubstitutionArray($outputlangs, 0, null, $object), $substitutionarray);
 
 		// Call the ODTSubstitution hook
-		$parameters = ['file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$substitutionarray];
+		$parameters = ['object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$substitutionarray];
 		$reshook = $hookmanager->executeHooks('ODTSubstitution', $parameters, $this, $action);
 
 		// Line of free text
@@ -407,7 +407,6 @@ class doc_easydoc_product_html extends ModelePDFProduct
 			'lines' => [],
 			'linkedObjects' => $linkedObjects,
 			'footerinfo' => getPdfPagefoot($outputlangs, $paramfreetext, $mysoc, $object),
-			'labelpaymentconditions' => $label_payment_conditions,
 			'currency' => $currency,
 			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
 		]);
@@ -415,36 +414,36 @@ class doc_easydoc_product_html extends ModelePDFProduct
 		$subtotal_ht = 0;
 		$subtotal_ttc = 0;
 		$linenumber = 1;
-		foreach ($object->lines as $key => $line) {
-			$subtotal_ht += $line->total_ht;
-			$subtotal_ttc += $line->total_ttc;
-			if ($line->special_code == 104777 && $line->qty == 99) {
-				$line->total_ht = $subtotal_ht;
-				$line->total_ttc = $subtotal_ttc;
-				$subtotal_ht = 0;
-				$subtotal_ttc = 0;
-			}
-			$substitutions['lines'][$key] = [
-				'linenumber' => $linenumber,
-				'qty' => $line->qty,
-				'ref' => $line->product_ref,
-				'label' => $line->label,
-				'description' => $line->desc,
-				'product_label' => $line->product_label,
-				'product_description' => $line->product_desc,
-				'subprice' => price($line->subprice),
-				'total_ht' => price($line->total_ht),
-				'total_ttc' => price($line->total_ttc),
-				'vatrate' => price($line->tva_tx) . '%',
-				'special_code' => $line->special_code,
-				'product_type' => $line->product_type,
-				'line_options' => [],
-				'product_options' => [],
-			];
-			if (empty($line->special_code)) {
-				$linenumber++;
-			}
-		}
+		// foreach ($object->lines as $key => $line) {
+		// 	$subtotal_ht += $line->total_ht;
+		// 	$subtotal_ttc += $line->total_ttc;
+		// 	if ($line->special_code == 104777 && $line->qty == 99) {
+		// 		$line->total_ht = $subtotal_ht;
+		// 		$line->total_ttc = $subtotal_ttc;
+		// 		$subtotal_ht = 0;
+		// 		$subtotal_ttc = 0;
+		// 	}
+		// 	$substitutions['lines'][$key] = [
+		// 		'linenumber' => $linenumber,
+		// 		'qty' => $line->qty,
+		// 		'ref' => $line->product_ref,
+		// 		'label' => $line->label,
+		// 		'description' => $line->desc,
+		// 		'product_label' => $line->product_label,
+		// 		'product_description' => $line->product_desc,
+		// 		'subprice' => price($line->subprice),
+		// 		'total_ht' => price($line->total_ht),
+		// 		'total_ttc' => price($line->total_ttc),
+		// 		'vatrate' => price($line->tva_tx) . '%',
+		// 		'special_code' => $line->special_code,
+		// 		'product_type' => $line->product_type,
+		// 		'line_options' => [],
+		// 		'product_options' => [],
+		// 	];
+		// 	if (empty($line->special_code)) {
+		// 		$linenumber++;
+		// 	}
+		// }
 
 		// var_dump($substitutions);
 		$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';

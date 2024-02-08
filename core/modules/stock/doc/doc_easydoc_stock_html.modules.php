@@ -260,7 +260,7 @@ class doc_easydoc_stock_html extends ModelePDFStock
 			$hookmanager = new HookManager($this->db);
 		}
 		$hookmanager->initHooks(['pdfgeneration']);
-		$parameters = ['file' => $file, 'object' => $object, 'outputlangs' => $outputlangs];
+		$parameters = ['object' => $object, 'outputlangs' => $outputlangs];
 		global $action;
 		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
@@ -322,7 +322,7 @@ class doc_easydoc_stock_html extends ModelePDFStock
 			$this->errors = $e->getMessage();
 			return -1;
 		}
-
+		$logo = '';
 		if ($this->emetteur->logo) {
 			$logodir = $conf->mycompany->dir_output;
 			if (!getDolGlobalInt('MAIN_PDF_USE_LARGE_LOGO')) {
@@ -390,7 +390,7 @@ class doc_easydoc_stock_html extends ModelePDFStock
 		$substitutionarray = array_merge(getCommonSubstitutionArray($outputlangs, 0, null, $object), $substitutionarray);
 
 		// Call the ODTSubstitution hook
-		$parameters = ['file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$substitutionarray];
+		$parameters = ['object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$substitutionarray];
 		$reshook = $hookmanager->executeHooks('ODTSubstitution', $parameters, $this, $action);
 
 		// Line of free text
@@ -409,10 +409,12 @@ class doc_easydoc_stock_html extends ModelePDFStock
 		$substitutions = array_merge($substitutions, getEachVarObject($object, $outputlangs, 0));
 
 		// thirdparty
-		$substitutions = array_merge($substitutions, getEachVarObject($object->thirdparty, $outputlangs, 1, 'thirdparty'));
-		$substitutions['thirdparty']['flag'] = DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($object->thirdparty->country_code) . '.png';
-		$substitutions['thirdparty']['phone_formatted'] = dol_print_phone($object->thirdparty->phone, $object->thirdparty->country_code, 0, 0, '', ' ');
-		$substitutions['thirdparty']['fax_formatted'] = dol_print_phone($object->thirdparty->fax, $object->thirdparty->country_code, 0, 0, '', ' ');
+		if (!empty($object->thirdparty)) {
+			$substitutions = array_merge($substitutions, getEachVarObject($object->thirdparty, $outputlangs, 1, 'thirdparty'));
+			$substitutions['thirdparty']['flag'] = DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($object->thirdparty->country_code) . '.png';
+			$substitutions['thirdparty']['phone_formatted'] = dol_print_phone($object->thirdparty->phone, $object->thirdparty->country_code, 0, 0, '', ' ');
+			$substitutions['thirdparty']['fax_formatted'] = dol_print_phone($object->thirdparty->fax, $object->thirdparty->country_code, 0, 0, '', ' ');
+		}
 
 		$typescontact = [
 			'external' => [
@@ -508,7 +510,7 @@ class doc_easydoc_stock_html extends ModelePDFStock
 		$mpdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
 		$mpdf->SetCreator('Dolibarr ' . DOL_VERSION);
 		$mpdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
-		$mpdf->SetKeyWords($outputlangs->convToOutputCharset($object->ref) . " " . $outputlangs->transnoentities("PdfStockTitle") . " " . $outputlangs->convToOutputCharset($object->thirdparty->name));
+		$mpdf->SetKeyWords($outputlangs->convToOutputCharset($object->ref) . " " . $outputlangs->transnoentities("PdfStockTitle"));
 		// Watermark
 		$text = getDolGlobalString('STOCK_DRAFT_WATERMARK');
 		$substitutionarray = pdf_getSubstitutionArray($outputlangs, null, null);

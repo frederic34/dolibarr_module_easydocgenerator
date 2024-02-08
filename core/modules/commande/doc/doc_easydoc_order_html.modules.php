@@ -259,7 +259,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			$hookmanager = new HookManager($this->db);
 		}
 		$hookmanager->initHooks(['pdfgeneration']);
-		$parameters = ['file' => $file, 'object' => $object, 'outputlangs' => $outputlangs];
+		$parameters = ['object' => $object, 'outputlangs' => $outputlangs];
 		global $action;
 		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
@@ -321,7 +321,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			$this->errors = $e->getMessage();
 			return -1;
 		}
-
+		$logo = '';
 		if ($this->emetteur->logo) {
 			$logodir = $conf->mycompany->dir_output;
 			if (!getDolGlobalInt('MAIN_PDF_USE_LARGE_LOGO')) {
@@ -352,6 +352,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			$tmparray = explode('_', $mysoc->country_code);
 			$flagImage = empty($tmparray[1]) ? $tmparray[0] : $tmparray[1];
 		}
+		$label_payment_conditions = '';
 		if ($object->cond_reglement_code) {
 			$label_payment_conditions = ($outputlangs->transnoentities("PaymentCondition" . $object->cond_reglement_code) != 'PaymentCondition' . $object->cond_reglement_code) ? $outputlangs->transnoentities("PaymentCondition" . $object->cond_reglement_code) : $outputlangs->convToOutputCharset($object->cond_reglement_doc ? $object->cond_reglement_doc : $object->cond_reglement_label);
 			$label_payment_conditions = str_replace('\n', "\n", $label_payment_conditions);
@@ -396,7 +397,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$substitutionarray = array_merge(getCommonSubstitutionArray($outputlangs, 0, null, $object), $substitutionarray);
 
 		// Call the ODTSubstitution hook
-		$parameters = ['file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$substitutionarray];
+		$parameters = ['object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$substitutionarray];
 		$reshook = $hookmanager->executeHooks('ODTSubstitution', $parameters, $this, $action);
 
 		// Line of free text
