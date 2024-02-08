@@ -30,3 +30,4 @@ EasydocgeneratorChangelog=Easydocgenerator Changelog
 PRODUIT_PDF_MERGE_PROPAL=Select product PDFs to add to documents
 EasydoCantAddPdfToDoc=Easydocgenerator cannot add %s file to document
 EASYDOC_ADD_TEMPLATE_SUFFIX_TO_FILENAME=Add the template name to the generated PDF file name
+EasydocEditor=Template editor

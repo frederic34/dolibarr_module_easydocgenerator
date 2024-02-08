@@ -30,3 +30,4 @@ EasydocgeneratorChangelog=Dziennik zmian Easydocgeneratora
 PRODUIT_PDF_MERGE_PROPAL=Wybierz pliki PDF produktów, które chcesz dodać do dokumentów
 EasydoCantAddPdfToDoc=Easydocgenerator nie może dodać pliku %s do dokumentu
 EASYDOC_ADD_TEMPLATE_SUFFIX_TO_FILENAME=Dodaj nazwę szablonu do wygenerowanej nazwy pliku PDF
+EasydocEditor=Edytor szablonów
