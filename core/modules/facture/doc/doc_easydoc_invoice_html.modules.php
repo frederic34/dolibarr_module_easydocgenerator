@@ -425,7 +425,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			$qrcodestring = $object->buildSwitzerlandQRString();
 		}
 		// Add online_payment_url, copied from irder
-		require_once DOL_DOCUMENT_ROOT.'/core/lib/payments.lib.php';
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/payments.lib.php';
 		$online_payment_url = getOnlinePaymentUrl(0, 'invoice', $object->ref);
 		$substitutions = array_merge($substitutions, getEachVarObject($object, $outputlangs, 0));
 		$substitutions['object']['qrcodestring'] = $qrcodestring;
