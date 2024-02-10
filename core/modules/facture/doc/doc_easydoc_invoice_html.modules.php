@@ -558,15 +558,21 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		}
 		$substitutions['payments'] = [];
 		// Loop on each payment
-		$sql = "SELECT p.datep as date, p.fk_paiement, p.num_paiement as num";
-		$sql .= ", pf.amount as amount, pf.multicurrency_amount,";
-		$sql .= " cp.code, ba.ref as bankref";
-		$sql .= " FROM " . MAIN_DB_PREFIX . "paiement_facture as pf";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "paiement as p ON  pf.fk_paiement = p.rowid";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "c_paiement AS cp ON p.fk_paiement = cp.id AND cp.entity IN (" . getEntity('c_paiement') . ")";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "bank as b ON p.fk_bank = b.rowid";
-		$sql .= " INNER JOIN " . MAIN_DB_PREFIX . "bank_account as ba ON b.fk_account = ba.rowid";
-		$sql .= " WHERE pf.fk_facture = " . ((int) $object->id);
+		// $sql = "SELECT p.datep as date, p.fk_paiement, p.num_paiement as num, pf.amount as amount, pf.multicurrency_amount,";
+		// $sql .= " cp.code, ba.ref as bankref";
+		// $sql .= " FROM " . MAIN_DB_PREFIX . "paiement_facture as pf";
+		// $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "paiement as p ON  pf.fk_paiement = p.rowid";
+		// $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "c_paiement AS cp ON p.fk_paiement = cp.id AND cp.entity IN (" . getEntity('c_paiement') . ")";
+		// $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "bank as b ON p.fk_bank = b.rowid";
+		// $sql .= " INNER JOIN " . MAIN_DB_PREFIX . "bank_account as ba ON b.fk_account = ba.rowid";
+		// $sql .= " WHERE pf.fk_facture = " . ((int) $object->id);
+		// $sql .= " ORDER BY p.datep";
+		$sql = "SELECT p.datep as date, p.fk_paiement, p.num_paiement as num, pf.amount as amount, pf.multicurrency_amount,";
+		$sql .= " cp.code";
+		$sql .= " FROM ".MAIN_DB_PREFIX."paiement_facture as pf, ".MAIN_DB_PREFIX."paiement as p";
+		$sql .= " LEFT JOIN ".MAIN_DB_PREFIX."c_paiement as cp ON p.fk_paiement = cp.id";
+		$sql .= " WHERE pf.fk_paiement = p.rowid AND pf.fk_facture = ".((int) $object->id);
+		// $sql.= " WHERE pf.fk_paiement = p.rowid AND pf.fk_facture = 1";
 		$sql .= " ORDER BY p.datep";
 
 		$resql = $this->db->query($sql);
@@ -581,7 +587,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 					'num' => $obj->num,
 					'total_ttc' => $obj->amount,
 					'multicurrency_total_ttc' => $obj->multicurrency_amount,
-					'bankref' => $obj->bankref,
+					//'bankref' => $obj->bankref,
 				];
 				$i++;
 			}
