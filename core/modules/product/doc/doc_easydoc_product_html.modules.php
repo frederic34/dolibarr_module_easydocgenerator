@@ -26,6 +26,7 @@
  *	\ingroup    product
  *	\brief      File of class to build PDF documents for products
  */
+
 use NumberToWords\NumberToWords;
 
 require_once DOL_DOCUMENT_ROOT . '/core/modules/product/modules_product.class.php';
@@ -69,7 +70,7 @@ class doc_easydoc_product_html extends ModelePDFProduct
 		// Name of constant that is used to save list of directories to scan
 		$this->scandir = 'PRODUCT_ADDON_EASYDOC_TEMPLATES_PATH';
 		// Save the name of generated file as the main doc when generating a doc with this template
-		$this->update_main_doc_field = ((int) DOL_VERSION < 21) ? 0 : 1;
+		$this->update_main_doc_field = ((int) DOL_VERSION < 20) ? 0 : 1;
 
 		// Page size for A4 format
 		$this->type = 'pdf';
@@ -264,11 +265,12 @@ class doc_easydoc_product_html extends ModelePDFProduct
 		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
 		require dol_buildpath('easydocgenerator/vendor/autoload.php');
-
+		$md5id = md5_file($srctemplatepath);
 		$loader = new \Twig\Loader\FilesystemLoader(dirname($srctemplatepath));
+		$enablecache = getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE') ? false : (DOL_DATA_ROOT . '/easydocgenerator/temp/' . ($md5id ? $md5id : ''));
 		$twig = new \Twig\Environment($loader, [
 			// developer mode unactive caching
-			'cache' => getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE') ? false : DOL_DATA_ROOT . '/easydocgenerator/temp',
+			'cache' => $enablecache,
 			'autoescape' => false,
 		]);
 		// create twig function which translate with $outpulangs->trans()
@@ -276,6 +278,7 @@ class doc_easydoc_product_html extends ModelePDFProduct
 			global $outputlangs, $langs;
 			if (!is_object($outputlangs)) {
 				$outputlangs = $langs;
+				$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
 			}
 			return $outputlangs->trans($value, $param1, $param2, $param3);
 		});
@@ -285,6 +288,7 @@ class doc_easydoc_product_html extends ModelePDFProduct
 			global $outputlangsbis, $langs;
 			if (!is_object($outputlangsbis)) {
 				$outputlangsbis = $langs;
+				$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
 			}
 			return $outputlangsbis->trans($value, $param1, $param2, $param3);
 		});
@@ -322,7 +326,7 @@ class doc_easydoc_product_html extends ModelePDFProduct
 			return -1;
 		}
 		$logo = '';
-		if ($this->emetteur->logo) {
+		if (!empty($this->emetteur->logo)) {
 			$logodir = $conf->mycompany->dir_output;
 			if (!getDolGlobalInt('MAIN_PDF_USE_LARGE_LOGO')) {
 				$logo = $logodir . '/logos/thumbs/' . $this->emetteur->logo_small;
@@ -446,7 +450,9 @@ class doc_easydoc_product_html extends ModelePDFProduct
 		// }
 
 		// var_dump($substitutions);
-		$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
+		if (getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE')) {
+			$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
+		}
 		try {
 			$html = $template->render($substitutions);
 		} catch (\Twig\Error\SyntaxError $e) {
@@ -477,13 +483,13 @@ class doc_easydoc_product_html extends ModelePDFProduct
 		complete_substitutions_array($substitutionarray, $outputlangs, null);
 		$text = make_substitutions($text, $substitutionarray, $outputlangs);
 		$mpdf->SetWatermarkText($text);
-		$mpdf->showWatermarkText = ($object->statut == Commande::STATUS_DRAFT && getDolGlobalString('PRODUCT_DRAFT_WATERMARK'));
+		$mpdf->showWatermarkText = (!$object->status_buy && getDolGlobalString('PRODUCT_DRAFT_WATERMARK'));
 		$mpdf->watermark_font = 'DejaVuSansCondensed';
 		$mpdf->watermarkTextAlpha = 0.1;
 
 		$mpdf->SetDisplayMode('fullpage');
 
-		$mpdf->Bookmark($outputlangs->trans('PdfOrderTitle'));
+		$mpdf->Bookmark($outputlangs->trans('PdfStockTitle'));
 		$mpdf->WriteHTML($html);
 
 		$dir = $conf->product->multidir_output[$object->entity];

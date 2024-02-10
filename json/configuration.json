@@ -39,14 +39,14 @@
     "dictionaries": [],
     "boxes": [],
     "const": [
-        ["ORDER_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/orders", "Directory for orders templates", 1],
-        ["CONTRACT_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/contracts", "Directory for contracts templates", 1],
-        ["INVOICE_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/invoices", "Directory for invoices templates", 1],
-        ["PROPALE_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/propales", "Directory for propales templates", 1],
-        ["PRODUCT_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/products", "Directory for products templates", 1],
-        ["SHIPPING_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/shippings", "Directory for shippings templates", 1],
-        ["TICKET_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/tickets", "Directory for tickets templates", 1],
-        ["STOCK_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/stocks", "Directory for stocks templates", 1],
-        ["INTERVENTION_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/interventions", "Directory for interventions templates", 1]
+        ["ORDER_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/orders", "Directory for orders templates", 0],
+        ["CONTRACT_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/contracts", "Directory for contracts templates", 0],
+        ["INVOICE_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/invoices", "Directory for invoices templates", 0],
+        ["PROPALE_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/propales", "Directory for propales templates", 0],
+        ["PRODUCT_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/products", "Directory for products templates", 0],
+        ["SHIPPING_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/shippings", "Directory for shippings templates", 0],
+        ["TICKET_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/tickets", "Directory for tickets templates", 0],
+        ["STOCK_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/stocks", "Directory for stocks templates", 0],
+        ["INTERVENTION_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/interventions", "Directory for interventions templates", 0]
     ]
 }

@@ -499,7 +499,9 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		}
 
 		// var_dump($substitutions);
-		$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
+		if (getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE')) {
+			$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
+		}
 		try {
 			$html = $template->render($substitutions);
 		} catch (\Twig\Error\SyntaxError $e) {
