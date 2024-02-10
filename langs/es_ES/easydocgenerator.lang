@@ -31,3 +31,4 @@ PRODUIT_PDF_MERGE_PROPAL=Seleccione archivos PDF de productos para agregarlos a 
 EasydoCantAddPdfToDoc=Easydocgenerator no puede agregar el archivo %s al documento
 EASYDOC_ADD_TEMPLATE_SUFFIX_TO_FILENAME=Agregue el nombre de la plantilla al nombre del archivo PDF generado
 EasydocEditor=editor de plantillas
+YourSalesRepresentatives=Tus representantes de ventas
