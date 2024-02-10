@@ -99,7 +99,7 @@ function getEachVarObject($object, $outputlangs, $recursive = 1, $objectname = '
 	$array_other = [];
 	if (!empty($object)) {
 		foreach ($object as $key => $value) {
-			if (in_array($key, ['db', 'fields', 'lines', 'modelpdf', 'model_pdf'])) {		// discard some properties
+			if (in_array($key, ['db', 'fields', 'lines', 'modelpdf', 'model_pdf', 'api_key', 'pass_indatabase_crypted'])) {		// discard some properties
 				continue;
 			}
 			if (!empty($value)) {
