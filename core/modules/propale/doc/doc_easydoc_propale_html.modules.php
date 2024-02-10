@@ -31,6 +31,7 @@ use NumberToWords\NumberToWords;
 
 require_once DOL_DOCUMENT_ROOT . '/core/modules/propale/modules_propale.php';
 require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
+require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
@@ -265,11 +266,12 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
 		require dol_buildpath('easydocgenerator/vendor/autoload.php');
-
+		$md5id = md5_file($srctemplatepath);
 		$loader = new \Twig\Loader\FilesystemLoader(dirname($srctemplatepath));
+		$enablecache = getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE') ? false : (DOL_DATA_ROOT . '/easydocgenerator/temp/' . ($md5id ? $md5id : ''));
 		$twig = new \Twig\Environment($loader, [
 			// developer mode unactive caching
-			'cache' => getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE') ? false : DOL_DATA_ROOT . '/easydocgenerator/temp',
+			'cache' => $enablecache,
 			'autoescape' => false,
 		]);
 		// create twig function which translate with $outpulangs->trans()
@@ -277,6 +279,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 			global $outputlangs, $langs;
 			if (!is_object($outputlangs)) {
 				$outputlangs = $langs;
+				$outputlangs->loadLangs(['main', 'dict', 'companies', 'propal', 'bills', 'products', 'orders', 'deliveries', 'banks']);
 			}
 			return $outputlangs->trans($value, $param1, $param2, $param3);
 		});
@@ -286,6 +289,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 			global $outputlangsbis, $langs;
 			if (!is_object($outputlangsbis)) {
 				$outputlangsbis = $langs;
+				$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'propal', 'bills', 'products', 'orders', 'deliveries', 'banks']);
 			}
 			return $outputlangsbis->trans($value, $param1, $param2, $param3);
 		});
@@ -323,7 +327,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 			return -1;
 		}
 		$logo = '';
-		if ($this->emetteur->logo) {
+		if (!empty($this->emetteur->logo)) {
 			$logodir = $conf->mycompany->dir_output;
 			if (!getDolGlobalInt('MAIN_PDF_USE_LARGE_LOGO')) {
 				$logo = $logodir . '/logos/thumbs/' . $this->emetteur->logo_small;
@@ -367,69 +371,54 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		if (!empty($conf->global->$paramfreetext)) {
 			$newfreetext = make_substitutions(getDolGlobalString($paramfreetext), $substitutionarray);
 		}
+		// mysoc
+		$substitutions = getEachVarObject($mysoc, $outputlangs, 1, 'mysoc');
+		$substitutions['mysoc']['flag'] = DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($flagImage) . '.png';
+		$substitutions['mysoc']['phone_formatted'] = dol_print_phone($mysoc->phone, $mysoc->country_code, 0, 0, '', ' ');
+		$substitutions['mysoc']['fax_formatted'] = dol_print_phone($mysoc->fax, $mysoc->country_code, 0, 0, '', ' ');
 
-		$substitutions = [
-			'mysoc' => [
-				'name' => $mysoc->name,
-				'name_alias' => $mysoc->name_alias,
-				'address' => $mysoc->address,
-				'zip' => $mysoc->zip,
-				'town' => $mysoc->town,
-				'country' => $mysoc->country,
-				'flag' => DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($flagImage) . '.png',
-				'phone' => dol_print_phone($mysoc->phone, $mysoc->country_code, 0, 0, '', ' '),
-				'fax' => dol_print_phone($mysoc->fax, $mysoc->country_code, 0, 0, '', ' '),
-				'email' => $mysoc->email,
-				'idprof1' => $mysoc->idprof1,
-				'idprof2' => $mysoc->idprof2,
-				'idprof3' => $mysoc->idprof3,
-				'idprof4' => $mysoc->idprof4,
-				'idprof5' => $mysoc->idprof5,
-				'idprof6' => $mysoc->idprof6,
-				'capital' => $mysoc->capital,
-				'tvanumber' => $mysoc->tva_intra,
+		// object
+		$substitutions = array_merge($substitutions, getEachVarObject($object, $outputlangs, 0));
+
+		// thirdparty
+		$substitutions = array_merge($substitutions, getEachVarObject($object->thirdparty, $outputlangs, 1, 'thirdparty'));
+		$substitutions['thirdparty']['flag'] = DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($object->thirdparty->country_code) . '.png';
+		$substitutions['thirdparty']['phone_formatted'] = dol_print_phone($object->thirdparty->phone, $object->thirdparty->country_code, 0, 0, '', ' ');
+		$substitutions['thirdparty']['fax_formatted'] = dol_print_phone($object->thirdparty->fax, $object->thirdparty->country_code, 0, 0, '', ' ');
+
+		$typescontact = [
+			'external' => [
+				'BILLING',
+				'SHIPPING',
+				'SALESREPFOLL',
+				'CUSTOMER',
 			],
-			'thirdparty' => [
-				'name' => $object->thirdparty->name,
-				'name_alias' => $object->thirdparty->name_alias,
-				'address' => $object->thirdparty->address,
-				'zip' => $object->thirdparty->zip,
-				'town' => $object->thirdparty->town,
-				'country' => $object->thirdparty->country,
-				'flag' => DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($object->thirdparty->country_code) . '.png',
-				'phone' => dol_print_phone($object->thirdparty->phone, $object->thirdparty->country_code, 0, 0, '', ' '),
-				'fax' => dol_print_phone($object->thirdparty->fax, $object->thirdparty->country_code, 0, 0, '', ' '),
-				'email' => $object->thirdparty->email,
-				'idprof1' => $object->thirdparty->idprof1,
-				'idprof2' => $object->thirdparty->idprof2,
-				'idprof3' => $object->thirdparty->idprof3,
-				'idprof4' => $object->thirdparty->idprof4,
-				'idprof5' => $object->thirdparty->idprof5,
-				'idprof6' => $object->thirdparty->idprof6,
-				'capital' => $object->thirdparty->capital,
-				'code_client' => $object->thirdparty->code_client,
+			'internal' => [
+				'BILLING',
+				'SHIPPING',
+				'SALESREPFOLL',
+				'CUSTOMER',
 			],
-			'object' => [
-				'status' => $object->status,
-				'date' => dol_print_date($object->date, "day", false, $outputlangs, true),
-				'ref' => $object->ref,
-				'note_public' => $object->note_public,
-				'note_private' => $object->note_private,
-				'total_tva' => price($object->total_tva),
-				'total_ht' => price($object->total_ht),
-				'total_ttc' => price($object->total_ttc),
-				'ref_customer' => $outputlangs->convToOutputCharset($object->ref_customer),
-			],
-			'date' => $outputlangs->trans("OrderDate"),
-			'qty' => $outputlangs->transnoentitiesnoconv('Qty'),
-			'ref' => $outputlangs->transnoentitiesnoconv('Ref'),
-			'ref_customer' => $outputlangs->transnoentities("RefCustomer"),
-			'unitprice_ht' => $outputlangs->transnoentitiesnoconv('PriceUHT'),
-			'total_ht' => $outputlangs->transnoentitiesnoconv('TotalHTShort'),
-			'total_tva' => $outputlangs->transnoentitiesnoconv('TotalVAT'),
-			'total_ttc' => $outputlangs->transnoentitiesnoconv('TotalTTCShort'),
-			'vat' => $outputlangs->trans('VAT'),
-			'description' => $outputlangs->trans('Description'),
+		];
+		foreach ($typescontact as $key => $value) {
+			foreach ($value as $type) {
+				$arrayidcontact = $object->getIdContact($key, $type);
+				$contacts = [];
+				foreach ($arrayidcontact as $idc) {
+					if ($key == 'external') {
+						$contact = new Contact($this->db);
+					} else {
+						$contact = new User($this->db);
+					}
+					$contact->fetch($idc);
+					$contacts[] = $contact;
+				}
+				$substitutions = array_merge($substitutions, getEachVarObject($contacts, $outputlangs, 1, strtolower($type) . '_' . $key));
+			}
+		}
+
+		// other
+		$substitutions = array_merge($substitutions, [
 			'logo' => $logo,
 			'freetext' => $newfreetext,
 			'lines' => [],
@@ -438,7 +427,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 			'labelpaymentconditions' => $label_payment_conditions,
 			'currency' => $currency,
 			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
-		];
+		]);
 		$subtotal_ht = 0;
 		$subtotal_ttc = 0;
 		$linenumber = 1;
@@ -473,7 +462,6 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 			}
 		}
 
-		// var_dump($substitutions);
 		if (getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE')) {
 			$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
 		}
@@ -620,214 +608,16 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 
 		$mpdf->Output($file, \Mpdf\Output\Destination::FILE);
 
+		$parameters = [
+			'file' => $file,
+			'object' => $object,
+			'outputlangs' => $outputlangs,
+		];
+		// Note that $action and $object may have been modified by some hooks
+		$hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action);
+
 		$this->result = ['fullpath' => $file];
 
 		return 1;
-
-		if (!empty($conf->propal->dir_output)) {
-			// If $object is id instead of object
-			if (!is_object($object)) {
-				$id = $object;
-				$object = new Commande($this->db);
-				$result = $object->fetch($id);
-				if ($result < 0) {
-					dol_print_error($this->db, $object->error);
-					return -1;
-				}
-			}
-
-			$object->fetch_thirdparty();
-
-			$dir = $conf->propal->multidir_output[$object->entity];
-			$objectref = dol_sanitizeFileName($object->ref);
-			if (!preg_match('/specimen/i', $objectref)) {
-				$dir .= "/" . $objectref;
-			}
-			$file = $dir . "/" . $objectref . ".odt";
-
-			if (!file_exists($dir)) {
-				if (dol_mkdir($dir) < 0) {
-					$this->error = $langs->transnoentities("ErrorCanNotCreateDir", $dir);
-					return -1;
-				}
-			}
-
-			if (file_exists($dir)) {
-				//print "srctemplatepath=".$srctemplatepath;	// Src filename
-				$newfile = basename($srctemplatepath);
-				$newfiletmp = preg_replace('/\.od[ts]/i', '', $newfile);
-				$newfiletmp = preg_replace('/template_/i', '', $newfiletmp);
-				$newfiletmp = preg_replace('/modele_/i', '', $newfiletmp);
-				$newfiletmp = $objectref . '_' . $newfiletmp;
-
-				// Get extension (ods or odt)
-				$newfileformat = substr($newfile, strrpos($newfile, '.') + 1);
-				if (getDolGlobalInt('MAIN_DOC_USE_TIMING')) {
-					$format = getDolGlobalInt('MAIN_DOC_USE_TIMING');
-					if ($format == '1') {
-						$format = '%Y%m%d%H%M%S';
-					}
-					$filename = $newfiletmp . '-' . dol_print_date(dol_now(), $format) . '.' . $newfileformat;
-				} else {
-					$filename = $newfiletmp . '.' . $newfileformat;
-				}
-				$file = $dir . '/' . $filename;
-
-				dol_mkdir($conf->propal->dir_temp);
-				if (!is_writable($conf->propal->dir_temp)) {
-					$this->error = $langs->transnoentities("ErrorFailedToWriteInTempDirectory", $conf->propal->dir_temp);
-					dol_syslog('Error in write_file: ' . $this->error, LOG_ERR);
-					return -1;
-				}
-
-				// If CUSTOMER contact defined on propale, we use it
-				$usecontact = false;
-				$arrayidcontact = $object->getIdContact('external', 'CUSTOMER');
-				if (count($arrayidcontact) > 0) {
-					$usecontact = true;
-					$result = $object->fetch_contact($arrayidcontact[0]);
-				}
-
-				// Recipient name
-				$contactobject = null;
-				if (!empty($usecontact)) {
-					// We can use the company of contact instead of thirdparty company
-					if ($object->contact->socid != $object->thirdparty->id && (!isset($conf->global->MAIN_USE_COMPANY_NAME_OF_CONTACT) || getDolGlobalString('MAIN_USE_COMPANY_NAME_OF_CONTACT'))) {
-						$object->contact->fetch_thirdparty();
-						$socobject = $object->contact->thirdparty;
-						$contactobject = $object->contact;
-					} else {
-						$socobject = $object->thirdparty;
-						// if we have a CUSTOMER contact and we don't use it as thirdparty recipient we store the contact object for later use
-						$contactobject = $object->contact;
-					}
-				} else {
-					$socobject = $object->thirdparty;
-				}
-
-				// Make substitution
-				$substitutionarray = [
-					'__FROM_NAME__' => $this->emetteur->name,
-					'__FROM_EMAIL__' => $this->emetteur->email,
-					'__TOTAL_TTC__' => $object->total_ttc,
-					'__TOTAL_HT__' => $object->total_ht,
-					'__TOTAL_VAT__' => $object->total_tva
-				];
-				complete_substitutions_array($substitutionarray, $langs, $object);
-				// Call the ODTSubstitution hook
-				$parameters = ['file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$substitutionarray];
-				$reshook = $hookmanager->executeHooks('ODTSubstitution', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
-
-				// Line of free text
-				$newfreetext = '';
-				$paramfreetext = 'PROPAL_FREE_TEXT';
-				if (!empty($conf->global->$paramfreetext)) {
-					$newfreetext = make_substitutions(getDolGlobalString($paramfreetext), $substitutionarray);
-				}
-
-				// Open and load template
-				require_once ODTPHP_PATH . 'odf.php';
-				try {
-					$odfHandler = new Odf(
-						$srctemplatepath,
-						[
-							'PATH_TO_TMP'	  => $conf->propal->dir_temp,
-							'ZIP_PROXY'		  => 'PclZipProxy', // PhpZipProxy or PclZipProxy. Got "bad compression method" error when using PhpZipProxy.
-							'DELIMITER_LEFT'  => '{',
-							'DELIMITER_RIGHT' => '}'
-						]
-					);
-				} catch (Exception $e) {
-					$this->error = $e->getMessage();
-					dol_syslog($e->getMessage(), LOG_INFO);
-					return -1;
-				}
-				// After construction $odfHandler->contentXml contains content and
-				// [!-- BEGIN row.lines --]*[!-- END row.lines --] has been replaced by
-				// [!-- BEGIN lines --]*[!-- END lines --]
-				//print html_entity_decode($odfHandler->__toString());
-				//print exit;
-
-
-				// Make substitutions into odt of freetext
-				try {
-					$odfHandler->setVars('free_text', $newfreetext, true, 'UTF-8');
-				} catch (OdfException $e) {
-					dol_syslog($e->getMessage(), LOG_INFO);
-				}
-
-				// Define substitution array
-				$substitutionarray = getCommonSubstitutionArray($outputlangs, 0, null, $object);
-				$array_object_from_properties = $this->get_substitutionarray_each_var_object($object, $outputlangs);
-				$array_objet = $this->get_substitutionarray_object($object, $outputlangs);
-				$array_user = $this->get_substitutionarray_user($user, $outputlangs);
-				$array_soc = $this->get_substitutionarray_mysoc($mysoc, $outputlangs);
-				$array_thirdparty = $this->get_substitutionarray_thirdparty($socobject, $outputlangs);
-				$array_other = $this->get_substitutionarray_other($outputlangs);
-				// retrieve contact information for use in object as contact_xxx tags
-				$array_thirdparty_contact = [];
-
-				if ($usecontact && is_object($contactobject)) {
-					$array_thirdparty_contact = $this->get_substitutionarray_contact($contactobject, $outputlangs, 'contact');
-				}
-
-				$tmparray = array_merge($substitutionarray, $array_object_from_properties, $array_user, $array_soc, $array_thirdparty, $array_objet, $array_other, $array_thirdparty_contact);
-				complete_substitutions_array($tmparray, $outputlangs, $object);
-
-				// Call the ODTSubstitution hook
-				$parameters = ['odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray];
-				$reshook = $hookmanager->executeHooks('ODTSubstitution', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
-
-				foreach ($tmparray as $key => $value) {
-				}
-				// Replace tags of lines
-				try {
-					$foundtagforlines = 1;
-
-					if ($foundtagforlines) {
-						$linenumber = 0;
-						foreach ($object->lines as $line) {
-							$linenumber++;
-							$tmparray = $this->get_substitutionarray_lines($line, $outputlangs, $linenumber);
-							complete_substitutions_array($tmparray, $outputlangs, $object, $line, "completesubstitutionarray_lines");
-							// Call the ODTSubstitutionLine hook
-							$parameters = ['odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray, 'line' => $line];
-							$reshook = $hookmanager->executeHooks('ODTSubstitutionLine', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
-							foreach ($tmparray as $key => $val) {
-							}
-						}
-					}
-				} catch (OdfException $e) {
-					$this->error = $e->getMessage();
-					dol_syslog($this->error, LOG_WARNING);
-					return -1;
-				}
-
-				// Replace labels translated
-				$tmparray = $outputlangs->get_translations_for_substitutions();
-
-				// Call the beforeODTSave hook
-				$parameters = ['odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray];
-				$reshook = $hookmanager->executeHooks('beforeODTSave', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
-
-				$parameters = [
-					'file' => $file,
-					'object' => $object,
-					'outputlangs' => $outputlangs,
-					'substitutionarray' => &$tmparray
-				];
-				// Note that $action and $object may have been modified by some hooks
-				$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action);
-
-				$this->result = ['fullpath' => $file];
-
-				return 1; // Success
-			} else {
-				$this->error = $langs->transnoentities("ErrorCanNotCreateDir", $dir);
-				return -1;
-			}
-		}
-
-		return -1;
 	}
 }
