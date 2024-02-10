@@ -457,7 +457,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 				if (!empty($substitutions[strtolower($type) . '_' . $key])) {
 					foreach ($substitutions[strtolower($type) . '_' . $key] as $jdx => $substitution) {
 						if (!empty($substitution['photo'])) {
-							$substitutions[strtolower($type) . '_' . $key][$jdx]['picture'] = $conf->{$substitution['element']}->multidir_output[$conf->entity].'/'.$substitution['ref'].'/'.$substitution['photo'];
+							$substitutions[strtolower($type) . '_' . $key][$jdx]['picture'] = $conf->{$substitution['element']}->multidir_output[$conf->entity] . '/' . $substitution['ref'] . '/' . $substitution['photo'];
 						}
 					}
 				}

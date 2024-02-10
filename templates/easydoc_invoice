@@ -79,7 +79,10 @@ table thead th {
 .freetext {
 	page-break-inside: avoid;
 }
-
+.picture {
+	max-width : 35px;
+	height : auto;
+}
 </style>
 </head>
 <body>
@@ -301,8 +304,34 @@ mpdf-->
 	</table>
 {% endif %}
 <br>
-
+{% if salesrepfoll_internal is iterable %}
+	<br>
+	<div class="freetext">{{ trans('YourSalesRepresentatives') }}.</div>
+	<table class="items" style="font-size: 6pt; border-collapse: collapse;" cellpadding="8" width="100%">
+		<tbody>
+	{% for salesrepfoll in salesrepfoll_internal %}
+		<tr>
+			<td width="10%" align="center"><img src="{{ salesrepfoll.picture }}" class="picture"/></td>
+		   <td>
+				{{ salesrepfoll.lastname }} {{ salesrepfoll.firstname }}
+				{% if salesrepfoll.office_phone %}
+					<br><span style="font-family:dejavusanscondensed;">&#9742; </span>{{ salesrepfoll.office_phone }}
+				{% endif %}
+				{% if salesrepfoll.user_mobile %}
+					<br><span style="font-family:dejavusanscondensed;">&#9742; </span>{{ salesrepfoll.user_mobile }}
+				{% endif %}
+				{% if salesrepfoll.email %}
+					<br><span style="font-family:dejavusanscondensed;">&#9993; </span>{{ salesrepfoll.email }}
+				{% endif %}
+		   </td>
+		</tr>
+	{% endfor %}
+		</tbody>
+	</table>
+{% else %}
+	{# salesrepfoll_internal is empty #}
+{% endif %}
 <div class="freetext">{{ freetext }}</div>
-
+<div class="freetext">{{ debug }}</div>
 </body>
 </html>
