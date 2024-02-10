@@ -26,6 +26,7 @@
  *	\ingroup    facture
  *	\brief      File of class to build PDF documents for invoices
  */
+
 use NumberToWords\NumberToWords;
 
 require_once DOL_DOCUMENT_ROOT . '/core/modules/facture/modules_facture.php';
@@ -265,11 +266,12 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
 		require dol_buildpath('easydocgenerator/vendor/autoload.php');
-
+		$md5id = md5_file($srctemplatepath);
 		$loader = new \Twig\Loader\FilesystemLoader(dirname($srctemplatepath));
+		$enablecache = getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE') ? false : (DOL_DATA_ROOT . '/easydocgenerator/temp/' . ($md5id ? $md5id : ''));
 		$twig = new \Twig\Environment($loader, [
 			// developer mode unactive caching
-			'cache' => getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE') ? false : DOL_DATA_ROOT . '/easydocgenerator/temp',
+			'cache' => $enablecache,
 			'autoescape' => false,
 		]);
 		// create twig function which translate with $outpulangs->trans()
@@ -277,6 +279,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			global $outputlangs, $langs;
 			if (!is_object($outputlangs)) {
 				$outputlangs = $langs;
+				$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
 			}
 			return $outputlangs->trans($value, $param1, $param2, $param3);
 		});
@@ -286,6 +289,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			global $outputlangsbis, $langs;
 			if (!is_object($outputlangsbis)) {
 				$outputlangsbis = $langs;
+				$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
 			}
 			return $outputlangsbis->trans($value, $param1, $param2, $param3);
 		});
@@ -323,7 +327,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			return -1;
 		}
 		$logo = '';
-		if ($this->emetteur->logo) {
+		if (!empty($this->emetteur->logo)) {
 			$logodir = $conf->mycompany->dir_output;
 			if (!getDolGlobalInt('MAIN_PDF_USE_LARGE_LOGO')) {
 				$logo = $logodir . '/logos/thumbs/' . $this->emetteur->logo_small;
@@ -563,7 +567,9 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			}
 		}
 		// var_dump($substitutions);
-		$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
+		if (getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE')) {
+			$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
+		}
 		try {
 			$html = $template->render($substitutions);
 		} catch (\Twig\Error\SyntaxError $e) {
