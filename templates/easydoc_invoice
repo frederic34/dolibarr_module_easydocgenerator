@@ -5,7 +5,9 @@ body {
 	font-family: sans-serif;
 	font-size: 9pt;
 }
-p {	margin: 0pt; }
+p {
+	margin: 0pt;
+}
 table.items {
 	border: 0.1mm solid #000000;
 }
@@ -104,6 +106,7 @@ table thead th {
 		{{ trans('VATIntraShort') }}: {{ mysoc.tva_intra }}<br />
 	{% endif %}
 </td>
+<td class="barcodecell"><barcode code="{{ object.ref }}" type="QR" class="barcode" size="0.8" error="H" disableborder="1" /></td>
 <td width="45%" style="text-align: right;">
 <span style="font-weight: bold; font-size: 14pt;"><b>
 {% if object.type == 1 %}
@@ -157,7 +160,7 @@ mpdf-->
 <table width="100%" style="font-family: serif; " cellpadding="10">
 <tr>
 <td width="46%" style="border: 0.1mm solid #888888; ">
-<span style="font-size: 7pt; color: #555555; font-family: sans;">SOLD TO:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
+<span style="font-size: 7pt; color: #555555; font-family: sans;">{{ trans('BillAddress')}}:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
 {% if thirdparty.phone %}
 	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone }}<br />
 {% endif %}
@@ -167,7 +170,7 @@ mpdf-->
 </td>
 <td width="8%">&nbsp;</td>
 <td width="46%" style="border: 0.1mm solid #888888;">
-<span style="font-size: 7pt; color: #555555; font-family: sans;">SHIP TO:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
+<span style="font-size: 7pt; color: #555555; font-family: sans;">{{ trans('DeliveryAddress')}}:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
 {% if thirdparty.phone %}
 	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone }}<br />
 {% endif %}
@@ -219,16 +222,30 @@ mpdf-->
 				<td class="subtotal" colspan="6" align="left">{{ line.label }}{{ line.qty }}</td>
 			{% endif %}
 		{% else %}
-			<td align="center">{{ line.ref }}</td>
-			<td>
-			{{ line.product_label }}<br />
-			{{ line.product_description }}<br />
-			<span class="barcodecell"><barcode code="978-0-9542246-0" text="1" class="barcode" height="0.50" /></span>
-			</td>
-			<td align="right">{{ line.vatrate }}</td>
+			{% if line.fk_product > 0 %}
+				<td align="center">{{ line.ref }}</td>
+				<td>
+					{% if line.product_label %}
+					{{ line.product_label }}<br />
+					{% endif %}
+				{{ line.product_description }}<br />
+				{% if line.product.barcode %}
+					<span class="barcodecell"><barcode code="{{ line.product.barcode }}" text="1" class="barcode" height="0.50" /></span>
+				{% endif %}
+				</td>
+			{% else %}
+				<td align="center"></td>
+				<td>
+				{% if line.label %}
+					{{ line.label }}<br />
+				{% endif %}
+				{{ line.description }}<br />
+				</td>
+			{% endif %}
+			<td align="right">{{ price(line.tva_tx) }}</td>
 			<td align="center">{{ line.qty }}</td>
-			<td class="cost">{{ line.subprice }}</td>
-			<td class="cost">{{ line.total_ht }}</td>
+			<td class="cost">{{ price(line.subprice) }}</td>
+			<td class="cost">{{ price(line.total_ht) }}</td>
 		{% endif %}
 		</tr>
 	{% endfor %}

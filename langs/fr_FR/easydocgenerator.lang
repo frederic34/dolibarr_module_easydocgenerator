@@ -46,4 +46,5 @@ EasydocStopThePropalAtSumOf=Arrêté la proposition commerciale à la somme de :
 EasydoCantAddPdfToDoc=Easydocgenerator ne peux pas ajouter le fichier %s au document
 EASYDOC_ADD_TEMPLATE_SUFFIX_TO_FILENAME=Ajouter le nom du modèle au nom du fichier PDF généré
 EasydocEditor=Éditeur de template
+YourSalesRepresentatives=Vos représentants commerciaux
 
