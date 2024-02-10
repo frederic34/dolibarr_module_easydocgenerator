@@ -418,7 +418,14 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		$substitutions['mysoc']['fax_formatted'] = dol_print_phone($mysoc->fax, $mysoc->country_code, 0, 0, '', ' ');
 
 		// object
+		$qrcodestring = '';
+		if (getDolGlobalString('INVOICE_ADD_ZATCA_QR_CODE')) {
+			$qrcodestring = $object->buildZATCAQRString();
+		} elseif (getDolGlobalString('INVOICE_ADD_SWISS_QR_CODE') == '1') {
+			$qrcodestring = $object->buildSwitzerlandQRString();
+		}
 		$substitutions = array_merge($substitutions, getEachVarObject($object, $outputlangs, 0));
+		$substitutions['object']['qrcodestring'] = $qrcodestring;
 
 		// thirdparty
 		$substitutions = array_merge($substitutions, getEachVarObject($object->thirdparty, $outputlangs, 1, 'thirdparty'));

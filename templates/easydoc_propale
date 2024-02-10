@@ -5,7 +5,9 @@ body {
 	font-family: sans-serif;
 	font-size: 9pt;
 }
-p {	margin: 0pt; }
+p {
+	margin: 0pt;
+}
 table.items {
 	border: 0.1mm solid #000000;
 }
@@ -50,6 +52,13 @@ table thead th {
 .items td.cost {
 	text-align: "." right;
 }
+.freetext {
+	page-break-inside: avoid;
+}
+.picture {
+	width : auto;
+	max-height : 35px;
+}
 </style>
 </head>
 <body>
@@ -65,14 +74,16 @@ table thead th {
 	{{ mysoc.zip }} {{ mysoc.town }}<br />
 	<img src="{{ mysoc.flag }}"> {{ mysoc.country }}<br />
 	{% if mysoc.phone %}
-		<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ mysoc.phone }}
+		<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ mysoc.phone_formatted }}
 	{% endif %}
 	{% if mysoc.fax %}
 		<span style="font-family:dejavusanscondensed;">&#8507; </span>{{ mysoc.fax }}
 	{% endif %}
 	<br />
 	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ mysoc.email }}<br />
-	{{ trans('VATIntraShort') }}: {{ mysoc.tvanumber }}<br />
+	{% if mysoc.tva_intra %}
+		{{ trans('VATIntraShort') }}: {{ mysoc.tva_intra }}<br />
+	{% endif %}
 </td>
 <td width="45%" style="text-align: right;">
 <span style="font-weight: bold; font-size: 14pt;"><b>{{ trans('PdfCommercialProposalTitle') }}</b></span>
@@ -113,7 +124,7 @@ mpdf-->
 <table width="100%" style="font-family: serif; " cellpadding="10">
 <tr>
 <td width="46%" style="border: 0.1mm solid #888888; ">
-<span style="font-size: 7pt; color: #555555; font-family: sans;">SOLD TO:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
+<span style="font-size: 7pt; color: #555555; font-family: sans;">{{ trans('BillAddress')}}:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
 {% if thirdparty.phone %}
 	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone }}<br />
 {% endif %}
@@ -123,7 +134,7 @@ mpdf-->
 </td>
 <td width="8%">&nbsp;</td>
 <td width="46%" style="border: 0.1mm solid #888888;">
-<span style="font-size: 7pt; color: #555555; font-family: sans;">SHIP TO:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
+<span style="font-size: 7pt; color: #555555; font-family: sans;">{{ trans('DeliveryAddress')}}:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
 {% if thirdparty.phone %}
 	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone }}<br />
 {% endif %}
@@ -177,10 +188,10 @@ mpdf-->
 		{% else %}
 			<td align="center">{{ line.ref }}</td>
 			<td>{{ line.product_label }}<br />{{ line.product_description }}</td>
-			<td align="right">{{ line.vatrate }}</td>
+			<td align="right">{{ price(line.tva_tx) }}</td>
 			<td align="center">{{ line.qty }}</td>
-			<td class="cost">{{ line.subprice }}</td>
-			<td class="cost">{{ line.total_ht }}</td>
+			<td class="cost">{{ price(line.subprice) }}</td>
+			<td class="cost">{{ price(line.total_ht) }}</td>
 		{% endif %}
 		</tr>
 	{% endfor %}
@@ -207,7 +218,35 @@ mpdf-->
 
 
 <div style="text-align: center; ">{{ trans('PaymentConditions') }}: {{ labelpaymentconditions }}</div>
-<div>{{ freetext }}</div>
-
+<br>
+{% if salesrepfoll_internal is iterable %}
+	<br>
+	<div class="freetext"><u>{{ trans('YourSalesRepresentatives') }}.</u></div>
+	<table style="font-size: 6pt; border-collapse: collapse;" cellpadding="8" width="100%">
+		<tbody>
+	{% for salesrepfoll in salesrepfoll_internal %}
+		<tr>
+			<td width="10%" align="center"><img src="{{ salesrepfoll.picture }}" class="picture"/></td>
+		   <td>
+				{{ salesrepfoll.lastname }} {{ salesrepfoll.firstname }}
+				{% if salesrepfoll.office_phone %}
+					<br><span style="font-family:dejavusanscondensed;">&#9742; </span>{{ salesrepfoll.office_phone }}
+				{% endif %}
+				{% if salesrepfoll.user_mobile %}
+					<br><span style="font-family:dejavusanscondensed;">&#9742; </span>{{ salesrepfoll.user_mobile }}
+				{% endif %}
+				{% if salesrepfoll.email %}
+					<br><span style="font-family:dejavusanscondensed;">&#9993; </span>{{ salesrepfoll.email }}
+				{% endif %}
+		   </td>
+		</tr>
+	{% endfor %}
+		</tbody>
+	</table>
+{% else %}
+	{# salesrepfoll_internal is empty #}
+{% endif %}
+<div class="freetext">{{ freetext }}</div>
+<div class="freetext">{{ debug }}</div>
 </body>
 </html>
