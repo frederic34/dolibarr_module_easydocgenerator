@@ -26,10 +26,12 @@
  *	\ingroup    commande
  *	\brief      File of class to build PDF documents for orders
  */
+
 use NumberToWords\NumberToWords;
 
 require_once DOL_DOCUMENT_ROOT . '/core/modules/commande/modules_commande.php';
 require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
+require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
@@ -264,11 +266,12 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
 		require dol_buildpath('easydocgenerator/vendor/autoload.php');
-
+		$md5id = md5_file($srctemplatepath);
 		$loader = new \Twig\Loader\FilesystemLoader(dirname($srctemplatepath));
+		$enablecache = getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE') ? false : (DOL_DATA_ROOT . '/easydocgenerator/temp/' . ($md5id ? $md5id : ''));
 		$twig = new \Twig\Environment($loader, [
 			// developer mode unactive caching
-			'cache' => getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE') ? false : DOL_DATA_ROOT . '/easydocgenerator/temp',
+			'cache' => $enablecache,
 			'autoescape' => false,
 		]);
 		// create twig function which translate with $outpulangs->trans()
@@ -276,6 +279,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			global $outputlangs, $langs;
 			if (!is_object($outputlangs)) {
 				$outputlangs = $langs;
+				$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
 			}
 			return $outputlangs->trans($value, $param1, $param2, $param3);
 		});
@@ -285,6 +289,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			global $outputlangsbis, $langs;
 			if (!is_object($outputlangsbis)) {
 				$outputlangsbis = $langs;
+				$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
 			}
 			return $outputlangsbis->trans($value, $param1, $param2, $param3);
 		});
@@ -322,7 +327,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			return -1;
 		}
 		$logo = '';
-		if ($this->emetteur->logo) {
+		if (!empty($this->emetteur->logo)) {
 			$logodir = $conf->mycompany->dir_output;
 			if (!getDolGlobalInt('MAIN_PDF_USE_LARGE_LOGO')) {
 				$logo = $logodir . '/logos/thumbs/' . $this->emetteur->logo_small;
@@ -463,7 +468,6 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			'currency' => $currency,
 			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
 		]);
-		// var_dump($substitutions);
 		$subtotal_ht = 0;
 		$subtotal_ttc = 0;
 		$linenumber = 1;
@@ -562,125 +566,16 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 
 		$mpdf->Output($file, \Mpdf\Output\Destination::FILE);
 
+		$parameters = [
+			'file' => $file,
+			'object' => $object,
+			'outputlangs' => $outputlangs,
+		];
+		// Note that $action and $object may have been modified by some hooks
+		$hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action);
+
 		$this->result = ['fullpath' => $file];
 
 		return 1;
-
-		if (!empty($conf->commande->dir_output)) {
-			$dir = $conf->commande->multidir_output[$object->entity];
-			$objectref = dol_sanitizeFileName($object->ref);
-			if (!preg_match('/specimen/i', $objectref)) {
-				$dir .= "/" . $objectref;
-			}
-			$file = $dir . "/" . $objectref . ".odt";
-
-			if (!file_exists($dir)) {
-				if (dol_mkdir($dir) < 0) {
-					$this->error = $langs->transnoentities("ErrorCanNotCreateDir", $dir);
-					return -1;
-				}
-			}
-
-			if (file_exists($dir)) {
-				//print "srctemplatepath=".$srctemplatepath;	// Src filename
-				$newfile = basename($srctemplatepath);
-				$newfiletmp = preg_replace('/\.od[ts]/i', '', $newfile);
-				$newfiletmp = preg_replace('/template_/i', '', $newfiletmp);
-				$newfiletmp = preg_replace('/modele_/i', '', $newfiletmp);
-				$newfiletmp = $objectref . '_' . $newfiletmp;
-
-				// Get extension (ods or odt)
-				$newfileformat = substr($newfile, strrpos($newfile, '.') + 1);
-				if (getDolGlobalInt('MAIN_DOC_USE_TIMING')) {
-					$format = getDolGlobalInt('MAIN_DOC_USE_TIMING');
-					if ($format == '1') {
-						$format = '%Y%m%d%H%M%S';
-					}
-					$filename = $newfiletmp . '-' . dol_print_date(dol_now(), $format) . '.' . $newfileformat;
-				} else {
-					$filename = $newfiletmp . '.' . $newfileformat;
-				}
-				$file = $dir . '/' . $filename;
-
-				dol_mkdir($conf->commande->dir_temp);
-				if (!is_writable($conf->commande->dir_temp)) {
-					$this->error = $langs->transnoentities("ErrorFailedToWriteInTempDirectory", $conf->commande->dir_temp);
-					dol_syslog('Error in write_file: ' . $this->error, LOG_ERR);
-					return -1;
-				}
-
-				// Define substitution array
-				$substitutionarray = getCommonSubstitutionArray($outputlangs, 0, null, $object);
-				$array_object_from_properties = $this->get_substitutionarray_each_var_object($object, $outputlangs);
-				$array_objet = $this->get_substitutionarray_object($object, $outputlangs);
-				$array_user = $this->get_substitutionarray_user($user, $outputlangs);
-				$array_soc = $this->get_substitutionarray_mysoc($mysoc, $outputlangs);
-				$array_thirdparty = $this->get_substitutionarray_thirdparty($socobject, $outputlangs);
-				$array_other = $this->get_substitutionarray_other($outputlangs);
-				// retrieve contact information for use in object as contact_xxx tags
-				$array_thirdparty_contact = [];
-
-				if ($usecontact && is_object($contactobject)) {
-					$array_thirdparty_contact = $this->get_substitutionarray_contact($contactobject, $outputlangs, 'contact');
-				}
-
-				$tmparray = array_merge($substitutionarray, $array_object_from_properties, $array_user, $array_soc, $array_thirdparty, $array_objet, $array_other, $array_thirdparty_contact);
-				complete_substitutions_array($tmparray, $outputlangs, $object);
-
-				// Call the ODTSubstitution hook
-				$parameters = ['odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray];
-				$reshook = $hookmanager->executeHooks('ODTSubstitution', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
-
-				foreach ($tmparray as $key => $value) {
-				}
-				// Replace tags of lines
-				try {
-					$foundtagforlines = 1;
-
-					if ($foundtagforlines) {
-						$linenumber = 0;
-						foreach ($object->lines as $line) {
-							$linenumber++;
-							$tmparray = $this->get_substitutionarray_lines($line, $outputlangs, $linenumber);
-							complete_substitutions_array($tmparray, $outputlangs, $object, $line, "completesubstitutionarray_lines");
-							// Call the ODTSubstitutionLine hook
-							$parameters = ['odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray, 'line' => $line];
-							$reshook = $hookmanager->executeHooks('ODTSubstitutionLine', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
-							foreach ($tmparray as $key => $val) {
-							}
-						}
-					}
-				} catch (OdfException $e) {
-					$this->error = $e->getMessage();
-					dol_syslog($this->error, LOG_WARNING);
-					return -1;
-				}
-
-				// Replace labels translated
-				$tmparray = $outputlangs->get_translations_for_substitutions();
-
-				// Call the beforeODTSave hook
-				$parameters = ['odfHandler' => &$odfHandler, 'file' => $file, 'object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$tmparray];
-				$reshook = $hookmanager->executeHooks('beforeODTSave', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
-
-				$parameters = [
-					'file' => $file,
-					'object' => $object,
-					'outputlangs' => $outputlangs,
-					'substitutionarray' => &$tmparray
-				];
-				// Note that $action and $object may have been modified by some hooks
-				$reshook = $hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action);
-
-				$this->result = ['fullpath' => $file];
-
-				return 1; // Success
-			} else {
-				$this->error = $langs->transnoentities("ErrorCanNotCreateDir", $dir);
-				return -1;
-			}
-		}
-
-		return -1;
 	}
 }

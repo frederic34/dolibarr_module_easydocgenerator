@@ -63,7 +63,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		global $langs, $mysoc;
 
 		// Load translation files required by the page
-		$langs->loadLangs(["main", "companies", "easydocgenerator@easydocgenerator"]);
+		$langs->loadLangs(['main', 'companies', 'easydocgenerator@easydocgenerator']);
 
 		$this->db = $db;
 		$this->name = "Easydoc templates";
@@ -468,7 +468,6 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			'currency' => $currency,
 			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
 		]);
-		// var_dump(getEachVarObject($object->lines, $outputlangs, 1, 'lines'));
 		$subtotal_ht = 0;
 		$subtotal_ttc = 0;
 		$linenumber = 1;

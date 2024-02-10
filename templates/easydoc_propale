@@ -192,15 +192,15 @@ mpdf-->
 <tr>
 <td class="blanktotal" colspan="4" rowspan="3"></td>
 <td class="totals">{{ trans('TotalHT') }}</td>
-<td class="totals cost">{{ object.total_ht }}</td>
+<td class="totals cost">{{ price(object.total_ht) }}</td>
 </tr>
 <tr>
 <td class="totals">{{ trans('TotalVAT') }}</td>
-<td class="totals cost">{{ object.total_tva }}</td>
+<td class="totals cost">{{ price(object.total_tva) }}</td>
 </tr>
 <tr>
 <td class="totals"><b>{{ trans('TotalTTC') }}</b></td>
-<td class="totals cost"><b>{{ object.total_ttc }}</b></td>
+<td class="totals cost"><b>{{ price(object.total_ttc) }}</b></td>
 </tr>
 </tbody>
 </table>
