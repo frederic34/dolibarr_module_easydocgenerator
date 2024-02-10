@@ -502,6 +502,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			$linearray = getEachVarObject($line, $outputlangs, 1, 'line');
 			$linesarray[$key] = $linearray['line'];
 			$linesarray[$key]['linenumber'] = $linenumber;
+			$linesarray[$key]['subtotal_ht'] = $subtotal_ht;
 			// $substitutions['lines'][$key] = [
 			// 	'linenumber' => $linenumber,
 			// 	'qty' => $line->qty,
