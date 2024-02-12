@@ -424,8 +424,12 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		} elseif (getDolGlobalString('INVOICE_ADD_SWISS_QR_CODE') == '1') {
 			$qrcodestring = $object->buildSwitzerlandQRString();
 		}
+		// Add online_payment_url, copied from irder
+		require_once DOL_DOCUMENT_ROOT . '/core/lib/payments.lib.php';
+		$online_payment_url = getOnlinePaymentUrl(0, 'invoice', $object->ref);
 		$substitutions = array_merge($substitutions, getEachVarObject($object, $outputlangs, 0));
 		$substitutions['object']['qrcodestring'] = $qrcodestring;
+		$substitutions['object']['online_payment_url'] = $online_payment_url;
 
 		// thirdparty
 		$substitutions = array_merge($substitutions, getEachVarObject($object->thirdparty, $outputlangs, 1, 'thirdparty'));
@@ -498,6 +502,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			$linearray = getEachVarObject($line, $outputlangs, 1, 'line');
 			$linesarray[$key] = $linearray['line'];
 			$linesarray[$key]['linenumber'] = $linenumber;
+			$linesarray[$key]['subtotal_ht'] = $subtotal_ht;
 			// $substitutions['lines'][$key] = [
 			// 	'linenumber' => $linenumber,
 			// 	'qty' => $line->qty,
