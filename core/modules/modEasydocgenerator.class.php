@@ -1,7 +1,7 @@
 <?php
 /* Copyright (C) 2004-2018  Laurent Destailleur     <eldy@users.sourceforge.net>
  * Copyright (C) 2018-2019  Nicolas ZABOURI         <info@inovea-conseil.com>
- * Copyright (C) 2019-2020  Frédéric France         <frederic.france@free.fr>
+ * Copyright (C) 2019-2024  Frédéric France         <frederic.france@free.fr>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,7 +112,8 @@ class modEasydocgenerator extends DolibarrModules
 		// Dependencies
 		// A condition to hide module
 		$this->hidden = $this->configuration['hidden'];
-		// List of module class names that must be enabled if this module is enabled. Example: array('always'=>array('modModuleToEnable1','modModuleToEnable2'), 'FR'=>array('modModuleToEnableFR')...)
+		// List of module class names that must be enabled if this module is enabled.
+		// Example: array('always'=>array('modModuleToEnable1','modModuleToEnable2'), 'FR'=>array('modModuleToEnableFR')...)
 		$this->depends = [];
 		// List of module class names to disable if this one is disabled. Example: array('modModuleToDisable1', ...)
 		$this->requiredby = [];
@@ -131,7 +132,8 @@ class modEasydocgenerator extends DolibarrModules
 		$this->warnings_activation = []; // Warning to show when we activate module. array('always'='text') or array('FR'='textfr','MX'='textmx'...)
 		$this->warnings_activation_ext = []; // Warning to show when we activate an external module. array('always'='text') or array('FR'='textfr','MX'='textmx'...)
 		// $this->automatic_activation = array('FR'=>'EasydocgeneratorWasAutomaticallyActivatedBecauseOfYourCountryChoice');
-		// $this->always_enabled = true;								// If true, can't be disabled
+		// If true, can't be disabled
+		// $this->always_enabled = true;
 
 		// Constants
 		// List of particular constants to add when module is enabled (key, 'chaine', value, desc, visible, 'current' or 'allentities', deleteonunactive)
@@ -198,7 +200,8 @@ class modEasydocgenerator extends DolibarrModules
 		//$result = $this->_load_tables('/install/mysql/', 'easydocgenerator');
 		$result = $this->_load_tables('/easydocgenerator/sql/');
 		if ($result < 0) {
-			return -1; // Do not activate module if error 'not allowed' returned when loading module SQL queries (the _load_table run sql with run_sql with the error allowed parameter set to 'default')
+			// Do not activate module if error 'not allowed' returned when loading module SQL queries (the _load_table run sql with run_sql with the error allowed parameter set to 'default')
+			return -1;
 		}
 
 		// Create extrafields during init
@@ -242,6 +245,7 @@ class modEasydocgenerator extends DolibarrModules
 		$moduledir = dol_sanitizeFileName('easydocgenerator');
 		$modules = [];
 		$modules = [
+			'bom',
 			'propale',
 			'order',
 			'invoice',

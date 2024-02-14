@@ -139,6 +139,42 @@ mpdf-->
 </tr>
 </table>
 <br />
+{% endif %}{% if object.description %}
+<table class="items" width="100%" style="font-size: 7pt; border-collapse: collapse; " cellpadding="8">
+<tr>
+<td>{{ object.description }}</td>
+</tr>
+</table>
+<br />
 {% endif %}
+<table class="items" width="100%" style="font-size: 7pt; border-collapse: collapse; " cellpadding="8">
+	<thead>
+	<tr>
+	<th width="15%">{{ trans('Photo') }}</th>
+	<th width="40%">{{ trans('Exif') }}</th>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- PICTURES HERE -->
+	{% if pictures is iterable %}
+		{% for picture in pictures %}
+		<tr>
+			<td>
+				<img src="{{ picture.dir }}{{ picture.original }}"/>
+			</td>
+			<td>
+				{{ picture.exif.UserComment }}
+			</td>
+		</tr>
+		{% endfor %}
+	{% else %}
+		{# picturess is empty #}
+	{% endif %}
+	<!-- END PICTURES HERE -->
+	</tbody>
+</table>
+
+<div class="freetext">{{ freetext }}</div>
+<div class="freetext">{{ debug }}</div>
 
 </html>
