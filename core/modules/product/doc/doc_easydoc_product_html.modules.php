@@ -402,6 +402,42 @@ class doc_easydoc_product_html extends ModelePDFProduct
 		$substitutions['mysoc']['fax_formatted'] = dol_print_phone($mysoc->fax, $mysoc->country_code, 0, 0, '', ' ');
 
 		// object
+		if (getDolGlobalInt('PRODUCT_USE_OLD_PATH_FOR_PHOTO')) {
+			$pdir[0] = get_exdir($object->id, 2, 0, 0, $object, 'product') . $object->id . "/photos/";
+			$pdir[1] = get_exdir(0, 0, 0, 0, $object, 'product') . dol_sanitizeFileName($object->ref) . '/';
+		} else {
+			$pdir[0] = get_exdir(0, 0, 0, 0, $object, 'product'); // default
+			$pdir[1] = get_exdir($object->id, 2, 0, 0, $object, 'product') . $object->id . "/photos/"; // alternative
+		}
+		$pictures = [];
+		foreach ($pdir as $midir) {
+			if ($conf->entity != $object->entity) {
+				$dir = $conf->product->multidir_output[$object->entity] . '/' . $midir; //Check repertories of current entities
+			} else {
+				$dir = $conf->product->dir_output . '/' . $midir; //Check repertory of the current product
+			}
+			foreach ($object->liste_photos($dir) as $key => $obj) {
+				$exif = '';
+				if (function_exists('exif_read_data')) {
+					$exif = exif_read_data($dir . $obj['photo']);
+				}
+				if ($obj['photo_vignette']) {
+					$pictures[] = [
+						'dir' => $dir,
+						'thumb' => $obj['photo_vignette'],
+						'original' => $obj['photo'],
+						'exif' => $exif,
+					];
+				} else {
+					$pictures[] = [
+						'dir' => $dir,
+						'original' => $obj['photo'],
+						'exif' => $exif,
+					];
+				}
+			}
+		}
+		$substitutions = array_merge($substitutions, ['pictures' => $pictures]);
 		$substitutions = array_merge($substitutions, getEachVarObject($object, $outputlangs, 0));
 
 		// other
@@ -489,7 +525,7 @@ class doc_easydoc_product_html extends ModelePDFProduct
 
 		$mpdf->SetDisplayMode('fullpage');
 
-		$mpdf->Bookmark($outputlangs->trans('PdfStockTitle'));
+		$mpdf->Bookmark($outputlangs->trans('PdfProductTitle'));
 		$mpdf->WriteHTML($html);
 
 		$dir = $conf->product->multidir_output[$object->entity];
