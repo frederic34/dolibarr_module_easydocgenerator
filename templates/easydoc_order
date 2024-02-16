@@ -210,10 +210,10 @@ mpdf-->
 			{{ line.product_label }}<br />
 			{{ line.product_description }}
 			</td>
-			<td align="right">{{ line.vatrate }}</td>
+			<td align="right">{{ price(line.tva_tx) }}%</td>
 			<td align="center">{{ line.qty }}</td>
-			<td class="cost">{{ line.subprice }}</td>
-			<td class="cost">{{ line.total_ht }}</td>
+			<td class="cost">{{ price(line.subprice) }}</td>
+			<td class="cost">{{ price(line.total_ht) }}</td>
 		{% endif %}
 		</tr>
 	{% endfor %}
@@ -245,6 +245,7 @@ mpdf-->
 
 <div style="text-align: center; ">{{ trans('PaymentConditions') }}: {{ labelpaymentconditions }}</div>
 <div class="freetext">{{ freetext }}</div>
+<div class="freetext">{{ debug }}</div>
 
 </body>
 </html>
