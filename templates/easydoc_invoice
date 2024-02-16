@@ -245,7 +245,7 @@ mpdf-->
 				{{ line.description }}<br />
 				</td>
 			{% endif %}
-			<td align="right">{{ price(line.tva_tx) }}</td>
+			<td align="right">{{ price(line.tva_tx) }}%</td>
 			<td align="center">{{ line.qty }}</td>
 			<td class="cost">{{ price(line.subprice) }}</td>
 			<td class="cost">{{ price(line.total_ht) }}</td>

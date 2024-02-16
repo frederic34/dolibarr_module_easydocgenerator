@@ -188,7 +188,7 @@ mpdf-->
 		{% else %}
 			<td align="center">{{ line.ref }}</td>
 			<td>{{ line.product_label }}<br />{{ line.product_description }}</td>
-			<td align="right">{{ price(line.tva_tx) }}</td>
+			<td align="right">{{ price(line.tva_tx) }}%</td>
 			<td align="center">{{ line.qty }}</td>
 			<td class="cost">{{ price(line.subprice) }}</td>
 			<td class="cost">{{ price(line.total_ht) }}</td>
