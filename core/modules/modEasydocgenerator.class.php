@@ -114,7 +114,7 @@ class modEasydocgenerator extends DolibarrModules
 		$this->hidden = $this->configuration['hidden'];
 		// List of module class names that must be enabled if this module is enabled.
 		// Example: array('always'=>array('modModuleToEnable1','modModuleToEnable2'), 'FR'=>array('modModuleToEnableFR')...)
-		$this->depends = [];
+		$this->depends = $this->configuration['depends'];
 		// List of module class names to disable if this one is disabled. Example: array('modModuleToDisable1', ...)
 		$this->requiredby = [];
 		// List of module class names this module is in conflict with. Example: array('modModuleToDisable1', ...)
@@ -255,6 +255,7 @@ class modEasydocgenerator extends DolibarrModules
 			'ticket',
 			'fichinter',
 			'supplier_order',
+			'intervention',
 		];
 
 		foreach ($modules as $module) {
