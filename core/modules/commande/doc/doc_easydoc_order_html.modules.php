@@ -441,7 +441,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			],
 		];
 		foreach ($typescontact as $key => $value) {
-			foreach ($value as $type) {
+			foreach ($value as $idx => $type) {
 				$arrayidcontact = $object->getIdContact($key, $type);
 				$contacts = [];
 				foreach ($arrayidcontact as $idc) {
@@ -454,6 +454,13 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 					$contacts[] = $contact;
 				}
 				$substitutions = array_merge($substitutions, getEachVarObject($contacts, $outputlangs, 1, strtolower($type) . '_' . $key));
+				if (!empty($substitutions[strtolower($type) . '_' . $key])) {
+					foreach ($substitutions[strtolower($type) . '_' . $key] as $jdx => $substitution) {
+						if (!empty($substitution['photo'])) {
+							$substitutions[strtolower($type) . '_' . $key][$jdx]['picture'] = $conf->{$substitution['element']}->multidir_output[$conf->entity] . '/' . $substitution['ref'] . '/' . $substitution['photo'];
+						}
+					}
+				}
 			}
 		}
 
@@ -471,6 +478,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$subtotal_ht = 0;
 		$subtotal_ttc = 0;
 		$linenumber = 1;
+		$linesarray = [];
 		foreach ($object->lines as $key => $line) {
 			$subtotal_ht += $line->total_ht;
 			$subtotal_ttc += $line->total_ttc;
@@ -480,29 +488,32 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				$subtotal_ht = 0;
 				$subtotal_ttc = 0;
 			}
-			$substitutions['lines'][$key] = [
-				'linenumber' => $linenumber,
-				'qty' => $line->qty,
-				'ref' => $line->product_ref,
-				'label' => $line->label,
-				'description' => $line->desc,
-				'product_label' => $line->product_label,
-				'product_description' => $line->product_desc,
-				'subprice' => price($line->subprice),
-				'total_ht' => price($line->total_ht),
-				'total_ttc' => price($line->total_ttc),
-				'vatrate' => price($line->tva_tx) . '%',
-				'special_code' => $line->special_code,
-				'product_type' => $line->product_type,
-				'line_options' => [],
-				'product_options' => [],
-			];
+			$linearray = getEachVarObject($line, $outputlangs, 1, 'line');
+			$linesarray[$key] = $linearray['line'];
+			$linesarray[$key]['linenumber'] = $linenumber;
+			$linesarray[$key]['subtotal_ht'] = $subtotal_ht;
+			// $substitutions['lines'][$key] = [
+			// 	'linenumber' => $linenumber,
+			// 	'qty' => $line->qty,
+			// 	'ref' => $line->product_ref,
+			// 	'label' => $line->label,
+			// 	'description' => $line->desc,
+			// 	'product_label' => $line->product_label,
+			// 	'product_description' => $line->product_desc,
+			// 	'subprice' => $line->subprice,
+			// 	'total_ht' => $line->total_ht,
+			// 	'total_ttc' => $line->total_ttc,
+			// 	'vatrate' => $line->tva_tx,
+			// 	'special_code' => $line->special_code,
+			// 	'product_type' => $line->product_type,
+			// 	'line_options' => [],
+			// 	'product_options' => [],
+			// ];
 			if (empty($line->special_code)) {
 				$linenumber++;
 			}
 		}
-
-		// var_dump($substitutions);
+		$substitutions = array_merge($substitutions, ['lines' => $linesarray]);
 		if (getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE')) {
 			$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
 		}
