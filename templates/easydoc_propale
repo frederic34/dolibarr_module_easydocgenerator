@@ -86,9 +86,9 @@ table thead th {
 	{% endif %}
 </td>
 <td width="45%" style="text-align: right;">
-<span style="font-weight: bold; font-size: 14pt;"><b>{{ trans('PdfCommercialProposalTitle') }}</b></span>
-<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('Ref') }}: {{ object.ref }}</span>
-<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('Date') }}: {{ object.date }}</span>
+<span style="font-weight: bold; font-size: 14pt;"><b>{{ trans('PdfCommercialProposalTitle') }}: {{ object.ref }}</b></span>
+<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('Date') }}: {{ date(object.date, 'day') }}</span>
+<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('DateEndPropal') }}: {{ date(object.fin_validite, 'day') }}</span>
 {% if object.ref_customer %}
 	<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('RefCustomer') }}: {{ object.ref_customer }}</span>
 {% endif %}
