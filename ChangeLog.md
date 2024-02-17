@@ -1,4 +1,13 @@
 
+## Unreleased (2024-02-17)
+
+#### :bug: Bug Fix
+* [#57](https://github.com/frederic34/dolibarr_module_easydocgenerator/pull/57) end validity propale ([@frederic34](https://github.com/frederic34))
+
+#### Committers: 1
+- Frédéric FRANCE ([@frederic34](https://github.com/frederic34))
+
+
 ## v1.0.3 (2024-02-16)
 
 #### :rocket: Enhancement
