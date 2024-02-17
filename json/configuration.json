@@ -1,6 +1,6 @@
 {
     "numero": 491350,
-    "version": "1.0.4",
+    "version": "1.0.5",
     "rights_class": "easydocgenerator",
     "family": "other",
     "picto": "pdf",
@@ -9,6 +9,7 @@
     "module_position": "90",
     "editor_name": "Frédéric France",
     "editor_url": "https://easydolidemo.fr",
+    "url_last_version": "http://easydolidemo/versionmodule.php",
     "hidden": false,
     "depends": [],
     "dirs": [
@@ -45,6 +46,7 @@
         ["INVOICE_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/invoices", "Directory for invoices templates", 0],
         ["PROPALE_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/propales", "Directory for propales templates", 0],
         ["PRODUCT_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/products", "Directory for products templates", 0],
+        ["EXPENSEREPORT_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/expensereports", "Directory for expensereports templates", 0],
         ["BOM_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/bpms", "Directory for boms templates", 0],
         ["SHIPPING_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/shippings", "Directory for shippings templates", 0],
         ["TICKET_ADDON_EASYDOC_TEMPLATES_PATH", "chaine", "DOL_DATA_ROOT/ecm/easydocgenerator/tickets", "Directory for tickets templates", 0],
