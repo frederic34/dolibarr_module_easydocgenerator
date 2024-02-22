@@ -33,3 +33,4 @@ EasydoCantAddPdfToDoc=Easydocgenerator non può aggiungere il file %s al documen
 EASYDOC_ADD_TEMPLATE_SUFFIX_TO_FILENAME=Aggiungi il nome del modello al nome del file PDF generato
 EasydocEditor=Editor di modelli
 YourSalesRepresentatives=I tuoi rappresentanti di vendita
+EasydocgeneratorVersion=Versione della libreria
