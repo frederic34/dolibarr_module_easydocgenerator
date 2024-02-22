@@ -85,10 +85,10 @@ class modEasydocgenerator extends DolibarrModules
 		$this->editor_url = $this->configuration['editor_url'];
 
 		// Possible values for version are: 'development', 'experimental', 'dolibarr', 'dolibarr_deprecated', 'experimental_deprecated' or a version string like 'x.y.z'
-		$this->version = '1.0.4'; // TODO remove this line
+		$this->version = '1.0.5'; // TODO remove this line
 		$this->version = $this->configuration['version'];
 		// Url to the file with your last numberversion of this module
-		// $this->url_last_version = 'http://www.example.com/versionmodule.txt';
+		$this->url_last_version = $this->configuration['url_last_version'] . '?module=' . strtolower($this->name) . '&number=' . $this->numero . '&version=' . $this->version . '&dolversion=' . DOL_VERSION;
 
 		// Key used in llx_const table to save module status enabled/disabled (where EASYDOCGENERATOR is value of property name of module in uppercase)
 		$this->const_name = 'MAIN_MODULE_' . strtoupper($this->name);
@@ -161,22 +161,7 @@ class modEasydocgenerator extends DolibarrModules
 		// Cronjobs (List of cron jobs entries to add when module is enabled)
 		// unit_frequency must be 60 for minute, 3600 for hour, 86400 for day, 604800 for week
 		/* BEGIN MODULEBUILDER CRON */
-		$this->cronjobs = [
-			//  0 => array(
-			//      'label' => 'MyJob label',
-			//      'jobtype' => 'method',
-			//      'class' => '/easydocgenerator/class/myobject.class.php',
-			//      'objectname' => 'MyObject',
-			//      'method' => 'doScheduledJob',
-			//      'parameters' => '',
-			//      'comment' => 'Comment',
-			//      'frequency' => 2,
-			//      'unitfrequency' => 3600,
-			//      'status' => 0,
-			//      'test' => 'isModEnabled("easydocgenerator")',
-			//      'priority' => 50,
-			//  ),
-		];
+		$this->cronjobs = [];
 
 		// Permissions provided by this module
 		$this->rights = [];
@@ -256,6 +241,7 @@ class modEasydocgenerator extends DolibarrModules
 			'fichinter',
 			'supplier_order',
 			'intervention',
+			'expensereport',
 		];
 
 		foreach ($modules as $module) {

@@ -38,13 +38,7 @@ require_once '../lib/easydocgenerator.lib.php';
 $action  = GETPOST('action', 'aZ09');
 $file = GETPOST('file', 'alpha');
 $now = dol_now();
-$newmask = 0;
-if (empty($newmask) && getDolGlobalString('MAIN_UMASK')) {
-	$newmask = getDolGlobalString('MAIN_UMASK');
-}
-if (empty($newmask)) {	// This should no happen
-	$newmask = '0664';
-}
+$newmask = getDolGlobalString('MAIN_UMASK', '0664');
 
 // Translations
 $langs->loadLangs(['admin', 'companies', 'languages', 'members', 'other', 'products', 'stocks', 'trips', 'easydocgenerator@easydocgenerator']);
@@ -100,11 +94,43 @@ $linkback .= $langs->trans("BackToModuleList") . '</a>';
 //print load_fiche_titre($langs->trans('EasydocgeneratorConfig'), $linkback, 'tools');
 
 $head = easydocgeneratorAdminPrepareHead();
+$constants = [
+	"BOM_ADDON_EASYDOC_TEMPLATES_PATH",
+	"CONTRACT_ADDON_EASYDOC_TEMPLATES_PATH",
+	"EXPENSEREPORT_ADDON_EASYDOC_TEMPLATES_PATH",
+	"INTERVENTION_ADDON_EASYDOC_TEMPLATES_PATH",
+	"ORDER_ADDON_EASYDOC_TEMPLATES_PATH",
+	"SUPPLIER_ORDER_ADDON_EASYDOC_TEMPLATES_PATH",
+	"INVOICE_ADDON_EASYDOC_TEMPLATES_PATH",
+	"PRODUCT_ADDON_EASYDOC_TEMPLATES_PATH",
+	"PROPALE_ADDON_EASYDOC_TEMPLATES_PATH",
+	"SHIPPING_ADDON_EASYDOC_TEMPLATES_PATH",
+	"STOCK_ADDON_EASYDOC_TEMPLATES_PATH",
+	"TICKET_ADDON_EASYDOC_TEMPLATES_PATH",
+];
+$listoffiles = [];
+foreach ($constants as $constant) {
+	$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim(getDolGlobalString($constant))));
+	foreach ($listofdir as $key => $tmpdir) {
+		$tmpdir = trim($tmpdir);
+		$tmpdir = preg_replace('/DOL_DATA_ROOT/', DOL_DATA_ROOT, $tmpdir);
+		if (!$tmpdir) {
+			unset($listofdir[$key]);
+			continue;
+		}
+		if (!is_dir($tmpdir)) {
+			setEventMessage($langs->trans("ErrorDirNotFound", $tmpdir), 0);
+		} else {
+			$tmpfiles = dol_dir_list($tmpdir, 'files', 0, '');
+			if (count($tmpfiles)) {
+				$listoffiles = array_merge($listoffiles, $tmpfiles);
+			}
+		}
+	}
+}
 
-
-$file = '/ecm/easydocgenerator/invoices/easydoc_invoice';
-
-$fullpathoffile = DOL_DATA_ROOT . $file;
+$file = $listoffiles[0]['name'];
+$fullpathoffile = $listoffiles[0]['fullname'];
 $content = '';
 if ($fullpathoffile) {
 	$content = file_get_contents($fullpathoffile);
