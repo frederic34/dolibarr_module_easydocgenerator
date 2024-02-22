@@ -206,7 +206,7 @@ class doc_easydoc_expensereport_html extends ModeleExpenseReport
 	/**
 	 *  Function to build a document on disk using the generic odt module.
 	 *
-	 *	@param		Product 	$object				Object source to build document
+	 *	@param		ExpenseReport 	$object				Object source to build document
 	 *	@param		Translate	$outputlangs		Lang output object
 	 * 	@param		string		$srctemplatepath	Full path of source filename for generator using a template file
 	 *  @param		int			$hidedetails		Do not show line details
@@ -410,33 +410,33 @@ class doc_easydoc_expensereport_html extends ModeleExpenseReport
 			$pdir[1] = get_exdir($object->id, 2, 0, 0, $object, 'expensereport') . $object->id . "/photos/"; // alternative
 		}
 		$pictures = [];
-		foreach ($pdir as $midir) {
-			if ($conf->entity != $object->entity) {
-				$dir = $conf->expensereport->multidir_output[$object->entity] . '/' . $midir; //Check repertories of current entities
-			} else {
-				$dir = $conf->expensereport->dir_output . '/' . $midir; //Check repertory of the current expensereport
-			}
-			foreach ($object->liste_photos($dir) as $key => $obj) {
-				$exif = '';
-				if (function_exists('exif_read_data')) {
-					$exif = exif_read_data($dir . $obj['photo']);
-				}
-				if ($obj['photo_vignette']) {
-					$pictures[] = [
-						'dir' => $dir,
-						'thumb' => $obj['photo_vignette'],
-						'original' => $obj['photo'],
-						'exif' => $exif,
-					];
-				} else {
-					$pictures[] = [
-						'dir' => $dir,
-						'original' => $obj['photo'],
-						'exif' => $exif,
-					];
-				}
-			}
-		}
+		// foreach ($pdir as $midir) {
+		// 	if ($conf->entity != $object->entity) {
+		// 		$dir = $conf->expensereport->multidir_output[$object->entity] . '/' . $midir; //Check repertories of current entities
+		// 	} else {
+		// 		$dir = $conf->expensereport->dir_output . '/' . $midir; //Check repertory of the current expensereport
+		// 	}
+		// 	foreach ($object->liste_photos($dir) as $key => $obj) {
+		// 		$exif = '';
+		// 		if (function_exists('exif_read_data')) {
+		// 			$exif = exif_read_data($dir . $obj['photo']);
+		// 		}
+		// 		if ($obj['photo_vignette']) {
+		// 			$pictures[] = [
+		// 				'dir' => $dir,
+		// 				'thumb' => $obj['photo_vignette'],
+		// 				'original' => $obj['photo'],
+		// 				'exif' => $exif,
+		// 			];
+		// 		} else {
+		// 			$pictures[] = [
+		// 				'dir' => $dir,
+		// 				'original' => $obj['photo'],
+		// 				'exif' => $exif,
+		// 			];
+		// 		}
+		// 	}
+		// }
 		$substitutions = array_merge($substitutions, ['pictures' => $pictures]);
 		$substitutions = array_merge($substitutions, getEachVarObject($object, $outputlangs, 0));
 
