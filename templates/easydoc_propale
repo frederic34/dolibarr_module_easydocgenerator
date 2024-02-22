@@ -201,8 +201,13 @@ mpdf-->
 {% endif %}
 <!-- END ITEMS HERE -->
 <tr>
-<td class="blanktotal" colspan="4" rowspan="3"></td>
-<td class="totals">{{ trans('TotalHT') }}</td>
+<td class="blanktotal" colspan="4" rowspan="3">
+{% if labelpaymentconditions %}
+	{{ trans('PaymentConditions') }}: {{ labelpaymentconditions }}
+{% endif %}
+<div class="freetext">{{ trans('EasydocStopThePropalAtSumOf', numbertowords(object.total_ttc, currency, 'fr')) }}.</div>
+</td>
+<td class="totals">{{ trans('TotalHT') }}<br>{{ transbis('TotalHT') }}</td>
 <td class="totals cost">{{ price(object.total_ht) }}</td>
 </tr>
 <tr>

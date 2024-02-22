@@ -306,7 +306,7 @@ mpdf-->
 <br>
 {% if salesrepfoll_internal is iterable %}
 	<br>
-	<div class="freetext">{{ trans('YourSalesRepresentatives') }}.</div>
+	<div class="freetext"><u>{{ trans('YourSalesRepresentatives') }}.</u></div>
 	<table class="items" style="font-size: 6pt; border-collapse: collapse;" cellpadding="8" width="100%">
 		<tbody>
 	{% for salesrepfoll in salesrepfoll_internal %}

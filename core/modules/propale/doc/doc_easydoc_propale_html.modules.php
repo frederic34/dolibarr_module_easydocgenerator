@@ -401,29 +401,33 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 				'CUSTOMER',
 			],
 		];
+		$contacts = [];
 		foreach ($typescontact as $key => $value) {
 			foreach ($value as $idx => $type) {
 				$arrayidcontact = $object->getIdContact($key, $type);
-				$contacts = [];
 				foreach ($arrayidcontact as $idc) {
 					if ($key == 'external') {
 						$contact = new Contact($this->db);
 					} else {
 						$contact = new User($this->db);
 					}
-					$contact->fetch($idc);
-					$contacts[] = $contact;
+					$res = $contact->fetch($idc);
+					if ($res < 0) {
+						setEventMessages($contact->error, $contact->errors, 'errors');
+					} else {
+						$contacts[strtolower($type) . '_' . $key][$idc] = getEachVarObject($contact, $outputlangs, 0, $idc)[$idc];
+					}
 				}
-				$substitutions = array_merge($substitutions, getEachVarObject($contacts, $outputlangs, 1, strtolower($type) . '_' . $key));
-				if (!empty($substitutions[strtolower($type) . '_' . $key])) {
-					foreach ($substitutions[strtolower($type) . '_' . $key] as $jdx => $substitution) {
+				if (!empty($contacts[strtolower($type) . '_' . $key])) {
+					foreach ($contacts[strtolower($type) . '_' . $key] as $jdx => $substitution) {
 						if (!empty($substitution['photo'])) {
-							$substitutions[strtolower($type) . '_' . $key][$jdx]['picture'] = $conf->{$substitution['element']}->multidir_output[$conf->entity] . '/' . $substitution['ref'] . '/' . $substitution['photo'];
+							$contacts[strtolower($type) . '_' . $key][$jdx]['picture'] = $conf->{$substitution['element']}->multidir_output[$conf->entity] . '/' . $substitution['ref'] . '/' . $substitution['photo'];
 						}
 					}
 				}
 			}
 		}
+		$substitutions = array_merge($substitutions, $contacts);
 
 		// other
 		$substitutions = array_merge($substitutions, [
