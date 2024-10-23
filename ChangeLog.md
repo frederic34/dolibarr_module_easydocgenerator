@@ -1,4 +1,13 @@
 
+## Unreleased (2024-10-23)
+
+#### :bug: Bug Fix
+* [#61](https://github.com/frederic34/dolibarr_module_easydocgenerator/pull/61) fix compat class ([@frederic34](https://github.com/frederic34))
+
+#### Committers: 1
+- Frédéric FRANCE ([@frederic34](https://github.com/frederic34))
+
+
 ## v1.0.4 (2024-02-17)
 
 #### :bug: Bug Fix
