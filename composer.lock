@@ -372,16 +372,16 @@
         },
         {
             "name": "horstoeko/zugferd",
-            "version": "v1.0.61",
+            "version": "v1.0.69",
             "source": {
                 "type": "git",
                 "url": "https://github.com/horstoeko/zugferd.git",
-                "reference": "e3c0d2b3c2aa84716bfbe235a15870f3798246e1"
+                "reference": "31877c64eb6aa75682a0844aba2bf05f1d90a527"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/horstoeko/zugferd/zipball/e3c0d2b3c2aa84716bfbe235a15870f3798246e1",
-                "reference": "e3c0d2b3c2aa84716bfbe235a15870f3798246e1",
+                "url": "https://api.github.com/repos/horstoeko/zugferd/zipball/31877c64eb6aa75682a0844aba2bf05f1d90a527",
+                "reference": "31877c64eb6aa75682a0844aba2bf05f1d90a527",
                 "shasum": ""
             },
             "require": {
@@ -441,9 +441,9 @@
             ],
             "support": {
                 "issues": "https://github.com/horstoeko/zugferd/issues",
-                "source": "https://github.com/horstoeko/zugferd/tree/v1.0.61"
+                "source": "https://github.com/horstoeko/zugferd/tree/v1.0.69"
             },
-            "time": "2024-09-12T14:13:26+00:00"
+            "time": "2024-10-22T03:33:57+00:00"
         },
         {
             "name": "jms/metadata",
@@ -1012,16 +1012,16 @@
         },
         {
             "name": "phpstan/phpdoc-parser",
-            "version": "1.31.0",
+            "version": "1.33.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "249f15fb843bf240cf058372dad29e100cee6c17"
+                "reference": "82a311fd3690fb2bf7b64d5c98f912b3dd746140"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/249f15fb843bf240cf058372dad29e100cee6c17",
-                "reference": "249f15fb843bf240cf058372dad29e100cee6c17",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/82a311fd3690fb2bf7b64d5c98f912b3dd746140",
+                "reference": "82a311fd3690fb2bf7b64d5c98f912b3dd746140",
                 "shasum": ""
             },
             "require": {
@@ -1053,9 +1053,9 @@
             "description": "PHPDoc parser with support for nullable, intersection and generic types",
             "support": {
                 "issues": "https://github.com/phpstan/phpdoc-parser/issues",
-                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.31.0"
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/1.33.0"
             },
-            "time": "2024-09-22T11:32:18+00:00"
+            "time": "2024-10-13T11:25:22+00:00"
         },
         {
             "name": "psr/http-message",
@@ -2247,12 +2247,12 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=7.4"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }
