@@ -32,3 +32,4 @@ EasydoCantAddPdfToDoc=Easydocgenerator no puede agregar el archivo %s al documen
 EASYDOC_ADD_TEMPLATE_SUFFIX_TO_FILENAME=Agregue el nombre de la plantilla al nombre del archivo PDF generado
 EasydocEditor=editor de plantillas
 YourSalesRepresentatives=Tus representantes de ventas
+EasydocgeneratorVersion=Versión de la biblioteca

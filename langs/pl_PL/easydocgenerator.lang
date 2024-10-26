@@ -32,3 +32,4 @@ EasydoCantAddPdfToDoc=Easydocgenerator nie może dodać pliku %s do dokumentu
 EASYDOC_ADD_TEMPLATE_SUFFIX_TO_FILENAME=Dodaj nazwę szablonu do wygenerowanej nazwy pliku PDF
 EasydocEditor=Edytor szablonów
 YourSalesRepresentatives=Twoi przedstawiciele handlowi
+EasydocgeneratorVersion=Wersja biblioteczna

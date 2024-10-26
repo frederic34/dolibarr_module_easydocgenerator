@@ -214,7 +214,7 @@ class doc_easydoc_expensereport_html extends ModeleExpenseReport
 	 *  @param		int			$hideref			Do not show ref
 	 *	@return		int         					1 if OK, <=0 if KO
 	 */
-	public function write_file($object, $outputlangs, $srctemplatepath, $hidedetails = 0, $hidedesc = 0, $hideref = 0)
+	public function write_file($object, $outputlangs, $srctemplatepath = '', $hidedetails = 0, $hidedesc = 0, $hideref = 0)
 	{
 		// phpcs:enable
 		global $user, $langs, $conf, $mysoc, $hookmanager;
