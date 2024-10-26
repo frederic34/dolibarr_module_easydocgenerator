@@ -63,7 +63,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		global $langs, $mysoc;
 
 		// Load translation files required by the page
-		$langs->loadLangs(['main', 'companies', "easydocgenerator@easydocgenerator"]);
+		$langs->loadLangs(['main', 'companies', 'easydocgenerator@easydocgenerator']);
 
 		$this->db = $db;
 		$this->name = "Easydoc templates";
@@ -193,9 +193,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		$text .= '<input type="submit" class="button reposition smallpaddingimp" value="' . dol_escape_htmltag($langs->trans("Upload")) . '" name="upload">';
 		$text .= '</div>';
 
-		$text .= '</td>';
-
-		$text .= '</tr>';
+		$text .= '</td></tr>';
 
 		$text .= '</table>';
 		$text .= '</form>';
@@ -376,6 +374,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		$substitutions = getEachVarObject($mysoc, $outputlangs, 1, 'mysoc');
 		$substitutions['mysoc']['flag'] = DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($flagImage) . '.png';
 		$substitutions['mysoc']['phone_formatted'] = dol_print_phone($mysoc->phone, $mysoc->country_code, 0, 0, '', ' ');
+		$substitutions['mysoc']['phone_mobile_formatted'] = dol_print_phone($mysoc->phone_mobile, $mysoc->country_code, 0, 0, '', ' ');
 		$substitutions['mysoc']['fax_formatted'] = dol_print_phone($mysoc->fax, $mysoc->country_code, 0, 0, '', ' ');
 
 		// object
@@ -421,7 +420,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 				if (!empty($contacts[strtolower($type) . '_' . $key])) {
 					foreach ($contacts[strtolower($type) . '_' . $key] as $jdx => $substitution) {
 						if (!empty($substitution['photo'])) {
-							$contacts[strtolower($type) . '_' . $key][$jdx]['picture'] = $conf->{$substitution['element']}->multidir_output[$conf->entity] . '/' . $substitution['ref'] . '/' . $substitution['photo'];
+							$contacts[strtolower($type) . '_' . $key][$jdx]['picture'] = $conf->{$substitution['element']}->multidir_output[$conf->entity] . '/' . $substitution['id'] . '/photos/' . $substitution['photo'];
 						}
 					}
 				}
@@ -457,6 +456,12 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 			$linesarray[$key] = $linearray['line'];
 			$linesarray[$key]['linenumber'] = $linenumber;
 			$linesarray[$key]['subtotal_ht'] = $subtotal_ht;
+			if ($line->fk_product > 0) {
+				$product = new Product($this->db);
+				$product->fetch($line->fk_product);
+				$linesarray[$key]['product'] = getEachVarObject($product, $outputlangs)['object'];
+			}
+
 			// $substitutions['lines'][$key] = [
 			// 	'linenumber' => $linenumber,
 			// 	'qty' => $line->qty,
@@ -480,6 +485,11 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		}
 		$substitutions = array_merge($substitutions, ['lines' => $linesarray]);
 
+		$substitutions['parameters'] = [
+			'hidedetails' => $hidedetails,
+			'hidedesc' => $hidedesc,
+			'hideref' => $hideref,
+		];
 		if (getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE')) {
 			$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
 		}

@@ -306,7 +306,8 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$twig->addFunction($function);
 		// create twig function which return price formatted
 		$function = new \Twig\TwigFunction('price', function ($price) {
-			return price($price, 0);
+			global $outputlangs, $langs;
+			return price($price, 0, $outputlangs);
 		});
 		$twig->addFunction($function);
 		// create twig function which return number to words
@@ -440,29 +441,33 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				'CUSTOMER',
 			],
 		];
+		$contacts = [];
 		foreach ($typescontact as $key => $value) {
 			foreach ($value as $idx => $type) {
 				$arrayidcontact = $object->getIdContact($key, $type);
-				$contacts = [];
 				foreach ($arrayidcontact as $idc) {
 					if ($key == 'external') {
 						$contact = new Contact($this->db);
 					} else {
 						$contact = new User($this->db);
 					}
-					$contact->fetch($idc);
-					$contacts[] = $contact;
+					$res = $contact->fetch($idc);
+					if ($res < 0) {
+						setEventMessages($contact->error, $contact->errors, 'errors');
+					} else {
+						$contacts[strtolower($type) . '_' . $key][$idc] = getEachVarObject($contact, $outputlangs, 0, $idc)[$idc];
+					}
 				}
-				$substitutions = array_merge($substitutions, getEachVarObject($contacts, $outputlangs, 1, strtolower($type) . '_' . $key));
-				if (!empty($substitutions[strtolower($type) . '_' . $key])) {
-					foreach ($substitutions[strtolower($type) . '_' . $key] as $jdx => $substitution) {
+				if (!empty($contacts[strtolower($type) . '_' . $key])) {
+					foreach ($contacts[strtolower($type) . '_' . $key] as $jdx => $substitution) {
 						if (!empty($substitution['photo'])) {
-							$substitutions[strtolower($type) . '_' . $key][$jdx]['picture'] = $conf->{$substitution['element']}->multidir_output[$conf->entity] . '/' . $substitution['ref'] . '/' . $substitution['photo'];
+							$contacts[strtolower($type) . '_' . $key][$jdx]['picture'] = $conf->{$substitution['element']}->multidir_output[$conf->entity] . '/' . $substitution['id'] . '/photos/' . $substitution['photo'];
 						}
 					}
 				}
 			}
 		}
+		$substitutions = array_merge($substitutions, $contacts);
 
 		// other
 		$substitutions = array_merge($substitutions, [
@@ -514,6 +519,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			}
 		}
 		$substitutions = array_merge($substitutions, ['lines' => $linesarray]);
+
 		if (getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE')) {
 			$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
 		}
