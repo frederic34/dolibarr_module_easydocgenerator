@@ -175,7 +175,8 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			// Show list of found files
 			foreach ($listoffiles as $file) {
 				$text .= '- ' . $file['name'] . ' <a href="' . DOL_URL_ROOT . '/document.php?modulepart=doctemplates&file=orders/' . urlencode(basename($file['name'])) . '">' . img_picto('', 'listlight') . '</a>';
-				$text .= ' &nbsp; <a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=ORDER_ADDON_EASYDOC_TEMPLATES_PATH&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name'])) . '">' . img_picto('', 'delete') . '</a>';
+				$url = $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=ORDER_ADDON_EASYDOC_TEMPLATES_PATH&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name']));
+				$text .= ' &nbsp; <a class="reposition" href="' . $url . '">' . img_picto('', 'delete') . '</a>';
 				$text .= '<br>';
 			}
 			$text .= '</div>';
