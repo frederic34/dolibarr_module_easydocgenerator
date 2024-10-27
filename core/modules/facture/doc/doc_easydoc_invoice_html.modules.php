@@ -193,9 +193,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		$text .= '<input type="submit" class="button reposition smallpaddingimp" value="' . dol_escape_htmltag($langs->trans("Upload")) . '" name="upload">';
 		$text .= '</div>';
 
-		$text .= '</td>';
-
-		$text .= '</tr>';
+		$text .= '</td></tr>';
 
 		$text .= '</table>';
 		$text .= '</form>';
@@ -218,7 +216,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 	public function write_file($object, $outputlangs, $srctemplatepath = '', $hidedetails = 0, $hidedesc = 0, $hideref = 0)
 	{
 		// phpcs:enable
-		global $user, $langs, $conf, $mysoc, $hookmanager;
+		global $action, $conf, $hookmanager, $langs, $mysoc, $user, $outputlangsbis;
 
 		if (empty($srctemplatepath)) {
 			dol_syslog("doc_easydoc_invoice_html::write_file parameter srctemplatepath empty", LOG_WARNING);
@@ -230,14 +228,14 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
 		}
-		$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
+		$langfiles = ['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'compta', 'easydocgenerator@easydocgenerator'];
+		$outputlangs->loadLangs($langfiles);
 
-		global $outputlangsbis;
 		$outputlangsbis = null;
 		if (getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE') && $outputlangs->defaultlang != getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE')) {
 			$outputlangsbis = new Translate('', $conf);
 			$outputlangsbis->setDefaultLang(getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE'));
-			$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks']);
+			$outputlangsbis->loadLangs($langfiles);
 		}
 
 		// add linked objects to note_public
@@ -261,9 +259,12 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			$hookmanager = new HookManager($this->db);
 		}
 		$hookmanager->initHooks(['pdfgeneration']);
-		$parameters = ['object' => $object, 'outputlangs' => $outputlangs];
-		global $action;
-		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
+		$parameters = [
+			'object' => $object,
+			'outputlangs' => $outputlangs,
+			'outputlangsbis' => $outputlangsbis,
+		];
+		$hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
 		require dol_buildpath('easydocgenerator/vendor/autoload.php');
 		$md5id = md5_file($srctemplatepath);
@@ -279,7 +280,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			global $outputlangs, $langs;
 			if (!is_object($outputlangs)) {
 				$outputlangs = $langs;
-				$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
+				$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator', 'compta']);
 			}
 			return $outputlangs->trans($value, $param1, $param2, $param3);
 		});
@@ -289,7 +290,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			global $outputlangsbis, $langs;
 			if (!is_object($outputlangsbis)) {
 				$outputlangsbis = $langs;
-				$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
+				$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator', 'compta']);
 			}
 			return $outputlangsbis->trans($value, $param1, $param2, $param3);
 		});
@@ -416,6 +417,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		$substitutions = getEachVarObject($mysoc, $outputlangs, 1, 'mysoc');
 		$substitutions['mysoc']['flag'] = DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($flagImage) . '.png';
 		$substitutions['mysoc']['phone_formatted'] = dol_print_phone($mysoc->phone, $mysoc->country_code, 0, 0, '', ' ');
+		$substitutions['mysoc']['phone_mobile_formatted'] = dol_print_phone($mysoc->phone_mobile, $mysoc->country_code, 0, 0, '', ' ');
 		$substitutions['mysoc']['fax_formatted'] = dol_print_phone($mysoc->fax, $mysoc->country_code, 0, 0, '', ' ');
 
 		// object
@@ -472,7 +474,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 				if (!empty($contacts[strtolower($type) . '_' . $key])) {
 					foreach ($contacts[strtolower($type) . '_' . $key] as $jdx => $substitution) {
 						if (!empty($substitution['photo'])) {
-							$contacts[strtolower($type) . '_' . $key][$jdx]['picture'] = $conf->{$substitution['element']}->multidir_output[$conf->entity] . '/' . $substitution['ref'] . '/' . $substitution['photo'];
+							$contacts[strtolower($type) . '_' . $key][$jdx]['picture'] = $conf->{$substitution['element']}->multidir_output[$conf->entity] . '/' . $substitution['id'] . '/photos/' . $substitution['photo'];
 						}
 					}
 				}
@@ -508,6 +510,12 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			$linesarray[$key] = $linearray['line'];
 			$linesarray[$key]['linenumber'] = $linenumber;
 			$linesarray[$key]['subtotal_ht'] = $subtotal_ht;
+			if ($line->fk_product > 0) {
+				$product = new Product($this->db);
+				$product->fetch($line->fk_product);
+				$linesarray[$key]['product'] = getEachVarObject($product, $outputlangs)['object'];
+			}
+
 			// $substitutions['lines'][$key] = [
 			// 	'linenumber' => $linenumber,
 			// 	'qty' => $line->qty,
@@ -602,6 +610,11 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 				$i++;
 			}
 		}
+		$substitutions['parameters'] = [
+			'hidedetails' => $hidedetails,
+			'hidedesc' => $hidedesc,
+			'hideref' => $hideref,
+		];
 		if (getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE')) {
 			$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
 		}
