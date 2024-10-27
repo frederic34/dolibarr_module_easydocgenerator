@@ -22,15 +22,15 @@
  */
 
 /**
- *	\file       htdocs/core/modules/ticket/doc/doc_easydoc_ticket_html.modules.php
- *	\ingroup    ticket
- *	\brief      File of class to build PDF documents for tickets
+ *	\file       htdocs/core/modules/bom/doc/doc_easydoc_bom_html.modules.php
+ *	\ingroup    bom
+ *	\brief      File of class to build PDF documents for boms
  */
 
 use NumberToWords\NumberToWords;
 
-require_once DOL_DOCUMENT_ROOT . '/core/modules/ticket/modules_ticket.php';
-require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
+require_once DOL_DOCUMENT_ROOT . '/core/modules/bom/modules_bom.php';
+require_once DOL_DOCUMENT_ROOT . '/bom/class/bom.class.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/functions2.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
@@ -42,7 +42,7 @@ dol_include_once('/easydocgenerator/lib/easydocgenerator.lib.php');
 /**
  *	Class to build documents using HTML templates
  */
-class doc_easydoc_ticket_html extends ModelePDFTicket
+class doc_easydoc_bom_html extends ModelePDFbom
 {
 	// phpcs:enable
 	/**
@@ -62,15 +62,15 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 		global $langs, $mysoc;
 
 		// Load translation files required by the page
-		$langs->loadLangs(['main', 'companies', 'easydocgenerator@easydocgenerator']);
+		$langs->loadLangs(["main", "companies", "easydocgenerator@easydocgenerator"]);
 
 		$this->db = $db;
 		$this->name = "Easydoc templates";
 		$this->description = $langs->trans("DocumentModelEasydocgeneratorTemplate");
 		// Name of constant that is used to save list of directories to scan
-		$this->scandir = 'TICKET_ADDON_EASYDOC_TEMPLATES_PATH';
+		$this->scandir = 'BOM_ADDON_EASYDOC_TEMPLATES_PATH';
 		// Save the name of generated file as the main doc when generating a doc with this template
-		$this->update_main_doc_field = 1;
+		$this->update_main_doc_field = ((int) DOL_VERSION < 21) ? 0 : 1;
 
 		// Page size for A4 format
 		$this->type = 'pdf';
@@ -83,7 +83,7 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 		$this->marge_basse = 0;
 
 		$this->option_logo = 1; // Display logo
-		$this->option_tva = 0; // Manage the vat option TICKET_TVAOPTION
+		$this->option_tva = 0; // Manage the vat option COMMANDE_TVAOPTION
 		$this->option_modereg = 0; // Display payment mode
 		$this->option_condreg = 0; // Display payment terms
 		$this->option_multilang = 1; // Available in several languages
@@ -108,7 +108,7 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 	 */
 	public function info($langs)
 	{
-		global $langs;
+		global $conf, $langs;
 
 		// Load translation files required by the page
 		$langs->loadLangs(["errors", "companies", "easydocgenerator@easydocgenerator"]);
@@ -120,7 +120,7 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 		$text .= '<input type="hidden" name="token" value="' . newToken() . '">';
 		$text .= '<input type="hidden" name="page_y" value="">';
 		$text .= '<input type="hidden" name="action" value="setModuleOptions">';
-		$text .= '<input type="hidden" name="param1" value="TICKET_ADDON_EASYDOC_TEMPLATES_PATH">';
+		$text .= '<input type="hidden" name="param1" value="' . $this->scandir . '">';
 		$text .= '<table class="nobordernopadding" width="100%">';
 
 		// List of directories area
@@ -147,8 +147,8 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 		$texthelp = $langs->trans("ListOfDirectoriesForModelGenHTML");
 		$texthelp .= '<br><br><span class="opacitymedium">' . $langs->trans("ExampleOfDirectoriesForModelGen") . '</span>';
 		// Add list of substitution keys
-		$texthelp .= '<br>' . $langs->trans("FollowingSubstitutionKeysCanBeUsed") . '<br>';
-		$texthelp .= $langs->transnoentitiesnoconv("FullListOnOnlineDocumentation"); // This contains an url, we don't modify it
+		// $texthelp .= '<br>' . $langs->trans("FollowingSubstitutionKeysCanBeUsed") . '<br>';
+		// $texthelp .= $langs->transnoentitiesnoconv("FullListOnOnlineDocumentation"); // This contains an url, we don't modify it
 
 		$text .= $form->textwithpicto($texttitle, $texthelp, 1, 'help', '', 1, 3, $this->name);
 		$text .= '<div><div style="display: inline-block; min-width: 100px; vertical-align: middle;">';
@@ -173,8 +173,9 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 			$text .= '<div id="div_' . get_class($this) . '" class="hiddenx">';
 			// Show list of found files
 			foreach ($listoffiles as $file) {
-				$text .= '- ' . $file['name'] . ' <a href="' . DOL_URL_ROOT . '/document.php?modulepart=doctemplates&file=tickets/' . urlencode(basename($file['name'])) . '">' . img_picto('', 'listlight') . '</a>';
-				$text .= ' &nbsp; <a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=TICKET_ADDON_EASYDOC_TEMPLATES_PATH&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name'])) . '">' . img_picto('', 'delete') . '</a>';
+				$text .= '- ' . $file['name'] . ' <a href="' . DOL_URL_ROOT . '/document.php?modulepart=doctemplates&file=products/' . urlencode(basename($file['name'])) . '">' . img_picto('', 'listlight') . '</a>';
+				$url = $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=' . $this->scandir . '&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name']));
+				$text .= ' &nbsp; <a class="reposition" href="' . $url . '">' . img_picto('', 'delete') . '</a>';
 				$text .= '<br>';
 			}
 			$text .= '</div>';
@@ -206,7 +207,7 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 	/**
 	 *  Function to build a document on disk using the generic odt module.
 	 *
-	 *	@param		Ticket	$object				Object source to build document
+	 *	@param		BOM         $object				Object source to build document
 	 *	@param		Translate	$outputlangs		Lang output object
 	 * 	@param		string		$srctemplatepath	Full path of source filename for generator using a template file
 	 *  @param		int			$hidedetails		Do not show line details
@@ -217,19 +218,21 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 	public function write_file($object, $outputlangs, $srctemplatepath = '', $hidedetails = 0, $hidedesc = 0, $hideref = 0)
 	{
 		// phpcs:enable
-		global $user, $langs, $conf, $mysoc, $hookmanager;
+		global $action, $langs, $conf, $mysoc, $hookmanager, $user;
 
 		if (empty($srctemplatepath)) {
-			dol_syslog("doc_easydoc_ticket_html::write_file parameter srctemplatepath empty", LOG_WARNING);
+			dol_syslog("doc_easydoc_product_html::write_file parameter srctemplatepath empty", LOG_WARNING);
 			return -1;
 		}
 
 		$object->fetch_thirdparty();
+		$object->fetch_product();
+		$object->calculateCosts();
 
 		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
 		}
-		$langfiles = ['main', 'dict', 'companies', 'bills', 'products', 'tickets', 'orders', 'deliveries', 'banks', 'compta', 'easydocgenerator@easydocgenerator'];
+		$langfiles = ['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'compta', 'mrp', 'easydocgenerator@easydocgenerator'];
 		$outputlangs->loadLangs($langfiles);
 
 		global $outputlangsbis;
@@ -261,16 +264,20 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 			$hookmanager = new HookManager($this->db);
 		}
 		$hookmanager->initHooks(['pdfgeneration']);
-		$parameters = ['object' => $object, 'outputlangs' => $outputlangs];
-		global $action;
+		$parameters = [
+			'object' => $object,
+			'outputlangs' => $outputlangs,
+			'outputlangsbis' => $outputlangsbis,
+		];
 		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
 		require dol_buildpath('easydocgenerator/vendor/autoload.php');
-
+		$md5id = md5_file($srctemplatepath);
 		$loader = new \Twig\Loader\FilesystemLoader(dirname($srctemplatepath));
+		$enablecache = getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE') ? false : (DOL_DATA_ROOT . '/easydocgenerator/temp/' . ($md5id ? $md5id : ''));
 		$twig = new \Twig\Environment($loader, [
 			// developer mode unactive caching
-			'cache' => getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE') ? false : DOL_DATA_ROOT . '/easydocgenerator/temp',
+			'cache' => $enablecache,
 			'autoescape' => false,
 		]);
 		// create twig function which translate with $outpulangs->trans()
@@ -278,6 +285,7 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 			global $outputlangs, $langs;
 			if (!is_object($outputlangs)) {
 				$outputlangs = $langs;
+				$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'compta', 'mrp', 'easydocgenerator@easydocgenerator']);
 			}
 			return $outputlangs->trans($value, $param1, $param2, $param3);
 		});
@@ -287,6 +295,7 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 			global $outputlangsbis, $langs;
 			if (!is_object($outputlangsbis)) {
 				$outputlangsbis = $langs;
+				$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'compta', 'mrp', 'easydocgenerator@easydocgenerator']);
 			}
 			return $outputlangsbis->trans($value, $param1, $param2, $param3);
 		});
@@ -324,7 +333,7 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 			return -1;
 		}
 		$logo = '';
-		if ($this->emetteur->logo) {
+		if (!empty($this->emetteur->logo)) {
 			$logodir = $conf->mycompany->dir_output;
 			if (!getDolGlobalInt('MAIN_PDF_USE_LARGE_LOGO')) {
 				$logo = $logodir . '/logos/thumbs/' . $this->emetteur->logo_small;
@@ -353,13 +362,6 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 		} else {
 			$tmparray = explode('_', $mysoc->country_code);
 			$flagImage = empty($tmparray[1]) ? $tmparray[0] : $tmparray[1];
-		}
-		// If CUSTOMER contact defined on ticket, we use it
-		$usecontact = false;
-		$arrayidcontact = $object->getIdContact('external', 'CUSTOMER');
-		if (count($arrayidcontact) > 0) {
-			$usecontact = true;
-			$result = $object->fetch_contact($arrayidcontact[0]);
 		}
 
 		// Recipient name
@@ -396,7 +398,7 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 
 		// Line of free text
 		$newfreetext = '';
-		$paramfreetext = 'TICKET_FREE_TEXT';
+		$paramfreetext = 'BOM_FREE_TEXT';
 		if (!empty($conf->global->$paramfreetext)) {
 			$newfreetext = make_substitutions(getDolGlobalString($paramfreetext), $substitutionarray);
 		}
@@ -407,44 +409,43 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 		$substitutions['mysoc']['fax_formatted'] = dol_print_phone($mysoc->fax, $mysoc->country_code, 0, 0, '', ' ');
 
 		// object
+		// if (getDolGlobalInt('PRODUCT_USE_OLD_PATH_FOR_PHOTO')) {
+		// 	$pdir[0] = get_exdir($object->id, 2, 0, 0, $object, 'product') . $object->id . "/photos/";
+		// 	$pdir[1] = get_exdir(0, 0, 0, 0, $object, 'product') . dol_sanitizeFileName($object->ref) . '/';
+		// } else {
+		// 	$pdir[0] = get_exdir(0, 0, 0, 0, $object, 'product'); // default
+		// 	$pdir[1] = get_exdir($object->id, 2, 0, 0, $object, 'product') . $object->id . "/photos/"; // alternative
+		// }
+		// $pictures = [];
+		// foreach ($pdir as $midir) {
+		// 	if ($conf->entity != $object->entity) {
+		// 		$dir = $conf->product->multidir_output[$object->entity] . '/' . $midir; //Check repertories of current entities
+		// 	} else {
+		// 		$dir = $conf->product->dir_output . '/' . $midir; //Check repertory of the current product
+		// 	}
+		// 	foreach ($object->liste_photos($dir) as $key => $obj) {
+		// 		$exif = '';
+		// 		if (function_exists('exif_read_data')) {
+		// 			$exif = exif_read_data($dir . $obj['photo']);
+		// 		}
+		// 		if ($obj['photo_vignette']) {
+		// 			$pictures[] = [
+		// 				'dir' => $dir,
+		// 				'thumb' => $obj['photo_vignette'],
+		// 				'original' => $obj['photo'],
+		// 				'exif' => $exif,
+		// 			];
+		// 		} else {
+		// 			$pictures[] = [
+		// 				'dir' => $dir,
+		// 				'original' => $obj['photo'],
+		// 				'exif' => $exif,
+		// 			];
+		// 		}
+		// 	}
+		// }
+		// $substitutions = array_merge($substitutions, ['pictures' => $pictures]);
 		$substitutions = array_merge($substitutions, getEachVarObject($object, $outputlangs, 0));
-
-		// thirdparty
-		$substitutions = array_merge($substitutions, getEachVarObject($object->thirdparty, $outputlangs, 1, 'thirdparty'));
-		$substitutions['thirdparty']['flag'] = DOL_DOCUMENT_ROOT . '/theme/common/flags/' . strtolower($object->thirdparty->country_code) . '.png';
-		$substitutions['thirdparty']['phone_formatted'] = dol_print_phone($object->thirdparty->phone, $object->thirdparty->country_code, 0, 0, '', ' ');
-		$substitutions['thirdparty']['fax_formatted'] = dol_print_phone($object->thirdparty->fax, $object->thirdparty->country_code, 0, 0, '', ' ');
-
-		$typescontact = [
-			'external' => [
-				'BILLING',
-				'SHIPPING',
-				'SALESREPFOLL',
-				'CUSTOMER',
-			],
-			'internal' => [
-				'BILLING',
-				'SHIPPING',
-				'SALESREPFOLL',
-				'CUSTOMER',
-			],
-		];
-		foreach ($typescontact as $key => $value) {
-			foreach ($value as $type) {
-				$arrayidcontact = $object->getIdContact($key, $type);
-				$contacts = [];
-				foreach ($arrayidcontact as $idc) {
-					if ($key == 'external') {
-						$contact = new Contact($this->db);
-					} else {
-						$contact = new User($this->db);
-					}
-					$contact->fetch($idc);
-					$contacts[] = $contact;
-				}
-				$substitutions = array_merge($substitutions, getEachVarObject($contacts, $outputlangs, 1, strtolower($type) . '_' . $key));
-			}
-		}
 
 		// other
 		$substitutions = array_merge($substitutions, [
@@ -492,7 +493,9 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 		// }
 
 		// var_dump($substitutions);
-		$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
+		if (getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE')) {
+			$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
+		}
 		try {
 			$html = $template->render($substitutions);
 		} catch (\Twig\Error\SyntaxError $e) {
@@ -513,26 +516,26 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 			'margin_footer' =>  getDolGlobalInt('EASYDOC_PDF_MARGIN_FOOTER', 10),
 		]);
 		$mpdf->SetProtection(['print']);
-		$mpdf->SetTitle($outputlangs->convToOutputCharset($object->ref));
+		$mpdf->SetTitle($outputlangs->convToOutputCharset("Product"));
 		$mpdf->SetCreator('Dolibarr ' . DOL_VERSION);
 		$mpdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
-		$mpdf->SetKeyWords($outputlangs->convToOutputCharset($object->ref) . " " . $outputlangs->transnoentities("PdfTicketTitle") . " " . $outputlangs->convToOutputCharset($object->thirdparty->name));
+		$mpdf->SetKeyWords($outputlangs->convToOutputCharset($object->ref) . " " . $outputlangs->transnoentities("Product"));
 		// Watermark
-		$text = getDolGlobalString('TICKET_DRAFT_WATERMARK');
+		$text = getDolGlobalString('BOM_DRAFT_WATERMARK');
 		$substitutionarray = pdf_getSubstitutionArray($outputlangs, null, null);
 		complete_substitutions_array($substitutionarray, $outputlangs, null);
 		$text = make_substitutions($text, $substitutionarray, $outputlangs);
 		$mpdf->SetWatermarkText($text);
-		$mpdf->showWatermarkText = ($object->statut == Ticket::STATUS_WAITING && getDolGlobalString('TICKET_DRAFT_WATERMARK'));
+		$mpdf->showWatermarkText = (!$object->status_buy && getDolGlobalString('BOM_DRAFT_WATERMARK'));
 		$mpdf->watermark_font = 'DejaVuSansCondensed';
 		$mpdf->watermarkTextAlpha = 0.1;
 
 		$mpdf->SetDisplayMode('fullpage');
 
-		$mpdf->Bookmark($outputlangs->trans('PdfOrderTitle'));
+		$mpdf->Bookmark($outputlangs->trans('PdfProductTitle'));
 		$mpdf->WriteHTML($html);
 
-		$dir = $conf->ticket->multidir_output[$object->entity];
+		$dir = $conf->bom->multidir_output[isset($object->entity) ? $object->entity : 1];
 		$objectref = dol_sanitizeFileName($object->ref);
 		if (!preg_match('/specimen/i', $objectref)) {
 			$dir .= "/" . $objectref;
