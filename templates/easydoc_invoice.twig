@@ -1,0 +1,337 @@
+<html>
+<head>
+<style>
+body {
+	font-family: sans-serif;
+	font-size: 9pt;
+}
+p {
+	margin: 0pt;
+}
+table.items {
+	border: 0.1mm solid #000000;
+}
+td { vertical-align: top; }
+.items td {
+	border-left: 0.1mm solid #000000;
+	border-right: 0.1mm solid #000000;
+}
+table thead th {
+	background-color: #EEEEEE;
+	text-align: center;
+	border: 0.1mm solid #000000;
+	font-variant: helvetica;
+}
+.items td.blanktotal {
+	background-color: #EEEEEE;
+	border: 0.1mm solid #000000;
+	border: 0mm none #000000;
+	border-top: 0.1mm solid #000000;
+	border-right: 0.1mm solid #000000;
+}
+.items td.subtotaltitle {
+	background-color: {{ getDolGlobalString('SUBTOTAL_TITLE_BACKGROUNDCOLOR', '#ffffff') }};
+	border: 0.1mm solid #000000;
+	border: 0mm none #000000;
+	border-top: 0.1mm solid #000000;
+	border-bottom: 0.1mm solid #000000;
+	border-right: 0.1mm solid #000000;
+}
+.items td.subtotalsubtotal {
+	background-color: {{ getDolGlobalString('SUBTOTAL_SUBTOTAL_BACKGROUNDCOLOR', '#ebebeb') }};
+	border: 0.1mm solid #000000;
+	border: 0mm none #000000;
+	border-top: 0.1mm solid #000000;
+	border-bottom: 0.1mm solid #000000;
+	border-right: 0.1mm solid #000000;
+}
+.items td.totals {
+	text-align: right;
+	border: 0.1mm solid #000000;
+}
+.items td.cost {
+	text-align: "." right;
+}
+.barcode {
+	padding: 1.5mm;
+	margin: 0;
+	vertical-align: top;
+	color: #000000;
+}
+.barcodecell {
+	text-align: center;
+	vertical-align: middle;
+	padding: 0;
+}
+.myfixed1 {
+	position: absolute;
+	overflow: visible;
+	left: 0;
+	bottom: 0;
+	border: 1px solid #880000;
+	background-color: #FFEEDD;
+	background-gradient: linear #dec7cd #fff0f2 0 1 0 0.5;
+	padding: 1.5em;
+	font-family:sans;
+	margin: 0;
+	border-radius: 2mm;
+}
+.freetext {
+	page-break-inside: avoid;
+}
+.picture {
+	max-width : 35px;
+	height : auto;
+}
+</style>
+</head>
+<body>
+
+<!--mpdf
+<htmlpageheader name="myheader">
+<table width="100%">
+<tr>
+<td align="center"><img src="{{ logo }}" height="80px"/></td>
+<td width="45%" style="color:#000000; ">
+	<span style="font-weight: bold; font-size: 14pt;">{{ mysoc.name }}</span><br />
+	{{ mysoc.address }}<br />
+	{{ mysoc.zip }} {{ mysoc.town }}<br />
+	<img src="{{ mysoc.flag }}"> {{ mysoc.country }}<br />
+	{% if mysoc.phone %}
+		<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ mysoc.phone_formatted }}
+	{% endif %}
+	{% if mysoc.fax %}
+		<span style="font-family:dejavusanscondensed;">&#8507; </span>{{ mysoc.fax_formatted }}
+	{% endif %}
+	<br />
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ mysoc.email }}<br />
+	{% if mysoc.tva_intra %}
+		{{ trans('VATIntraShort') }}: {{ mysoc.tva_intra }}<br />
+	{% endif %}
+</td>
+<td class="barcodecell"><barcode code="{{ object.ref }}" type="QR" class="barcode" size="0.8" error="H" disableborder="1" /></td>
+<td width="45%" style="text-align: right;">
+<span style="font-weight: bold; font-size: 14pt;"><b>
+{% if object.type == 1 %}
+{{ trans('InvoiceReplacement') }}
+{% elseif object.type == 2 %}
+{{ trans('InvoiceAvoir') }}
+{% elseif object.type == 3 %}
+{{ trans('InvoiceDeposit') }}
+{% elseif object.type == 4 %}
+{{ trans('InvoiceProForma') }}
+{% else %}
+{{ trans('PdfInvoiceTitle') }}
+{% endif %}
+ {{ object.ref }}</span>
+<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('DateInvoice') }}: {{ date(object.date, 'day') }}</span>
+{% if object.type != 2 %}
+	<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('DateDue') }}: {{ date(object.date_lim_reglement, 'day') }}</span>
+{% endif %}
+{% if object.ref_customer %}
+	<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('RefCustomer') }}: {{ object.ref_customer }}</span>
+{% endif %}
+{% if object.ref_project %}
+	<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans("RefProject") }}: {{ object.ref_project }}</span>
+{% endif %}
+{% if thirdparty.code_client %}
+	<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('CustomerCode') }}: {{ thirdparty.code_client }}</span>
+{% endif %}
+{% if linkedObjects is iterable %}
+	{% for link in linkedObjects %}
+		<br /><span style="font-weight: bold; font-size: 10pt;">{{ link.ref_title}}: {{ link.ref_value }}</span>
+	{% endfor %}
+{% endif %}
+</td>
+</tr>
+</table>
+</htmlpageheader>
+
+<htmlpagefooter name="myfooter">
+<div style="border-top: 1px solid #000000; font-size: 6pt; text-align: center; padding-top: 3mm; ">
+{{ footerinfo.line3 }}<br />
+{{ footerinfo.line4 }}<br />
+{PAGENO} / {nb}
+</div>
+</htmlpagefooter>
+
+<sethtmlpageheader name="myheader" value="on" show-this-page="1" />
+<sethtmlpagefooter name="myfooter" value="on" />
+mpdf-->
+
+
+<table width="100%" style="font-family: serif; " cellpadding="10">
+<tr>
+<td width="46%" style="border: 0.1mm solid #888888; ">
+<span style="font-size: 7pt; color: #555555; font-family: sans;">{{ trans('BillAddress')}}:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
+{% if thirdparty.phone %}
+	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone }}<br />
+{% endif %}
+{% if thirdparty.email %}
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ thirdparty.email }}<br />
+{% endif %}
+</td>
+<td width="8%">&nbsp;</td>
+<td width="46%" style="border: 0.1mm solid #888888;">
+<span style="font-size: 7pt; color: #555555; font-family: sans;">{{ trans('DeliveryAddress')}}:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
+{% if thirdparty.phone %}
+	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone }}<br />
+{% endif %}
+{% if thirdparty.email %}
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ thirdparty.email }}<br />
+{% endif %}
+</td>
+</tr>
+</table>
+
+<br />
+{% if object.note_public %}
+<table class="items" width="100%" style="font-size: 7pt; border-collapse: collapse; " cellpadding="8">
+<tr>
+<td>{{ object.note_public }}</td>
+</tr>
+</table>
+<br />
+{% endif %}
+<div style="text-align: right">{{ currencyinfo }}</div>
+
+<table class="items" width="100%" style="font-size: 7pt; border-collapse: collapse; " cellpadding="8">
+<thead>
+<tr>
+<th width="15%">{{ trans('Ref') }}</th>
+<th width="40%">{{ trans('Description') }}</th>
+<th width="10%">{{ trans('VAT') }}</th>
+<th width="10%">{{ trans('Qty') }}</th>
+<th width="15%">{{ trans('PriceUHT') }}</th>
+<th width="15%">{{ trans('TotalHTShort') }}</th>
+</tr>
+</thead>
+<tbody>
+<!-- ITEMS HERE -->
+{% if lines is iterable %}
+	{% for line in lines %}
+		<tr>
+		{% if line.special_code == 104777 %}
+			{% if line.qty == 1 %}
+				<!-- SUBTOTAL TITLE -->
+				<td class="subtotaltitle" colspan="6" align="left">{{ line.label }}</td>
+			{% elseif line.qty == 50 %}
+				<!-- SUBTOTAL TEXT -->
+				<td class="blanktotal" colspan="6">{{ line.description }}</td>
+			{% elseif line.qty == 99 %}
+				<!-- SUBTOTAL SUBTOTAL -->
+				<td class="subtotalsubtotal" colspan="6" align="right">{{ line.label }}: {{ line.total_ht }}</td>
+			{% else %}
+				<td class="subtotal" colspan="6" align="left">{{ line.label }}{{ line.qty }}</td>
+			{% endif %}
+		{% else %}
+			{% if line.fk_product > 0 %}
+				<td align="center">{{ line.ref }}</td>
+				<td>
+					{% if line.product_label %}
+					{{ line.product_label }}<br />
+					{% endif %}
+				{{ line.product_description }}<br />
+				{% if line.product.barcode %}
+					<span class="barcodecell"><barcode code="{{ line.product.barcode }}" text="1" class="barcode" height="0.50" /></span>
+				{% endif %}
+				</td>
+			{% else %}
+				<td align="center"></td>
+				<td>
+				{% if line.label %}
+					{{ line.label }}<br />
+				{% endif %}
+				{{ line.description }}<br />
+				</td>
+			{% endif %}
+			<td align="right">{{ price(line.tva_tx) }}%</td>
+			<td align="center">{{ line.qty }}</td>
+			<td class="cost">{{ price(line.subprice) }}</td>
+			<td class="cost">{{ price(line.total_ht) }}</td>
+		{% endif %}
+		</tr>
+	{% endfor %}
+{% else %}
+	{# lines is empty #}
+	No lines
+{% endif %}
+<!-- END ITEMS HERE -->
+<tr>
+<td class="blanktotal" colspan="4" rowspan="3">
+{% if labelpaymentconditions %}
+	{{ trans('PaymentConditions') }}: {{ labelpaymentconditions }}
+{% endif %}
+<div class="freetext">{{ trans('EasydocStopTheBillAtSumOf', numbertowords(object.total_ttc, currency, 'fr')) }}.</div>
+</td>
+<td class="totals">{{ trans('TotalHT') }}<br>{{ transbis('TotalHT') }}</td>
+<td class="totals cost">{{ price(object.total_ht) }}</td>
+</tr>
+<tr>
+<td class="totals">{{ trans('TotalVAT') }}<br>{{ transbis('TotalVAT') }}</td>
+<td class="totals cost">{{ price(object.total_tva) }}</td>
+</tr>
+<tr>
+<td class="totals"><b>{{ trans('TotalTTC') }}<br>{{ transbis('TotalTTC') }}</b></td>
+<td class="totals cost"><b>{{ price(object.total_ttc) }}</b></td>
+</tr>
+</tbody>
+</table>
+
+{% if payments or discounts %}
+	<br>
+	<table class="items" style="font-size: 6pt; border-collapse: collapse;" cellpadding="8">
+		<thead>
+			<tr>
+				<th width="10%">{{ trans('Payment') }}</th>
+				<th width="10%">{{ trans('Amount') }}</th>
+				<th width="15%">{{ trans('Type') }}</th>
+				<th width="10%">{{ trans('Num') }}</th>
+				<th width="10%">{{ trans('Bank') }}</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for payment in payments %}
+			<tr>
+				<td class="totals" align="center">{{ date(payment.date, 'day') }}</td>
+				<td class="totals cost">{{ price(payment.total_ttc) }}</td>
+				<td class="totals" align="center">{{ trans(payment.text) }}</td>
+				<td class="totals">{{ payment.num }}</td>
+				<td class="totals" align="center">{{ payment.bankref }}</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+{% endif %}
+<br>
+{% if salesrepfoll_internal is iterable %}
+	<br>
+	<div class="freetext"><u>{{ trans('YourSalesRepresentatives') }}.</u></div>
+	<table class="items" style="font-size: 6pt; border-collapse: collapse;" cellpadding="8" width="100%">
+		<tbody>
+	{% for salesrepfoll in salesrepfoll_internal %}
+		<tr>
+			<td width="10%" align="center"><img src="{{ salesrepfoll.picture }}" class="picture"/></td>
+		   <td>
+				{{ salesrepfoll.lastname }} {{ salesrepfoll.firstname }}
+				{% if salesrepfoll.office_phone %}
+					<br><span style="font-family:dejavusanscondensed;">&#9742; </span>{{ salesrepfoll.office_phone }}
+				{% endif %}
+				{% if salesrepfoll.user_mobile %}
+					<br><span style="font-family:dejavusanscondensed;">&#9742; </span>{{ salesrepfoll.user_mobile }}
+				{% endif %}
+				{% if salesrepfoll.email %}
+					<br><span style="font-family:dejavusanscondensed;">&#9993; </span>{{ salesrepfoll.email }}
+				{% endif %}
+		   </td>
+		</tr>
+	{% endfor %}
+		</tbody>
+	</table>
+{% else %}
+	{# salesrepfoll_internal is empty #}
+{% endif %}
+<div class="freetext">{{ freetext }}</div>
+<div class="freetext">{{ debug }}</div>
+</body>
+</html>
