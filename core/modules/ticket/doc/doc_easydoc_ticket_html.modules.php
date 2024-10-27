@@ -108,7 +108,7 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 	 */
 	public function info($langs)
 	{
-		global $conf, $langs;
+		global $langs;
 
 		// Load translation files required by the page
 		$langs->loadLangs(["errors", "companies", "easydocgenerator@easydocgenerator"]);
