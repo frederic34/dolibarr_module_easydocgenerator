@@ -216,7 +216,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 	public function write_file($object, $outputlangs, $srctemplatepath = '', $hidedetails = 0, $hidedesc = 0, $hideref = 0)
 	{
 		// phpcs:enable
-		global $user, $langs, $conf, $mysoc, $hookmanager;
+		global $action, $conf, $hookmanager, $langs, $mysoc, $user, $outputlangsbis;
 
 		if (empty($srctemplatepath)) {
 			dol_syslog("doc_easydoc_invoice_html::write_file parameter srctemplatepath empty", LOG_WARNING);
@@ -228,14 +228,14 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
 		}
-		$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
+		$langfiles = ['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'compta', 'easydocgenerator@easydocgenerator'];
+		$outputlangs->loadLangs($langfiles);
 
-		global $outputlangsbis;
 		$outputlangsbis = null;
 		if (getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE') && $outputlangs->defaultlang != getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE')) {
 			$outputlangsbis = new Translate('', $conf);
 			$outputlangsbis->setDefaultLang(getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE'));
-			$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks']);
+			$outputlangsbis->loadLangs($langfiles);
 		}
 
 		// add linked objects to note_public
@@ -259,9 +259,12 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			$hookmanager = new HookManager($this->db);
 		}
 		$hookmanager->initHooks(['pdfgeneration']);
-		$parameters = ['object' => $object, 'outputlangs' => $outputlangs];
-		global $action;
-		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
+		$parameters = [
+			'object' => $object,
+			'outputlangs' => $outputlangs,
+			'outputlangsbis' => $outputlangsbis,
+		];
+		$hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
 		require dol_buildpath('easydocgenerator/vendor/autoload.php');
 		$md5id = md5_file($srctemplatepath);
@@ -277,7 +280,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			global $outputlangs, $langs;
 			if (!is_object($outputlangs)) {
 				$outputlangs = $langs;
-				$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
+				$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator', 'compta']);
 			}
 			return $outputlangs->trans($value, $param1, $param2, $param3);
 		});
@@ -287,7 +290,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 			global $outputlangsbis, $langs;
 			if (!is_object($outputlangsbis)) {
 				$outputlangsbis = $langs;
-				$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
+				$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator', 'compta']);
 			}
 			return $outputlangsbis->trans($value, $param1, $param2, $param3);
 		});
