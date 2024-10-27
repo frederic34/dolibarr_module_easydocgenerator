@@ -138,7 +138,7 @@ class doc_easydoc_contract_html extends ModelePDFContract
 			if (!is_dir($tmpdir)) {
 				$texttitle .= img_warning($langs->trans("ErrorDirNotFound", $tmpdir), 0);
 			} else {
-				$tmpfiles = dol_dir_list($tmpdir, 'files', 0, '');
+				$tmpfiles = dol_dir_list($tmpdir, 'files', 0, '\.(twig)');
 				if (count($tmpfiles)) {
 					$listoffiles = array_merge($listoffiles, $tmpfiles);
 				}
