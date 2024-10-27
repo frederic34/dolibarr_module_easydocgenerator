@@ -70,7 +70,7 @@ class doc_easydoc_bom_html extends ModelePDFbom
 		// Name of constant that is used to save list of directories to scan
 		$this->scandir = 'BOM_ADDON_EASYDOC_TEMPLATES_PATH';
 		// Save the name of generated file as the main doc when generating a doc with this template
-		$this->update_main_doc_field = ((int) DOL_VERSION < 20) ? 0 : 1;
+		$this->update_main_doc_field = ((int) DOL_VERSION < 21) ? 0 : 1;
 
 		// Page size for A4 format
 		$this->type = 'pdf';
@@ -174,7 +174,8 @@ class doc_easydoc_bom_html extends ModelePDFbom
 			// Show list of found files
 			foreach ($listoffiles as $file) {
 				$text .= '- ' . $file['name'] . ' <a href="' . DOL_URL_ROOT . '/document.php?modulepart=doctemplates&file=products/' . urlencode(basename($file['name'])) . '">' . img_picto('', 'listlight') . '</a>';
-				$text .= ' &nbsp; <a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=' . $this->scandir . '&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name'])) . '">' . img_picto('', 'delete') . '</a>';
+				$url = $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=' . $this->scandir . '&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name']));
+				$text .= ' &nbsp; <a class="reposition" href="' . $url . '">' . img_picto('', 'delete') . '</a>';
 				$text .= '<br>';
 			}
 			$text .= '</div>';
@@ -206,7 +207,7 @@ class doc_easydoc_bom_html extends ModelePDFbom
 	/**
 	 *  Function to build a document on disk using the generic odt module.
 	 *
-	 *	@param		Product 	$object				Object source to build document
+	 *	@param		BOM         $object				Object source to build document
 	 *	@param		Translate	$outputlangs		Lang output object
 	 * 	@param		string		$srctemplatepath	Full path of source filename for generator using a template file
 	 *  @param		int			$hidedetails		Do not show line details
@@ -217,7 +218,7 @@ class doc_easydoc_bom_html extends ModelePDFbom
 	public function write_file($object, $outputlangs, $srctemplatepath = '', $hidedetails = 0, $hidedesc = 0, $hideref = 0)
 	{
 		// phpcs:enable
-		global $user, $langs, $conf, $mysoc, $hookmanager;
+		global $action, $langs, $conf, $mysoc, $hookmanager, $user;
 
 		if (empty($srctemplatepath)) {
 			dol_syslog("doc_easydoc_product_html::write_file parameter srctemplatepath empty", LOG_WARNING);
@@ -225,18 +226,21 @@ class doc_easydoc_bom_html extends ModelePDFbom
 		}
 
 		$object->fetch_thirdparty();
+		$object->fetch_product();
+		$object->calculateCosts();
 
 		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
 		}
-		$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
+		$langfiles = ['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'compta', 'mrp', 'easydocgenerator@easydocgenerator'];
+		$outputlangs->loadLangs($langfiles);
 
 		global $outputlangsbis;
 		$outputlangsbis = null;
 		if (getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE') && $outputlangs->defaultlang != getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE')) {
 			$outputlangsbis = new Translate('', $conf);
 			$outputlangsbis->setDefaultLang(getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE'));
-			$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks']);
+			$outputlangsbis->loadLangs($langfiles);
 		}
 
 		// add linked objects to note_public
@@ -260,8 +264,11 @@ class doc_easydoc_bom_html extends ModelePDFbom
 			$hookmanager = new HookManager($this->db);
 		}
 		$hookmanager->initHooks(['pdfgeneration']);
-		$parameters = ['object' => $object, 'outputlangs' => $outputlangs];
-		global $action;
+		$parameters = [
+			'object' => $object,
+			'outputlangs' => $outputlangs,
+			'outputlangsbis' => $outputlangsbis,
+		];
 		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
 		require dol_buildpath('easydocgenerator/vendor/autoload.php');
@@ -278,7 +285,7 @@ class doc_easydoc_bom_html extends ModelePDFbom
 			global $outputlangs, $langs;
 			if (!is_object($outputlangs)) {
 				$outputlangs = $langs;
-				$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
+				$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'compta', 'mrp', 'easydocgenerator@easydocgenerator']);
 			}
 			return $outputlangs->trans($value, $param1, $param2, $param3);
 		});
@@ -288,7 +295,7 @@ class doc_easydoc_bom_html extends ModelePDFbom
 			global $outputlangsbis, $langs;
 			if (!is_object($outputlangsbis)) {
 				$outputlangsbis = $langs;
-				$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
+				$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'compta', 'mrp', 'easydocgenerator@easydocgenerator']);
 			}
 			return $outputlangsbis->trans($value, $param1, $param2, $param3);
 		});
@@ -402,42 +409,42 @@ class doc_easydoc_bom_html extends ModelePDFbom
 		$substitutions['mysoc']['fax_formatted'] = dol_print_phone($mysoc->fax, $mysoc->country_code, 0, 0, '', ' ');
 
 		// object
-		if (getDolGlobalInt('PRODUCT_USE_OLD_PATH_FOR_PHOTO')) {
-			$pdir[0] = get_exdir($object->id, 2, 0, 0, $object, 'product') . $object->id . "/photos/";
-			$pdir[1] = get_exdir(0, 0, 0, 0, $object, 'product') . dol_sanitizeFileName($object->ref) . '/';
-		} else {
-			$pdir[0] = get_exdir(0, 0, 0, 0, $object, 'product'); // default
-			$pdir[1] = get_exdir($object->id, 2, 0, 0, $object, 'product') . $object->id . "/photos/"; // alternative
-		}
-		$pictures = [];
-		foreach ($pdir as $midir) {
-			if ($conf->entity != $object->entity) {
-				$dir = $conf->product->multidir_output[$object->entity] . '/' . $midir; //Check repertories of current entities
-			} else {
-				$dir = $conf->product->dir_output . '/' . $midir; //Check repertory of the current product
-			}
-			foreach ($object->liste_photos($dir) as $key => $obj) {
-				$exif = '';
-				if (function_exists('exif_read_data')) {
-					$exif = exif_read_data($dir . $obj['photo']);
-				}
-				if ($obj['photo_vignette']) {
-					$pictures[] = [
-						'dir' => $dir,
-						'thumb' => $obj['photo_vignette'],
-						'original' => $obj['photo'],
-						'exif' => $exif,
-					];
-				} else {
-					$pictures[] = [
-						'dir' => $dir,
-						'original' => $obj['photo'],
-						'exif' => $exif,
-					];
-				}
-			}
-		}
-		$substitutions = array_merge($substitutions, ['pictures' => $pictures]);
+		// if (getDolGlobalInt('PRODUCT_USE_OLD_PATH_FOR_PHOTO')) {
+		// 	$pdir[0] = get_exdir($object->id, 2, 0, 0, $object, 'product') . $object->id . "/photos/";
+		// 	$pdir[1] = get_exdir(0, 0, 0, 0, $object, 'product') . dol_sanitizeFileName($object->ref) . '/';
+		// } else {
+		// 	$pdir[0] = get_exdir(0, 0, 0, 0, $object, 'product'); // default
+		// 	$pdir[1] = get_exdir($object->id, 2, 0, 0, $object, 'product') . $object->id . "/photos/"; // alternative
+		// }
+		// $pictures = [];
+		// foreach ($pdir as $midir) {
+		// 	if ($conf->entity != $object->entity) {
+		// 		$dir = $conf->product->multidir_output[$object->entity] . '/' . $midir; //Check repertories of current entities
+		// 	} else {
+		// 		$dir = $conf->product->dir_output . '/' . $midir; //Check repertory of the current product
+		// 	}
+		// 	foreach ($object->liste_photos($dir) as $key => $obj) {
+		// 		$exif = '';
+		// 		if (function_exists('exif_read_data')) {
+		// 			$exif = exif_read_data($dir . $obj['photo']);
+		// 		}
+		// 		if ($obj['photo_vignette']) {
+		// 			$pictures[] = [
+		// 				'dir' => $dir,
+		// 				'thumb' => $obj['photo_vignette'],
+		// 				'original' => $obj['photo'],
+		// 				'exif' => $exif,
+		// 			];
+		// 		} else {
+		// 			$pictures[] = [
+		// 				'dir' => $dir,
+		// 				'original' => $obj['photo'],
+		// 				'exif' => $exif,
+		// 			];
+		// 		}
+		// 	}
+		// }
+		// $substitutions = array_merge($substitutions, ['pictures' => $pictures]);
 		$substitutions = array_merge($substitutions, getEachVarObject($object, $outputlangs, 0));
 
 		// other
@@ -528,7 +535,7 @@ class doc_easydoc_bom_html extends ModelePDFbom
 		$mpdf->Bookmark($outputlangs->trans('PdfProductTitle'));
 		$mpdf->WriteHTML($html);
 
-		$dir = $conf->product->multidir_output[$object->entity];
+		$dir = $conf->bom->multidir_output[isset($object->entity) ? $object->entity : 1];
 		$objectref = dol_sanitizeFileName($object->ref);
 		if (!preg_match('/specimen/i', $objectref)) {
 			$dir .= "/" . $objectref;

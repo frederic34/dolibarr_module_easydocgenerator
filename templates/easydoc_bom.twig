@@ -105,11 +105,7 @@ table thead th {
 	{% endif %}
 </td>
 <td width="45%" style="text-align: right;">
-{% if (object.type == 1) %}
-	<span style="font-weight: bold; font-size: 14pt;"><b>{{ trans('ServiceSheet') }}</b></span>
-{% else %}
-	<span style="font-weight: bold; font-size: 14pt;"><b>{{ trans('ProductSheet') }}</b></span>
-{% endif %}
+<span style="font-weight: bold; font-size: 14pt;"><b>{{ trans('BillOfMaterials') }}</b></span>
 
 <br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('Ref') }}: {{ object.ref }}</span>
 
@@ -173,8 +169,6 @@ mpdf-->
 	<!-- END PICTURES HERE -->
 	</tbody>
 </table>
-
 <div class="freetext">{{ freetext }}</div>
 <div class="freetext">{{ debug }}</div>
-
 </html>
