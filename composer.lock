@@ -372,16 +372,16 @@
         },
         {
             "name": "horstoeko/zugferd",
-            "version": "v1.0.72",
+            "version": "v1.0.76",
             "source": {
                 "type": "git",
                 "url": "https://github.com/horstoeko/zugferd.git",
-                "reference": "4895eacd83278979371c6159142d105a96b0c560"
+                "reference": "74bd98c0fa883048f80563e08042556f8f0294ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/horstoeko/zugferd/zipball/4895eacd83278979371c6159142d105a96b0c560",
-                "reference": "4895eacd83278979371c6159142d105a96b0c560",
+                "url": "https://api.github.com/repos/horstoeko/zugferd/zipball/74bd98c0fa883048f80563e08042556f8f0294ce",
+                "reference": "74bd98c0fa883048f80563e08042556f8f0294ce",
                 "shasum": ""
             },
             "require": {
@@ -390,7 +390,7 @@
                 "horstoeko/mimedb": "^1",
                 "horstoeko/stringmanagement": "^1",
                 "jms/serializer": "^3",
-                "php": "^7.3|^7.4|^8",
+                "php": ">=7.3",
                 "setasign/fpdf": "^1",
                 "setasign/fpdi": "^2",
                 "smalot/pdfparser": "^0|^2",
@@ -441,9 +441,9 @@
             ],
             "support": {
                 "issues": "https://github.com/horstoeko/zugferd/issues",
-                "source": "https://github.com/horstoeko/zugferd/tree/v1.0.72"
+                "source": "https://github.com/horstoeko/zugferd/tree/v1.0.76"
             },
-            "time": "2024-10-24T16:50:47+00:00"
+            "time": "2024-11-03T09:05:21+00:00"
         },
         {
             "name": "jms/metadata",
@@ -511,16 +511,16 @@
         },
         {
             "name": "jms/serializer",
-            "version": "3.30.0",
+            "version": "3.31.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/schmittjoh/serializer.git",
-                "reference": "bf1105358123d7c02ee6cad08ea33ab535a09d5e"
+                "reference": "362503da26673f210221c25b99c795da718ad9aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/schmittjoh/serializer/zipball/bf1105358123d7c02ee6cad08ea33ab535a09d5e",
-                "reference": "bf1105358123d7c02ee6cad08ea33ab535a09d5e",
+                "url": "https://api.github.com/repos/schmittjoh/serializer/zipball/362503da26673f210221c25b99c795da718ad9aa",
+                "reference": "362503da26673f210221c25b99c795da718ad9aa",
                 "shasum": ""
             },
             "require": {
@@ -540,10 +540,10 @@
                 "jackalope/jackalope-doctrine-dbal": "^1.3",
                 "ocramius/proxy-manager": "^1.0 || ^2.0",
                 "phpbench/phpbench": "^1.0",
-                "phpstan/phpstan": "^1.0.2",
-                "phpunit/phpunit": "^9.0 || ^10.0",
+                "phpstan/phpstan": "^1.10.57",
+                "phpunit/phpunit": "^9.0 || ^10.0 || ^11.0",
                 "psr/container": "^1.0 || ^2.0",
-                "rector/rector": "^0.19.0",
+                "rector/rector": "^1.0.0",
                 "symfony/dependency-injection": "^5.4 || ^6.0 || ^7.0",
                 "symfony/expression-language": "^5.4 || ^6.0 || ^7.0",
                 "symfony/filesystem": "^5.4 || ^6.0 || ^7.0",
@@ -596,7 +596,7 @@
             ],
             "support": {
                 "issues": "https://github.com/schmittjoh/serializer/issues",
-                "source": "https://github.com/schmittjoh/serializer/tree/3.30.0"
+                "source": "https://github.com/schmittjoh/serializer/tree/3.31.1"
             },
             "funding": [
                 {
@@ -604,20 +604,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-02-24T14:12:14+00:00"
+            "time": "2024-10-31T18:35:14+00:00"
         },
         {
             "name": "kwn/number-to-words",
-            "version": "2.10.0",
+            "version": "2.11.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kwn/number-to-words.git",
-                "reference": "2144ba025d9f6f0ff850049fa43ba3bf47220460"
+                "reference": "4eecd25251335114f0f9fb9cea5d141609a07f21"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kwn/number-to-words/zipball/2144ba025d9f6f0ff850049fa43ba3bf47220460",
-                "reference": "2144ba025d9f6f0ff850049fa43ba3bf47220460",
+                "url": "https://api.github.com/repos/kwn/number-to-words/zipball/4eecd25251335114f0f9fb9cea5d141609a07f21",
+                "reference": "4eecd25251335114f0f9fb9cea5d141609a07f21",
                 "shasum": ""
             },
             "require": {
@@ -655,9 +655,9 @@
             ],
             "support": {
                 "issues": "https://github.com/kwn/number-to-words/issues",
-                "source": "https://github.com/kwn/number-to-words/tree/2.10.0"
+                "source": "https://github.com/kwn/number-to-words/tree/2.11.0"
             },
-            "time": "2024-09-18T20:08:07+00:00"
+            "time": "2024-11-04T21:09:14+00:00"
         },
         {
             "name": "mpdf/mpdf",
@@ -1929,16 +1929,16 @@
         },
         {
             "name": "symfony/validator",
-            "version": "v5.4.44",
+            "version": "v5.4.46",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/validator.git",
-                "reference": "5b061420daf15b58e1599cd2191b0780ddcd2157"
+                "reference": "9849c2cae17964a42a77df6823ac90414e2b451d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/validator/zipball/5b061420daf15b58e1599cd2191b0780ddcd2157",
-                "reference": "5b061420daf15b58e1599cd2191b0780ddcd2157",
+                "url": "https://api.github.com/repos/symfony/validator/zipball/9849c2cae17964a42a77df6823ac90414e2b451d",
+                "reference": "9849c2cae17964a42a77df6823ac90414e2b451d",
                 "shasum": ""
             },
             "require": {
@@ -2022,7 +2022,7 @@
             "description": "Provides tools to validate values",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/validator/tree/v5.4.44"
+                "source": "https://github.com/symfony/validator/tree/v5.4.46"
             },
             "funding": [
                 {
@@ -2038,20 +2038,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-09-19T08:27:53+00:00"
+            "time": "2024-11-04T11:03:12+00:00"
         },
         {
             "name": "symfony/yaml",
-            "version": "v5.4.44",
+            "version": "v5.4.45",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "7025b964f123bbf1896d7563db6ec7f1f63e918a"
+                "reference": "a454d47278cc16a5db371fe73ae66a78a633371e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/7025b964f123bbf1896d7563db6ec7f1f63e918a",
-                "reference": "7025b964f123bbf1896d7563db6ec7f1f63e918a",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/a454d47278cc16a5db371fe73ae66a78a633371e",
+                "reference": "a454d47278cc16a5db371fe73ae66a78a633371e",
                 "shasum": ""
             },
             "require": {
@@ -2097,7 +2097,7 @@
             "description": "Loads and dumps YAML files",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/yaml/tree/v5.4.44"
+                "source": "https://github.com/symfony/yaml/tree/v5.4.45"
             },
             "funding": [
                 {
@@ -2113,7 +2113,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-09-16T14:36:56+00:00"
+            "time": "2024-09-25T14:11:13+00:00"
         },
         {
             "name": "t4web/composer-lock-parser",
@@ -2247,12 +2247,12 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=7.4"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }
