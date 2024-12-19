@@ -65,7 +65,7 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 		$langs->loadLangs(['main', 'companies', 'easydocgenerator@easydocgenerator']);
 
 		$this->db = $db;
-		$this->name = "Easydoc templates";
+		$this->name = "Easydoc tickets templates";
 		$this->description = $langs->trans("DocumentModelEasydocgeneratorTemplate");
 		// Name of constant that is used to save list of directories to scan
 		$this->scandir = 'TICKET_ADDON_EASYDOC_TEMPLATES_PATH';
@@ -120,7 +120,7 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 		$text .= '<input type="hidden" name="token" value="' . newToken() . '">';
 		$text .= '<input type="hidden" name="page_y" value="">';
 		$text .= '<input type="hidden" name="action" value="setModuleOptions">';
-		$text .= '<input type="hidden" name="param1" value="TICKET_ADDON_EASYDOC_TEMPLATES_PATH">';
+		$text .= '<input type="hidden" name="param1" value="' . $this->scandir . '">';
 		$text .= '<table class="nobordernopadding" width="100%">';
 
 		// List of directories area
@@ -174,7 +174,7 @@ class doc_easydoc_ticket_html extends ModelePDFTicket
 			// Show list of found files
 			foreach ($listoffiles as $file) {
 				$text .= '- ' . $file['name'] . ' <a href="' . DOL_URL_ROOT . '/document.php?modulepart=doctemplates&file=tickets/' . urlencode(basename($file['name'])) . '">' . img_picto('', 'listlight') . '</a>';
-				$text .= ' &nbsp; <a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=TICKET_ADDON_EASYDOC_TEMPLATES_PATH&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name'])) . '">' . img_picto('', 'delete') . '</a>';
+				$text .= ' &nbsp; <a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=' . $this->scandir . '&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name'])) . '">' . img_picto('', 'delete') . '</a>';
 				$text .= '<br>';
 			}
 			$text .= '</div>';

@@ -74,13 +74,13 @@ class doc_easydoc_contract_html extends ModelePDFContract
 
 		// Page size for A4 format
 		$this->type = 'pdf';
-		$this->page_largeur = 0;
-		$this->page_hauteur = 0;
+		$this->page_largeur = 210;
+		$this->page_hauteur = 297;
 		$this->format = [$this->page_largeur, $this->page_hauteur];
-		$this->marge_gauche = 0;
-		$this->marge_droite = 0;
-		$this->marge_haute = 0;
-		$this->marge_basse = 0;
+		$this->marge_gauche = getDolGlobalInt('EASYDOC_PDF_MARGIN_LEFT', 10);
+		$this->marge_droite = getDolGlobalInt('EASYDOC_PDF_MARGIN_RIGHT', 10);
+		$this->marge_haute = getDolGlobalInt('EASYDOC_PDF_MARGIN_TOP', 48);
+		$this->marge_basse = getDolGlobalInt('EASYDOC_PDF_MARGIN_BOTTOM', 48);
 
 		$this->option_logo = 1; // Display logo
 		$this->option_tva = 0; // Manage the vat option COMMANDE_TVAOPTION
@@ -504,11 +504,11 @@ class doc_easydoc_contract_html extends ModelePDFContract
 		}
 		// print $html;
 		$mpdf = new \Mpdf\Mpdf([
-			'format' => [210, 297],
-			'margin_left' => getDolGlobalInt('EASYDOC_PDF_MARGIN_LEFT', 10),
-			'margin_right' => getDolGlobalInt('EASYDOC_PDF_MARGIN_RIGHT', 10),
-			'margin_top' => getDolGlobalInt('EASYDOC_PDF_MARGIN_TOP', 48),
-			'margin_bottom' => getDolGlobalInt('EASYDOC_PDF_MARGIN_BOTTOM', 25),
+			'format' => $this->format,
+			'margin_left' => $this->marge_gauche,
+			'margin_right' => $this->marge_droite,
+			'margin_top' => $this->marge_haute,
+			'margin_bottom' => $this->marge_basse,
 			'margin_header' =>  getDolGlobalInt('EASYDOC_PDF_MARGIN_HEADER', 10),
 			'margin_footer' =>  getDolGlobalInt('EASYDOC_PDF_MARGIN_FOOTER', 10),
 		]);
