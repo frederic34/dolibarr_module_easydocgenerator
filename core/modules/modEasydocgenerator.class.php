@@ -180,7 +180,7 @@ class modEasydocgenerator extends DolibarrModules
 	 */
 	public function init($options = '')
 	{
-		global $conf, $langs;
+		global $langs;
 
 		//$result = $this->_load_tables('/install/mysql/', 'easydocgenerator');
 		$result = $this->_load_tables('/easydocgenerator/sql/');
@@ -245,9 +245,9 @@ class modEasydocgenerator extends DolibarrModules
 		];
 
 		foreach ($modules as $module) {
-			$src = dol_buildpath('/easydocgenerator/templates/') . 'easydoc_' . $module;
+			$src = dol_buildpath('/easydocgenerator/templates/') . 'easydoc_' . $module . '.twig';
 			$dirtemplate = DOL_DATA_ROOT . '/ecm/easydocgenerator/' . $module . 's';
-			$dest = $dirtemplate . '/easydoc_' . $module;
+			$dest = $dirtemplate . '/easydoc_' . $module . '.twig';
 
 			if (file_exists($src) && !file_exists($dest)) {
 				require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';

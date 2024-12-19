@@ -1,0 +1,229 @@
+<html>
+<head>
+<style>
+body {
+	font-family: sans-serif;
+	font-size: 9pt;
+}
+p {	margin: 0pt; }
+table.items {
+	border: 0.1mm solid #000000;
+}
+td { vertical-align: top; }
+.items td {
+	border-left: 0.1mm solid #000000;
+	border-right: 0.1mm solid #000000;
+}
+table thead th {
+	background-color: #EEEEEE;
+	text-align: center;
+	border: 0.1mm solid #000000;
+	font-variant: helvetica;
+}
+.items td.blanktotal {
+	background-color: #EEEEEE;
+	border: 0.1mm solid #000000;
+	border: 0mm none #000000;
+	border-top: 0.1mm solid #000000;
+	border-right: 0.1mm solid #000000;
+}
+.items td.subtotaltitle {
+	background-color: {{ getDolGlobalString('SUBTOTAL_TITLE_BACKGROUNDCOLOR', '#ffffff') }};
+	border: 0.1mm solid #000000;
+	border: 0mm none #000000;
+	border-top: 0.1mm solid #000000;
+	border-bottom: 0.1mm solid #000000;
+	border-right: 0.1mm solid #000000;
+}
+.items td.subtotalsubtotal {
+	background-color: {{ getDolGlobalString('SUBTOTAL_SUBTOTAL_BACKGROUNDCOLOR', '#ebebeb') }};
+	border: 0.1mm solid #000000;
+	border: 0mm none #000000;
+	border-top: 0.1mm solid #000000;
+	border-bottom: 0.1mm solid #000000;
+	border-right: 0.1mm solid #000000;
+}
+.items td.totals {
+	text-align: right;
+	border: 0.1mm solid #000000;
+}
+.items td.cost {
+	text-align: "." right;
+}
+</style>
+</head>
+<body>
+
+<!--mpdf
+<htmlpageheader name="myheader">
+<table width="100%">
+<tr>
+<td align="center"><img src="{{ logo }}" height="80px"/></td>
+<td width="45%" style="color:#000000; ">
+	<span style="font-weight: bold; font-size: 14pt;">{{ mysoc.name }}</span><br />
+	{{ mysoc.address }}<br />
+	{{ mysoc.zip }} {{ mysoc.town }}<br />
+	<img src="{{ mysoc.flag }}"> {{ mysoc.country }}<br />
+	{% if mysoc.phone %}
+		<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ mysoc.phone }}
+	{% endif %}
+	{% if mysoc.fax %}
+		<span style="font-family:dejavusanscondensed;">&#8507; </span>{{ mysoc.fax }}
+	{% endif %}
+	<br />
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ mysoc.email }}<br />
+	{{ trans('VATIntraShort') }}: {{ mysoc.tva_intra }}<br />
+</td>
+<td width="45%" style="text-align: right;">
+<span style="font-weight: bold; font-size: 14pt;"><b>{{ trans('Contract') }} {{ object.ref }}</b></span>
+<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('Date') }}: {{ date(object.date_contrat, 'day') }}</span>
+{% if object.ref_customer %}
+	<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('RefCustomer') }}: {{ object.ref_customer }}</span>
+{% endif %}
+{% if object.ref_project %}
+	<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans("RefProject") }}: {{ object.ref_project }}</span>
+{% endif %}
+{% if thirdparty.code_client %}
+	<br /><span style="font-weight: bold; font-size: 10pt;">{{ trans('CustomerCode') }}: {{ thirdparty.code_client }}</span>
+{% endif %}
+{% if linkedObjects is iterable %}
+	{% for link in linkedObjects %}
+		<br /><span style="font-weight: bold; font-size: 10pt;">{{ link.ref_title}}: {{ link.ref_value }}</span>
+	{% endfor %}
+{% endif %}
+</td>
+</tr>
+</table>
+</htmlpageheader>
+
+<htmlpagefooter name="myfooter">
+<div style="border-top: 1px solid #000000; font-size: 6pt; text-align: center; padding-top: 3mm; ">
+{{ footerinfo.line3 }}<br />
+{{ footerinfo.line4 }}<br />
+{PAGENO} / {nb}
+</div>
+</htmlpagefooter>
+
+<sethtmlpageheader name="myheader" value="on" show-this-page="1" />
+<sethtmlpagefooter name="myfooter" value="on" />
+mpdf-->
+
+
+<table width="100%" style="font-family: serif; " cellpadding="10">
+<tr>
+<td width="46%" style="border: 0.1mm solid #888888; ">
+<span style="font-size: 7pt; color: #555555; font-family: sans;">SOLD TO:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
+{% if thirdparty.phone %}
+	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone }}<br />
+{% endif %}
+{% if thirdparty.email %}
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ thirdparty.email }}<br />
+{% endif %}
+</td>
+<td width="8%">&nbsp;</td>
+<td width="46%" style="border: 0.1mm solid #888888;">
+<span style="font-size: 7pt; color: #555555; font-family: sans;">SHIP TO:</span><br /><b>{{ thirdparty.name }}</b><br />{{ thirdparty.address }}<br />{{ thirdparty.zip }} {{ thirdparty.town }}<br /><img src="{{ thirdparty.flag }}"> {{ thirdparty.country }}<br />
+{% if thirdparty.phone %}
+	<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ thirdparty.phone }}<br />
+{% endif %}
+{% if thirdparty.email %}
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ thirdparty.email }}<br />
+{% endif %}
+</td>
+</tr>
+</table>
+
+<br />
+{% if object.note_public %}
+<table class="items" width="100%" style="font-size: 7pt; border-collapse: collapse; " cellpadding="8">
+<tr>
+<td>{{ object.note_public }}</td>
+</tr>
+</table>
+<br />
+{% endif %}
+<div style="text-align: right">{{ currencyinfo }}</div>
+
+<table class="items" width="100%" style="font-size: 7pt; border-collapse: collapse; " cellpadding="8">
+<thead>
+<tr>
+<th width="15%">{{ trans('Ref') }}</th>
+<th width="40%">{{ trans('Description') }}</th>
+<th width="10%">{{ trans('VAT') }}</th>
+<th width="10%">{{ trans('Qty') }}</th>
+<th width="15%">{{ trans('PriceUHT') }}</th>
+<th width="15%">{{ trans('TotalHTShort') }}</th>
+</tr>
+</thead>
+<tbody>
+<!-- ITEMS HERE -->
+{% if lines is iterable %}
+	{% for line in lines %}
+		<tr>
+		{% if line.special_code == 104777 %}
+			{% if line.qty == 1 %}
+				<!-- SUBTOTAL TITLE -->
+				<td class="subtotaltitle" colspan="6" align="left">{{ line.label }}</td>
+			{% elseif line.qty == 50 %}
+				<!-- SUBTOTAL TEXT -->
+				<td class="blanktotal" colspan="6">{{ line.description }}</td>
+			{% elseif line.qty == 99 %}
+				<!-- SUBTOTAL SUBTOTAL -->
+				<td class="subtotalsubtotal" colspan="6" align="right">{{ line.label }}: {{ line.total_ht }}</td>
+			{% else %}
+				<td class="subtotal" colspan="6" align="left">{{ line.label }}{{ line.qty }}</td>
+			{% endif %}
+		{% else %}
+			<td align="center">{{ line.ref }}</td>
+			<td>{{ line.product_label }}
+				<br>{{ line.product_description }}
+				<br>{{ trans('DateStartPlannedShort') }}: {% if line.date_start %}{{ date(line.date_start, 'day') }}{% else %}{{ trans("Unknown") }}{% endif %}
+				<br>{{ trans('DateEndPlannedShort') }}: {% if line.date_end %}{{ date(line.date_end, 'day') }}{% else %}{{ trans("Unknown") }}{% endif %}
+			</td>
+			<td align="right">{{ price(line.tva_tx) }}%</td>
+			<td align="center">{{ line.qty }}</td>
+			<td class="cost">{{ price(line.subprice) }}</td>
+			<td class="cost">{{ price(line.total_ht) }}</td>
+		{% endif %}
+		</tr>
+	{% endfor %}
+{% else %}
+	{# lines is empty #}
+	No lines
+{% endif %}
+<!-- END ITEMS HERE -->
+<tr>
+<td class="blanktotal" colspan="4" rowspan="3"></td>
+<td class="totals">{{ trans('TotalHT') }}</td>
+<td class="totals cost">{{ price(object.total_ht) }}</td>
+</tr>
+<tr>
+<td class="totals">{{ trans('TotalVAT') }}</td>
+<td class="totals cost">{{ price(object.total_tva) }}</td>
+</tr>
+<tr>
+<td class="totals"><b>{{ trans('TotalTTC') }}</b></td>
+<td class="totals cost"><b>{{ price(object.total_ttc) }}</b></td>
+</tr>
+</tbody>
+</table>
+
+<br>
+<table width="100%" style="font-family: serif; " cellpadding="10">
+	<tr>
+	<td width="46%" style="border: 0.1mm solid #888888; ">
+	<span style="font-size: 7pt; color: #555555; font-family: sans;">SOLD TO:</span>
+	<br><br>
+	</td>
+	<td width="8%">&nbsp;</td>
+	<td width="46%" style="border: 0.1mm solid #888888;">
+	<span style="font-size: 7pt; color: #555555; font-family: sans;">SHIP TO:</span>
+	<br><br>
+	</td>
+	</tr>
+</table>
+<br>
+<div>{{ freetext }}</div>
+
+</body>
+</html>

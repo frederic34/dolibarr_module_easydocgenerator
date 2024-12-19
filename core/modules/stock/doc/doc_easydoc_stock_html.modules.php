@@ -108,7 +108,7 @@ class doc_easydoc_stock_html extends ModelePDFStock
 	 */
 	public function info($langs)
 	{
-		global $conf, $langs;
+		global $langs;
 
 		// Load translation files required by the page
 		$langs->loadLangs(["errors", "companies", "easydocgenerator@easydocgenerator"]);
@@ -138,7 +138,7 @@ class doc_easydoc_stock_html extends ModelePDFStock
 			if (!is_dir($tmpdir)) {
 				$texttitle .= img_warning($langs->trans("ErrorDirNotFound", $tmpdir), 0);
 			} else {
-				$tmpfiles = dol_dir_list($tmpdir, 'files', 0, '');
+				$tmpfiles = dol_dir_list($tmpdir, 'files', 0, '\.(twig)');
 				if (count($tmpfiles)) {
 					$listoffiles = array_merge($listoffiles, $tmpfiles);
 				}

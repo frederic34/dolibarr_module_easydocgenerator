@@ -120,13 +120,13 @@ class doc_easydoc_expensereport_html extends ModeleExpenseReport
 		$text .= '<input type="hidden" name="token" value="' . newToken() . '">';
 		$text .= '<input type="hidden" name="page_y" value="">';
 		$text .= '<input type="hidden" name="action" value="setModuleOptions">';
-		$text .= '<input type="hidden" name="param1" value="EXPENSEREPORT_ADDON_EASYDOC_TEMPLATES_PATH">';
+		$text .= '<input type="hidden" name="param1" value="' . $this->scandir . '">';
 		$text .= '<table class="nobordernopadding" width="100%">';
 
 		// List of directories area
 		$text .= '<tr><td>';
 		$texttitle = $langs->trans("ListOfDirectoriesForHtmlTemplates");
-		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim(getDolGlobalString('EXPENSEREPORT_ADDON_EASYDOC_TEMPLATES_PATH'))));
+		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim(getDolGlobalString($this->scandir))));
 		$listoffiles = [];
 		foreach ($listofdir as $key => $tmpdir) {
 			$tmpdir = trim($tmpdir);
@@ -138,7 +138,7 @@ class doc_easydoc_expensereport_html extends ModeleExpenseReport
 			if (!is_dir($tmpdir)) {
 				$texttitle .= img_warning($langs->trans("ErrorDirNotFound", $tmpdir), 0);
 			} else {
-				$tmpfiles = dol_dir_list($tmpdir, 'files', 0, '');
+				$tmpfiles = dol_dir_list($tmpdir, 'files', 0, '\.(twig)');
 				if (count($tmpfiles)) {
 					$listoffiles = array_merge($listoffiles, $tmpfiles);
 				}
@@ -153,7 +153,7 @@ class doc_easydoc_expensereport_html extends ModeleExpenseReport
 		$text .= $form->textwithpicto($texttitle, $texthelp, 1, 'help', '', 1, 3, $this->name);
 		$text .= '<div><div style="display: inline-block; min-width: 100px; vertical-align: middle;">';
 		$text .= '<textarea class="flat" cols="60" name="value1">';
-		$text .= getDolGlobalString('EXPENSEREPORT_ADDON_EASYDOC_TEMPLATES_PATH');
+		$text .= getDolGlobalString($this->scandir);
 		$text .= '</textarea>';
 		$text .= '</div><div style="display: inline-block; vertical-align: middle;">';
 		$text .= '<input type="submit" class="button button-edit reposition smallpaddingimp" name="modify" value="' . dol_escape_htmltag($langs->trans("Modify")) . '">';
@@ -161,7 +161,7 @@ class doc_easydoc_expensereport_html extends ModeleExpenseReport
 
 		// Scan directories
 		$nbofiles = count($listoffiles);
-		if (getDolGlobalString('EXPENSEREPORT_ADDON_EASYDOC_TEMPLATES_PATH')) {
+		if (getDolGlobalString($this->scandir)) {
 			$text .= $langs->trans("NumberOfModelHTMLFilesFound") . ': <b>';
 			//$text.=$nbofiles?'<a id="a_'.get_class($this).'" href="#">':'';
 			$text .= count($listoffiles);
@@ -174,7 +174,7 @@ class doc_easydoc_expensereport_html extends ModeleExpenseReport
 			// Show list of found files
 			foreach ($listoffiles as $file) {
 				$text .= '- ' . $file['name'] . ' <a href="' . DOL_URL_ROOT . '/document.php?modulepart=doctemplates&file=expensereports/' . urlencode(basename($file['name'])) . '">' . img_picto('', 'listlight') . '</a>';
-				$text .= ' &nbsp; <a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=EXPENSEREPORT_ADDON_EASYDOC_TEMPLATES_PATH&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name'])) . '">' . img_picto('', 'delete') . '</a>';
+				$text .= ' &nbsp; <a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=' . $this->scandir . '&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name'])) . '">' . img_picto('', 'delete') . '</a>';
 				$text .= '<br>';
 			}
 			$text .= '</div>';
@@ -188,7 +188,7 @@ class doc_easydoc_expensereport_html extends ModeleExpenseReport
 			$text .= '<input type="hidden" name="MAX_FILE_SIZE" value="' . ($maxmin * 1024) . '">';
 		}
 		$text .= ' <input type="file" name="uploadfile">';
-		$text .= '<input type="hidden" value="EXPENSEREPORT_ADDON_EASYDOC_TEMPLATES_PATH" name="keyforuploaddir">';
+		$text .= '<input type="hidden" value="' . $this->scandir . '" name="keyforuploaddir">';
 		$text .= '<input type="submit" class="button reposition smallpaddingimp" value="' . dol_escape_htmltag($langs->trans("Upload")) . '" name="upload">';
 		$text .= '</div>';
 
@@ -229,14 +229,14 @@ class doc_easydoc_expensereport_html extends ModeleExpenseReport
 		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
 		}
-		$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'trips', 'easydocgenerator@easydocgenerator']);
+		$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'trips', 'compta', 'easydocgenerator@easydocgenerator']);
 
 		global $outputlangsbis;
 		$outputlangsbis = null;
 		if (getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE') && $outputlangs->defaultlang != getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE')) {
 			$outputlangsbis = new Translate('', $conf);
 			$outputlangsbis->setDefaultLang(getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE'));
-			$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'trips', 'easydocgenerator@easydocgenerator']);
+			$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'trips', 'compta', 'easydocgenerator@easydocgenerator']);
 		}
 
 		// add linked objects to note_public
@@ -260,7 +260,11 @@ class doc_easydoc_expensereport_html extends ModeleExpenseReport
 			$hookmanager = new HookManager($this->db);
 		}
 		$hookmanager->initHooks(['pdfgeneration']);
-		$parameters = ['object' => $object, 'outputlangs' => $outputlangs];
+		$parameters = [
+			'object' => $object,
+			'outputlangs' => $outputlangs,
+			'outputlangsbis' => $outputlangsbis,
+		];
 		global $action;
 		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
@@ -278,7 +282,7 @@ class doc_easydoc_expensereport_html extends ModeleExpenseReport
 			global $outputlangs, $langs;
 			if (!is_object($outputlangs)) {
 				$outputlangs = $langs;
-				$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
+				$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'compta', 'easydocgenerator@easydocgenerator']);
 			}
 			return $outputlangs->trans($value, $param1, $param2, $param3);
 		});
@@ -288,7 +292,7 @@ class doc_easydoc_expensereport_html extends ModeleExpenseReport
 			global $outputlangsbis, $langs;
 			if (!is_object($outputlangsbis)) {
 				$outputlangsbis = $langs;
-				$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
+				$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'compta', 'easydocgenerator@easydocgenerator']);
 			}
 			return $outputlangsbis->trans($value, $param1, $param2, $param3);
 		});
@@ -386,7 +390,12 @@ class doc_easydoc_expensereport_html extends ModeleExpenseReport
 		$substitutionarray = array_merge(getCommonSubstitutionArray($outputlangs, 0, null, $object), $substitutionarray);
 
 		// Call the ODTSubstitution hook
-		$parameters = ['object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$substitutionarray];
+		$parameters = [
+			'object' => $object,
+			'outputlangs' => $outputlangs,
+			'outputlangsbis' => $outputlangsbis,
+			'substitutionarray' => &$substitutionarray,
+		];
 		$reshook = $hookmanager->executeHooks('ODTSubstitution', $parameters, $this, $action);
 
 		// Line of free text

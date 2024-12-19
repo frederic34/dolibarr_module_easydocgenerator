@@ -1,0 +1,144 @@
+<html>
+<head>
+<style>
+body {
+	font-family: sans-serif;
+	font-size: 9pt;
+}
+p {	margin: 0pt; }
+table.items {
+	border: 0.1mm solid #000000;
+}
+td { vertical-align: top; }
+.items td {
+	border-left: 0.1mm solid #000000;
+	border-right: 0.1mm solid #000000;
+}
+table thead th {
+	background-color: #EEEEEE;
+	text-align: center;
+	border: 0.1mm solid #000000;
+	font-variant: helvetica;
+}
+.items td.blanktotal {
+	background-color: #EEEEEE;
+	border: 0.1mm solid #000000;
+	border: 0mm none #000000;
+	border-top: 0.1mm solid #000000;
+	border-right: 0.1mm solid #000000;
+}
+.items td.subtotaltitle {
+	background-color: {{ getDolGlobalString('SUBTOTAL_TITLE_BACKGROUNDCOLOR', '#ffffff') }};
+	border: 0.1mm solid #000000;
+	border: 0mm none #000000;
+	border-top: 0.1mm solid #000000;
+	border-bottom: 0.1mm solid #000000;
+	border-right: 0.1mm solid #000000;
+}
+.items td.subtotalsubtotal {
+	background-color: {{ getDolGlobalString('SUBTOTAL_SUBTOTAL_BACKGROUNDCOLOR', '#ebebeb') }};
+	border: 0.1mm solid #000000;
+	border: 0mm none #000000;
+	border-top: 0.1mm solid #000000;
+	border-bottom: 0.1mm solid #000000;
+	border-right: 0.1mm solid #000000;
+}
+.items td.totals {
+	text-align: right;
+	border: 0.1mm solid #000000;
+}
+.items td.cost {
+	text-align: "." right;
+}
+.barcode {
+	padding: 1.5mm;
+	margin: 0;
+	vertical-align: top;
+	color: #000000;
+}
+.barcodecell {
+	text-align: center;
+	vertical-align: middle;
+	padding: 0;
+}
+.myfixed1 {
+	position: absolute;
+	overflow: visible;
+	left: 0;
+	bottom: 0;
+	border: 1px solid #880000;
+	background-color: #FFEEDD;
+	background-gradient: linear #dec7cd #fff0f2 0 1 0 0.5;
+	padding: 1.5em;
+	font-family:sans;
+	margin: 0;
+	border-radius: 2mm;
+}
+.freetext {
+	page-break-inside: avoid;
+}
+
+</style>
+</head>
+<body>
+
+<!--mpdf
+<htmlpageheader name="myheader">
+<table width="100%">
+<tr>
+<td align="center"><img src="{{ logo }}" height="80px"/></td>
+<td width="45%" style="color:#000000; ">
+	<span style="font-weight: bold; font-size: 14pt;">{{ mysoc.name }}</span><br />
+	{{ mysoc.address }}<br />
+	{{ mysoc.zip }} {{ mysoc.town }}<br />
+	<img src="{{ mysoc.flag }}"> {{ mysoc.country }}<br />
+	{% if mysoc.phone %}
+		<span style="font-family:dejavusanscondensed;">&#9742; </span>{{ mysoc.phone }}
+	{% endif %}
+	{% if mysoc.fax %}
+		<span style="font-family:dejavusanscondensed;">&#8507; </span>{{ mysoc.fax }}
+	{% endif %}
+	<br />
+	<span style="font-family:dejavusanscondensed;">&#9993; </span>{{ mysoc.email }}<br />
+	{% if mysoc.tva_intra %}
+		{{ trans('VATIntraShort') }}: {{ mysoc.tva_intra }}<br />
+	{% endif %}
+</td>
+<td width="45%" style="text-align: right;">
+
+<span style="font-weight: bold; font-size: 14pt;"><b>{{ trans('Ticket') }} {{ object.ref }}</b></span>
+
+<br /><span style="font-weight: bold; font-size: 8pt;">{{ trans('Label') }}: {{ object.lieu }}</span>
+<br /><span style="font-weight: bold; font-size: 8pt;">{{ trans('Address') }}: {{ object.address }}</span>
+
+</td>
+</tr>
+</table>
+</htmlpageheader>
+
+<htmlpagefooter name="myfooter">
+<div style="border-top: 1px solid #000000; font-size: 6pt; text-align: center; padding-top: 3mm; ">
+{{ footerinfo.line3 }}<br />
+{{ footerinfo.line4 }}<br />
+{PAGENO} / {nb}
+</div>
+</htmlpagefooter>
+
+<sethtmlpageheader name="myheader" value="on" show-this-page="1" />
+<sethtmlpagefooter name="myfooter" value="on" />
+mpdf-->
+
+
+<br />
+{% if object.note_public %}
+<table class="items" width="100%" style="font-size: 6pt; border-collapse: collapse; " cellpadding="8">
+<tr>
+<td>{{ object.note_public }}</td>
+</tr>
+</table>
+<br />
+{% endif %}
+{% if getDolGlobalString('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE') %}
+{{ debug }}
+{% endif %}
+</html>

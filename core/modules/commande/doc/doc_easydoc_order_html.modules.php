@@ -121,13 +121,13 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$text .= '<input type="hidden" name="token" value="' . newToken() . '">';
 		$text .= '<input type="hidden" name="page_y" value="">';
 		$text .= '<input type="hidden" name="action" value="setModuleOptions">';
-		$text .= '<input type="hidden" name="param1" value="ORDER_ADDON_EASYDOC_TEMPLATES_PATH">';
+		$text .= '<input type="hidden" name="param1" value="' . $this->scandir . '">';
 		$text .= '<table class="nobordernopadding" width="100%">';
 
 		// List of directories area
 		$text .= '<tr><td>';
 		$texttitle = $langs->trans("ListOfDirectoriesForHtmlTemplates");
-		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim($conf->global->ORDER_ADDON_EASYDOC_TEMPLATES_PATH)));
+		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim(getDolGlobalString($this->scandir))));
 		$listoffiles = [];
 		foreach ($listofdir as $key => $tmpdir) {
 			$tmpdir = trim($tmpdir);
@@ -154,7 +154,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$text .= $form->textwithpicto($texttitle, $texthelp, 1, 'help', '', 1, 3, $this->name);
 		$text .= '<div><div style="display: inline-block; min-width: 100px; vertical-align: middle;">';
 		$text .= '<textarea class="flat" cols="60" name="value1">';
-		$text .= getDolGlobalString('ORDER_ADDON_EASYDOC_TEMPLATES_PATH');
+		$text .= getDolGlobalString($this->scandir);
 		$text .= '</textarea>';
 		$text .= '</div><div style="display: inline-block; vertical-align: middle;">';
 		$text .= '<input type="submit" class="button button-edit reposition smallpaddingimp" name="modify" value="' . dol_escape_htmltag($langs->trans("Modify")) . '">';
@@ -162,7 +162,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 
 		// Scan directories
 		$nbofiles = count($listoffiles);
-		if (getDolGlobalString('ORDER_ADDON_EASYDOC_TEMPLATES_PATH')) {
+		if (getDolGlobalString($this->scandir)) {
 			$text .= $langs->trans("NumberOfModelHTMLFilesFound") . ': <b>';
 			//$text.=$nbofiles?'<a id="a_'.get_class($this).'" href="#">':'';
 			$text .= count($listoffiles);
@@ -175,7 +175,8 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			// Show list of found files
 			foreach ($listoffiles as $file) {
 				$text .= '- ' . $file['name'] . ' <a href="' . DOL_URL_ROOT . '/document.php?modulepart=doctemplates&file=orders/' . urlencode(basename($file['name'])) . '">' . img_picto('', 'listlight') . '</a>';
-				$text .= ' &nbsp; <a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=ORDER_ADDON_EASYDOC_TEMPLATES_PATH&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name'])) . '">' . img_picto('', 'delete') . '</a>';
+				$url = $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=' . $this->scandir . '&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name']));
+				$text .= ' &nbsp; <a class="reposition" href="' . $url . '">' . img_picto('', 'delete') . '</a>';
 				$text .= '<br>';
 			}
 			$text .= '</div>';
@@ -189,7 +190,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			$text .= '<input type="hidden" name="MAX_FILE_SIZE" value="' . ($maxmin * 1024) . '">';
 		}
 		$text .= ' <input type="file" name="uploadfile">';
-		$text .= '<input type="hidden" value="ORDER_ADDON_EASYDOC_TEMPLATES_PATH" name="keyforuploaddir">';
+		$text .= '<input type="hidden" value="' . $this->scandir . '" name="keyforuploaddir">';
 		$text .= '<input type="submit" class="button reposition smallpaddingimp" value="' . dol_escape_htmltag($langs->trans("Upload")) . '" name="upload">';
 		$text .= '</div>';
 
@@ -218,7 +219,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 	public function write_file($object, $outputlangs, $srctemplatepath = '', $hidedetails = 0, $hidedesc = 0, $hideref = 0)
 	{
 		// phpcs:enable
-		global $user, $langs, $conf, $mysoc, $hookmanager;
+		global $action, $user, $langs, $conf, $mysoc, $hookmanager;
 
 		if (empty($srctemplatepath)) {
 			dol_syslog("doc_easydoc_order_html::write_file parameter srctemplatepath empty", LOG_WARNING);
@@ -230,19 +231,19 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
 		}
-		$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
+		$langfiles = ['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'compta', 'easydocgenerator@easydocgenerator'];
+		$outputlangs->loadLangs($langfiles);
 
 		global $outputlangsbis;
 		$outputlangsbis = null;
 		if (getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE') && $outputlangs->defaultlang != getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE')) {
 			$outputlangsbis = new Translate('', $conf);
 			$outputlangsbis->setDefaultLang(getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE'));
-			$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks']);
+			$outputlangsbis->loadLangs($langfiles);
 		}
 
 		// add linked objects to note_public
 		$linkedObjects = pdf_getLinkedObjects($object, $outputlangs);
-
 
 		$sav_charset_output = $outputlangs->charset_output;
 		$outputlangs->charset_output = 'UTF-8';
@@ -261,9 +262,12 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			$hookmanager = new HookManager($this->db);
 		}
 		$hookmanager->initHooks(['pdfgeneration']);
-		$parameters = ['object' => $object, 'outputlangs' => $outputlangs];
-		global $action;
-		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
+		$parameters = [
+			'object' => $object,
+			'outputlangs' => $outputlangs,
+			'outputlangsbis' => $outputlangsbis,
+		];
+		$hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
 		require dol_buildpath('easydocgenerator/vendor/autoload.php');
 		$md5id = md5_file($srctemplatepath);
@@ -279,7 +283,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			global $outputlangs, $langs;
 			if (!is_object($outputlangs)) {
 				$outputlangs = $langs;
-				$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
+				$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'compta', 'easydocgenerator@easydocgenerator']);
 			}
 			return $outputlangs->trans($value, $param1, $param2, $param3);
 		});
@@ -289,7 +293,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			global $outputlangsbis, $langs;
 			if (!is_object($outputlangsbis)) {
 				$outputlangsbis = $langs;
-				$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
+				$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'orders', 'deliveries', 'banks', 'compta', 'easydocgenerator@easydocgenerator']);
 			}
 			return $outputlangsbis->trans($value, $param1, $param2, $param3);
 		});
@@ -306,7 +310,8 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$twig->addFunction($function);
 		// create twig function which return price formatted
 		$function = new \Twig\TwigFunction('price', function ($price) {
-			return price($price, 0);
+			global $outputlangs, $langs;
+			return price($price, 0, $outputlangs);
 		});
 		$twig->addFunction($function);
 		// create twig function which return number to words
@@ -402,8 +407,13 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$substitutionarray = array_merge(getCommonSubstitutionArray($outputlangs, 0, null, $object), $substitutionarray);
 
 		// Call the ODTSubstitution hook
-		$parameters = ['object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$substitutionarray];
-		$reshook = $hookmanager->executeHooks('ODTSubstitution', $parameters, $this, $action);
+		$parameters = [
+			'object' => $object,
+			'outputlangs' => $outputlangs,
+			'outputlangsbis' => $outputlangsbis,
+			'substitutionarray' => &$substitutionarray,
+		];
+		$hookmanager->executeHooks('ODTSubstitution', $parameters, $this, $action);
 
 		// Line of free text
 		$newfreetext = '';
@@ -440,29 +450,33 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 				'CUSTOMER',
 			],
 		];
+		$contacts = [];
 		foreach ($typescontact as $key => $value) {
 			foreach ($value as $idx => $type) {
 				$arrayidcontact = $object->getIdContact($key, $type);
-				$contacts = [];
 				foreach ($arrayidcontact as $idc) {
 					if ($key == 'external') {
 						$contact = new Contact($this->db);
 					} else {
 						$contact = new User($this->db);
 					}
-					$contact->fetch($idc);
-					$contacts[] = $contact;
+					$res = $contact->fetch($idc);
+					if ($res < 0) {
+						setEventMessages($contact->error, $contact->errors, 'errors');
+					} else {
+						$contacts[strtolower($type) . '_' . $key][$idc] = getEachVarObject($contact, $outputlangs, 0, $idc)[$idc];
+					}
 				}
-				$substitutions = array_merge($substitutions, getEachVarObject($contacts, $outputlangs, 1, strtolower($type) . '_' . $key));
-				if (!empty($substitutions[strtolower($type) . '_' . $key])) {
-					foreach ($substitutions[strtolower($type) . '_' . $key] as $jdx => $substitution) {
+				if (!empty($contacts[strtolower($type) . '_' . $key])) {
+					foreach ($contacts[strtolower($type) . '_' . $key] as $jdx => $substitution) {
 						if (!empty($substitution['photo'])) {
-							$substitutions[strtolower($type) . '_' . $key][$jdx]['picture'] = $conf->{$substitution['element']}->multidir_output[$conf->entity] . '/' . $substitution['ref'] . '/' . $substitution['photo'];
+							$contacts[strtolower($type) . '_' . $key][$jdx]['picture'] = $conf->{$substitution['element']}->multidir_output[$conf->entity] . '/' . $substitution['id'] . '/photos/' . $substitution['photo'];
 						}
 					}
 				}
 			}
 		}
+		$substitutions = array_merge($substitutions, $contacts);
 
 		// other
 		$substitutions = array_merge($substitutions, [
@@ -514,6 +528,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			}
 		}
 		$substitutions = array_merge($substitutions, ['lines' => $linesarray]);
+
 		if (getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE')) {
 			$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
 		}
@@ -581,6 +596,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 			'file' => $file,
 			'object' => $object,
 			'outputlangs' => $outputlangs,
+			'outputlangsbis' => $outputlangsbis,
 		];
 		// Note that $action and $object may have been modified by some hooks
 		$hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action);
