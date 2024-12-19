@@ -5,7 +5,7 @@
 Description of the module...
 
 <!--
-![Screenshot easybuilder](img/screenshot_easybuilder.png?raw=true "EasyBuilder"){imgmd}
+![Screenshot easydocgenerator](img/screenshot_easydocgenerator.png?raw=true "EasyBuilder"){imgmd}
 -->
 
 Other external modules are available on [Dolistore.com](https://www.dolistore.com).
@@ -64,11 +64,11 @@ Note: If this screen tell you that there is no "custom" directory, check that yo
 
 ### From a GIT repository
 
-Clone the repository in ```$dolibarr_main_document_root_alt/easybuilder```
+Clone the repository in ```$dolibarr_main_document_root_alt/easydocgenerator```
 
 ```sh
 cd ....../custom
-git clone git@github.com:gitlogin/easybuilder.git easybuilder
+git clone git@github.com:gitlogin/easydocgenerator.git easydocgenerator
 ```
 
 -->

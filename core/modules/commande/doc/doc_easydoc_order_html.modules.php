@@ -75,8 +75,8 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 
 		// Page size for A4 format
 		$this->type = 'pdf';
-		$this->page_largeur = 0;
-		$this->page_hauteur = 0;
+		$this->page_largeur = 210;
+		$this->page_hauteur = 297;
 		$this->format = [$this->page_largeur, $this->page_hauteur];
 		$this->marge_gauche = 0;
 		$this->marge_droite = 0;
@@ -543,7 +543,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		}
 		// print $html;
 		$mpdf = new \Mpdf\Mpdf([
-			'format' => [210, 297],
+			'format' => $this->format,
 			'margin_left' => getDolGlobalInt('EASYDOC_PDF_MARGIN_LEFT', 10),
 			'margin_right' => getDolGlobalInt('EASYDOC_PDF_MARGIN_RIGHT', 10),
 			'margin_top' => getDolGlobalInt('EASYDOC_PDF_MARGIN_TOP', 48),
