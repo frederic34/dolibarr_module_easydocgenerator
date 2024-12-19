@@ -78,7 +78,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		$this->page_largeur = 210;
 		$this->page_hauteur = 297;
 		$this->format = [$this->page_largeur, $this->page_hauteur];
-		$this->marge_gauche = 0;
+		$this->marge_gauche = getDolGlobalInt('EASYDOC_PDF_MARGIN_LEFT', 10);
 		$this->marge_droite = 0;
 		$this->marge_haute = 0;
 		$this->marge_basse = 0;
@@ -219,7 +219,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 	public function write_file($object, $outputlangs, $srctemplatepath = '', $hidedetails = 0, $hidedesc = 0, $hideref = 0)
 	{
 		// phpcs:enable
-		global $action, $user, $langs, $conf, $mysoc, $hookmanager;
+		global $action, $langs, $conf, $mysoc, $hookmanager, $user;
 
 		if (empty($srctemplatepath)) {
 			dol_syslog("doc_easydoc_order_html::write_file parameter srctemplatepath empty", LOG_WARNING);
@@ -544,7 +544,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		// print $html;
 		$mpdf = new \Mpdf\Mpdf([
 			'format' => $this->format,
-			'margin_left' => getDolGlobalInt('EASYDOC_PDF_MARGIN_LEFT', 10),
+			'margin_left' => $this->marge_gauche,
 			'margin_right' => getDolGlobalInt('EASYDOC_PDF_MARGIN_RIGHT', 10),
 			'margin_top' => getDolGlobalInt('EASYDOC_PDF_MARGIN_TOP', 48),
 			'margin_bottom' => getDolGlobalInt('EASYDOC_PDF_MARGIN_BOTTOM', 25),

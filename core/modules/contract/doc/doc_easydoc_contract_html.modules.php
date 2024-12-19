@@ -218,7 +218,7 @@ class doc_easydoc_contract_html extends ModelePDFContract
 	public function write_file($object, $outputlangs, $srctemplatepath = '', $hidedetails = 0, $hidedesc = 0, $hideref = 0)
 	{
 		// phpcs:enable
-		global $user, $langs, $conf, $mysoc, $hookmanager;
+		global $action, $langs, $conf, $mysoc, $hookmanager, $user;
 
 		if (empty($srctemplatepath)) {
 			dol_syslog("doc_easydoc_contract_html::write_file parameter srctemplatepath empty", LOG_WARNING);
@@ -230,19 +230,19 @@ class doc_easydoc_contract_html extends ModelePDFContract
 		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
 		}
-		$outputlangs->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'contracts', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
+		$langfiles = ['main', 'dict', 'companies', 'bills', 'products', 'contracts', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator'];
+		$outputlangs->loadLangs($langfiles);
 
 		global $outputlangsbis;
 		$outputlangsbis = null;
 		if (getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE') && $outputlangs->defaultlang != getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE')) {
 			$outputlangsbis = new Translate('', $conf);
 			$outputlangsbis->setDefaultLang(getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE'));
-			$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'bills', 'products', 'contracts', 'deliveries', 'banks']);
+			$outputlangsbis->loadLangs($langfiles);
 		}
 
 		// add linked objects to note_public
 		$linkedObjects = pdf_getLinkedObjects($object, $outputlangs);
-
 
 		$sav_charset_output = $outputlangs->charset_output;
 		$outputlangs->charset_output = 'UTF-8';
@@ -261,16 +261,20 @@ class doc_easydoc_contract_html extends ModelePDFContract
 			$hookmanager = new HookManager($this->db);
 		}
 		$hookmanager->initHooks(['pdfgeneration']);
-		$parameters = ['object' => $object, 'outputlangs' => $outputlangs];
-		global $action;
+		$parameters = [
+			'object' => $object,
+			'outputlangs' => $outputlangs,
+			'outputlangsbis' => $outputlangsbis,
+		];
 		$reshook = $hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
 		require dol_buildpath('easydocgenerator/vendor/autoload.php');
-
+		$md5id = md5_file($srctemplatepath);
 		$loader = new \Twig\Loader\FilesystemLoader(dirname($srctemplatepath));
+		$enablecache = getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE') ? false : (DOL_DATA_ROOT . '/easydocgenerator/temp/' . ($md5id ? $md5id : ''));
 		$twig = new \Twig\Environment($loader, [
 			// developer mode unactive caching
-			'cache' => getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE') ? false : DOL_DATA_ROOT . '/easydocgenerator/temp',
+			'cache' => $enablecache,
 			'autoescape' => false,
 		]);
 		// create twig function which translate with $outpulangs->trans()
@@ -303,7 +307,8 @@ class doc_easydoc_contract_html extends ModelePDFContract
 		$twig->addFunction($function);
 		// create twig function which return price formatted
 		$function = new \Twig\TwigFunction('price', function ($price) {
-			return price($price, 0);
+			global $outputlangs, $langs;
+			return price($price, 0, $outputlangs);
 		});
 		$twig->addFunction($function);
 		// create twig function which return number to words
@@ -324,7 +329,7 @@ class doc_easydoc_contract_html extends ModelePDFContract
 			return -1;
 		}
 		$logo = '';
-		if ($this->emetteur->logo) {
+		if (!empty($this->emetteur->logo)) {
 			$logodir = $conf->mycompany->dir_output;
 			if (!getDolGlobalInt('MAIN_PDF_USE_LARGE_LOGO')) {
 				$logo = $logodir . '/logos/thumbs/' . $this->emetteur->logo_small;
@@ -391,7 +396,12 @@ class doc_easydoc_contract_html extends ModelePDFContract
 		$substitutionarray = array_merge(getCommonSubstitutionArray($outputlangs, 0, null, $object), $substitutionarray);
 
 		// Call the ODTSubstitution hook
-		$parameters = ['object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$substitutionarray];
+		$parameters = [
+			'object' => $object,
+			'outputlangs' => $outputlangs,
+			'outputlangsbis' => $outputlangsbis,
+			'substitutionarray' => &$substitutionarray,
+		];
 		$reshook = $hookmanager->executeHooks('ODTSubstitution', $parameters, $this, $action);
 
 		// Line of free text
@@ -492,7 +502,9 @@ class doc_easydoc_contract_html extends ModelePDFContract
 		}
 
 		// var_dump($substitutions);
-		$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
+		if (getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE')) {
+			$substitutions['debug'] = '<pre>' . print_r($substitutions, true) . '</pre>';
+		}
 		try {
 			$html = $template->render($substitutions);
 		} catch (\Twig\Error\SyntaxError $e) {
@@ -658,6 +670,7 @@ class doc_easydoc_contract_html extends ModelePDFContract
 					'file' => $file,
 					'object' => $object,
 					'outputlangs' => $outputlangs,
+					'outputlangsbis' => $outputlangsbis,
 					'substitutionarray' => &$tmparray
 				];
 				// Note that $action and $object may have been modified by some hooks

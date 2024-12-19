@@ -78,9 +78,9 @@ class doc_easydoc_bom_html extends ModelePDFbom
 		$this->page_hauteur = 297;
 		$this->format = [$this->page_largeur, $this->page_hauteur];
 		$this->marge_gauche = getDolGlobalInt('EASYDOC_PDF_MARGIN_LEFT', 10);
-		$this->marge_droite = 0;
-		$this->marge_haute = 0;
-		$this->marge_basse = 0;
+		$this->marge_droite = getDolGlobalInt('EASYDOC_PDF_MARGIN_RIGHT', 10);
+		$this->marge_haute = getDolGlobalInt('EASYDOC_PDF_MARGIN_TOP', 48);
+		$this->marge_basse = getDolGlobalInt('EASYDOC_PDF_MARGIN_BOTTOM', 48);
 
 		$this->option_logo = 1; // Display logo
 		$this->option_tva = 0; // Manage the vat option COMMANDE_TVAOPTION
@@ -246,7 +246,6 @@ class doc_easydoc_bom_html extends ModelePDFbom
 		// add linked objects to note_public
 		$linkedObjects = pdf_getLinkedObjects($object, $outputlangs);
 
-
 		$sav_charset_output = $outputlangs->charset_output;
 		$outputlangs->charset_output = 'UTF-8';
 
@@ -312,7 +311,8 @@ class doc_easydoc_bom_html extends ModelePDFbom
 		$twig->addFunction($function);
 		// create twig function which return price formatted
 		$function = new \Twig\TwigFunction('price', function ($price) {
-			return price($price, 0);
+			global $outputlangs, $langs;
+			return price($price, 0, $outputlangs);
 		});
 		$twig->addFunction($function);
 		// create twig function which return number to words
@@ -393,7 +393,12 @@ class doc_easydoc_bom_html extends ModelePDFbom
 		$substitutionarray = array_merge(getCommonSubstitutionArray($outputlangs, 0, null, $object), $substitutionarray);
 
 		// Call the ODTSubstitution hook
-		$parameters = ['object' => $object, 'outputlangs' => $outputlangs, 'substitutionarray' => &$substitutionarray];
+		$parameters = [
+			'object' => $object,
+			'outputlangs' => $outputlangs,
+			'outputlangsbis' => $outputlangsbis,
+			'substitutionarray' => &$substitutionarray,
+		];
 		$reshook = $hookmanager->executeHooks('ODTSubstitution', $parameters, $this, $action);
 
 		// Line of free text
@@ -457,7 +462,6 @@ class doc_easydoc_bom_html extends ModelePDFbom
 			'currency' => $currency,
 			'currencyinfo' => $outputlangs->trans("AmountInCurrency", $outputlangs->trans("Currency" . $currency)),
 		]);
-		// var_dump($substitutions);
 		$subtotal_ht = 0;
 		$subtotal_ttc = 0;
 		$linenumber = 1;
@@ -509,9 +513,9 @@ class doc_easydoc_bom_html extends ModelePDFbom
 		$mpdf = new \Mpdf\Mpdf([
 			'format' => $this->format,
 			'margin_left' => $this->marge_gauche,
-			'margin_right' => getDolGlobalInt('EASYDOC_PDF_MARGIN_RIGHT', 10),
-			'margin_top' => getDolGlobalInt('EASYDOC_PDF_MARGIN_TOP', 48),
-			'margin_bottom' => getDolGlobalInt('EASYDOC_PDF_MARGIN_BOTTOM', 25),
+			'margin_right' => $this->marge_droite,
+			'margin_top' => $this->marge_haute,
+			'margin_bottom' => $this->marge_basse,
 			'margin_header' =>  getDolGlobalInt('EASYDOC_PDF_MARGIN_HEADER', 10),
 			'margin_footer' =>  getDolGlobalInt('EASYDOC_PDF_MARGIN_FOOTER', 10),
 		]);
@@ -555,6 +559,15 @@ class doc_easydoc_bom_html extends ModelePDFbom
 		}
 
 		$mpdf->Output($file, \Mpdf\Output\Destination::FILE);
+
+		$parameters = [
+			'file' => $file,
+			'object' => $object,
+			'outputlangs' => $outputlangs,
+			'outputlangsbis' => $outputlangsbis,
+		];
+		// Note that $action and $object may have been modified by some hooks
+		$hookmanager->executeHooks('afterPDFCreation', $parameters, $this, $action);
 
 		$this->result = ['fullpath' => $file];
 
