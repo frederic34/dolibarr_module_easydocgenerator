@@ -120,13 +120,13 @@ class doc_easydoc_stock_html extends ModelePDFStock
 		$text .= '<input type="hidden" name="token" value="' . newToken() . '">';
 		$text .= '<input type="hidden" name="page_y" value="">';
 		$text .= '<input type="hidden" name="action" value="setModuleOptions">';
-		$text .= '<input type="hidden" name="param1" value="STOCK_ADDON_EASYDOC_TEMPLATES_PATH">';
+		$text .= '<input type="hidden" name="param1" value="' . $this->scandir . '">';
 		$text .= '<table class="nobordernopadding" width="100%">';
 
 		// List of directories area
 		$text .= '<tr><td>';
 		$texttitle = $langs->trans("ListOfDirectoriesForHtmlTemplates");
-		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim(getDolGlobalString('STOCK_ADDON_EASYDOC_TEMPLATES_PATH'))));
+		$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim(getDolGlobalString($this->scandir))));
 		$listoffiles = [];
 		foreach ($listofdir as $key => $tmpdir) {
 			$tmpdir = trim($tmpdir);
@@ -153,7 +153,7 @@ class doc_easydoc_stock_html extends ModelePDFStock
 		$text .= $form->textwithpicto($texttitle, $texthelp, 1, 'help', '', 1, 3, $this->name);
 		$text .= '<div><div style="display: inline-block; min-width: 100px; vertical-align: middle;">';
 		$text .= '<textarea class="flat" cols="60" name="value1">';
-		$text .= getDolGlobalString('STOCK_ADDON_EASYDOC_TEMPLATES_PATH');
+		$text .= getDolGlobalString($this->scandir);
 		$text .= '</textarea>';
 		$text .= '</div><div style="display: inline-block; vertical-align: middle;">';
 		$text .= '<input type="submit" class="button button-edit reposition smallpaddingimp" name="modify" value="' . dol_escape_htmltag($langs->trans("Modify")) . '">';
@@ -161,7 +161,7 @@ class doc_easydoc_stock_html extends ModelePDFStock
 
 		// Scan directories
 		$nbofiles = count($listoffiles);
-		if (getDolGlobalString('STOCK_ADDON_EASYDOC_TEMPLATES_PATH')) {
+		if (getDolGlobalString($this->scandir)) {
 			$text .= $langs->trans("NumberOfModelHTMLFilesFound") . ': <b>';
 			//$text.=$nbofiles?'<a id="a_'.get_class($this).'" href="#">':'';
 			$text .= count($listoffiles);
@@ -174,7 +174,7 @@ class doc_easydoc_stock_html extends ModelePDFStock
 			// Show list of found files
 			foreach ($listoffiles as $file) {
 				$text .= '- ' . $file['name'] . ' <a href="' . DOL_URL_ROOT . '/document.php?modulepart=doctemplates&file=stocks/' . urlencode(basename($file['name'])) . '">' . img_picto('', 'listlight') . '</a>';
-				$text .= ' &nbsp; <a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=STOCK_ADDON_EASYDOC_TEMPLATES_PATH&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name'])) . '">' . img_picto('', 'delete') . '</a>';
+				$text .= ' &nbsp; <a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=' . $this->scandir . '&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name'])) . '">' . img_picto('', 'delete') . '</a>';
 				$text .= '<br>';
 			}
 			$text .= '</div>';
@@ -188,7 +188,7 @@ class doc_easydoc_stock_html extends ModelePDFStock
 			$text .= '<input type="hidden" name="MAX_FILE_SIZE" value="' . ($maxmin * 1024) . '">';
 		}
 		$text .= ' <input type="file" name="uploadfile">';
-		$text .= '<input type="hidden" value="STOCK_ADDON_EASYDOC_TEMPLATES_PATH" name="keyforuploaddir">';
+		$text .= '<input type="hidden" value="' . $this->scandir . '" name="keyforuploaddir">';
 		$text .= '<input type="submit" class="button reposition smallpaddingimp" value="' . dol_escape_htmltag($langs->trans("Upload")) . '" name="upload">';
 		$text .= '</div>';
 
