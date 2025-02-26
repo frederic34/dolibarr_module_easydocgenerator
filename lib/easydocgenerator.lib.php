@@ -96,6 +96,8 @@ function easydocgeneratorAdminPrepareHead()
  */
 function getEachVarObject($object, $outputlangs, $recursive = 1, $objectname = 'object')
 {
+	global $extrafields;
+
 	$array_other = [];
 	if (!empty($object)) {
 		foreach ($object as $key => $value) {
@@ -110,7 +112,9 @@ function getEachVarObject($object, $outputlangs, $recursive = 1, $objectname = '
 				} elseif (is_array($value) && (!$recursive && $key == 'array_options')) {
 					$tmparray = getEachVarObject($value, $outputlangs, 0);
 					foreach ($tmparray as $key2 => $value2) {
-						$array_other[$objectname][$key] = $value2;
+						foreach ($value2 as $k => $v) {
+							$array_other[$objectname][$key][$k] = $extrafields->showOutputField(substr($k, 8), $v, '', $object->table_element);
+						}
 					}
 				} elseif (is_array($value) && $recursive) {
 					$tmparray = getEachVarObject($value, $outputlangs, 0);
