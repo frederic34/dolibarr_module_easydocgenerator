@@ -505,7 +505,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		}
 		// print $html;
 		$mpdf = new \Mpdf\Mpdf([
-			'tempDir' => DOL_DATA_ROOT . '/esaydocgenerator/temp',
+			'tempDir' => DOL_DATA_ROOT . '/easydocgenerator/temp',
 			'format' => $this->format,
 			'margin_left' => getDolGlobalInt('EASYDOC_PDF_MARGIN_LEFT', 10),
 			'margin_right' => getDolGlobalInt('EASYDOC_PDF_MARGIN_RIGHT', 10),

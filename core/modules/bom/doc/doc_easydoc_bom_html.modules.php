@@ -511,7 +511,7 @@ class doc_easydoc_bom_html extends ModelePDFbom
 		}
 		// print $html;
 		$mpdf = new \Mpdf\Mpdf([
-			'tempDir' => DOL_DATA_ROOT . '/esaydocgenerator/temp',
+			'tempDir' => DOL_DATA_ROOT . '/easydocgenerator/temp',
 			'format' => $this->format,
 			'margin_left' => $this->marge_gauche,
 			'margin_right' => $this->marge_droite,
