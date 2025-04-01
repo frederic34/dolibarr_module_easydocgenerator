@@ -6,6 +6,6 @@
         "twig/twig": "^3.0",
         "horstoeko/zugferd":"^1",
         "kwn/number-to-words": "^2.8",
-        "t4web/composer-lock-parser": "1.1.*"
+        "t4web/composer-lock-parser": "^1.1"
     }
 }
