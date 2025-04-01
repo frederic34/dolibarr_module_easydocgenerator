@@ -630,6 +630,7 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		}
 		// print $html;
 		$mpdf = new \Mpdf\Mpdf([
+			'tempDir' => DOL_DATA_ROOT . '/esaydocgenerator/temp',
 			'format' => $this->format,
 			'margin_left' => getDolGlobalInt('EASYDOC_PDF_MARGIN_LEFT', 10),
 			'margin_right' => getDolGlobalInt('EASYDOC_PDF_MARGIN_RIGHT', 10),
