@@ -180,10 +180,10 @@ class doc_easydoc_expedition_html extends ModelePDFExpedition
 				$url = $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=' . $this->scandir . '&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name']));
 				$text .= '&nbsp;<a class="reposition" href="' . $url . '">' . img_picto('', 'delete') . '</a>';
 				$text .= '&nbsp;';
-				if (getDolGlobalString('EXPEDITION_ADDON_PDF') == 'easydoc_expedition_html:'.$nametostore) {
+				if (getDolGlobalString('EXPEDITION_ADDON_PDF') == 'easydoc_expedition_html:' . $nametostore) {
 					$text .= img_picto($langs->trans("Default"), 'on');
 				} else {
-					$text .= '<a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?action=setdoc&token='.newToken().'&value='.urlencode('easydoc_expedition_html:'.$nametostore).'&scan_dir='.urlencode('EXPEDITION_ADDON_EASYDOC_TEMPLATES_PATH').'&label='.urlencode('Easydoc templates').'" alt="'.$langs->trans("Default").'">'.img_picto($langs->trans("SetAsDefault"), 'off').'</a>';
+					$text .= '<a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?action=setdoc&token=' . newToken() . '&value=' . urlencode('easydoc_expedition_html:' . $nametostore) . '&scan_dir=' . urlencode('EXPEDITION_ADDON_EASYDOC_TEMPLATES_PATH') . '&label=' . urlencode('Easydoc templates') . '" alt="' . $langs->trans("Default") . '">' . img_picto($langs->trans("SetAsDefault"), 'off') . '</a>';
 				}
 				$text .= '<br>';
 			}
@@ -492,11 +492,11 @@ class doc_easydoc_expedition_html extends ModelePDFExpedition
 				$linesarray[$key]['photos'] = [];
 				$pdir = array();
 				if (getDolGlobalInt('PRODUCT_USE_OLD_PATH_FOR_PHOTO')) {
-					$pdir[0] = get_exdir($product->id, 2, 0, 0, $product, 'product').$product->id."/photos/";
-					$pdir[1] = get_exdir(0, 0, 0, 0, $product, 'product').dol_sanitizeFileName($product->ref).'/';
+					$pdir[0] = get_exdir($product->id, 2, 0, 0, $product, 'product') . $product->id . "/photos/";
+					$pdir[1] = get_exdir(0, 0, 0, 0, $product, 'product') . dol_sanitizeFileName($product->ref) . '/';
 				} else {
 					$pdir[0] = get_exdir(0, 0, 0, 0, $product, 'product'); // default
-					$pdir[1] = get_exdir($product->id, 2, 0, 0, $product, 'product').$product->id."/photos/"; // alternative
+					$pdir[1] = get_exdir($product->id, 2, 0, 0, $product, 'product') . $product->id . "/photos/"; // alternative
 				}
 				foreach ($pdir as $midir) {
 					if ($conf->entity != $product->entity) {
@@ -512,7 +512,7 @@ class doc_easydoc_expedition_html extends ModelePDFExpedition
 						// 		$filename = $obj['photo'];
 						// 	}
 						// } else {
-							$filename = $obj['photo'];
+						$filename = $obj['photo'];
 						// }
 
 						$linesarray[$key]['photos'][] = $dir . $filename;
