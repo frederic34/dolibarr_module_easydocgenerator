@@ -160,7 +160,7 @@ print '</form>';
 print '<form action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
 print '<input type="hidden" name="token" value="' . newToken() . '">';
 print '<input type="hidden" name="action" value="savefile">';
-print '<input type="hidden" name="fullfilenameid" value="'.$fullfilenameid.'">';
+print '<input type="hidden" name="fullfilenameid" value="' . $fullfilenameid . '">';
 print '<input type="hidden" name="file" value="' . dol_escape_htmltag($fullpathoffile) . '">';
 
 

@@ -239,8 +239,8 @@ class doc_easydoc_expedition_html extends ModelePDFExpedition
 		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
 		}
-		$langages = ['main', 'dict', 'companies', 'sendings', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator'];
-		$outputlangs->loadLangs($langages);
+		$languages = ['main', 'dict', 'companies', 'sendings', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator'];
+		$outputlangs->loadLangs($languages);
 
 		$outputlangsbis = null;
 		if (getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE') && $outputlangs->defaultlang != getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE')) {
@@ -489,6 +489,35 @@ class doc_easydoc_expedition_html extends ModelePDFExpedition
 				$linesarray[$key]['product'] = getEachVarObject($product, $outputlangs)['object'];
 				$cat = new Categorie($this->db);
 				$linesarray[$key]['categories'] = $cat->getListForItem($line->fk_product, 'product');
+				$linesarray[$key]['photos'] = [];
+				$pdir = array();
+				if (getDolGlobalInt('PRODUCT_USE_OLD_PATH_FOR_PHOTO')) {
+					$pdir[0] = get_exdir($product->id, 2, 0, 0, $product, 'product').$product->id."/photos/";
+					$pdir[1] = get_exdir(0, 0, 0, 0, $product, 'product').dol_sanitizeFileName($product->ref).'/';
+				} else {
+					$pdir[0] = get_exdir(0, 0, 0, 0, $product, 'product'); // default
+					$pdir[1] = get_exdir($product->id, 2, 0, 0, $product, 'product').$product->id."/photos/"; // alternative
+				}
+				foreach ($pdir as $midir) {
+					if ($conf->entity != $product->entity) {
+						$dir = $conf->product->multidir_output[$product->entity] . '/' . $midir; //Check repertories of current entities
+					} else {
+						$dir = $conf->product->dir_output . '/' . $midir; //Check repertory of the current product
+					}
+					foreach ($product->liste_photos($dir, 1) as $photokey => $obj) {
+						// if (!getDolGlobalInt('CAT_HIGH_QUALITY_IMAGES')) {		// If CAT_HIGH_QUALITY_IMAGES not defined, we use thumb if defined and then original photo
+						// 	if ($obj['photo_vignette']) {
+						// 		$filename = $obj['photo_vignette'];
+						// 	} else {
+						// 		$filename = $obj['photo'];
+						// 	}
+						// } else {
+							$filename = $obj['photo'];
+						// }
+
+						$linesarray[$key]['photos'][] = $dir . $filename;
+					}
+				}
 			}
 
 			// $substitutions['lines'][$key] = [
@@ -533,6 +562,7 @@ class doc_easydoc_expedition_html extends ModelePDFExpedition
 		}
 		// print $html;
 		$mpdf = new \Mpdf\Mpdf([
+			'tempDir' => DOL_DATA_ROOT . '/easydocgenerator/temp',
 			'format' => $this->format,
 			'margin_left' => getDolGlobalInt('EASYDOC_PDF_MARGIN_LEFT', 10),
 			'margin_right' => getDolGlobalInt('EASYDOC_PDF_MARGIN_RIGHT', 10),

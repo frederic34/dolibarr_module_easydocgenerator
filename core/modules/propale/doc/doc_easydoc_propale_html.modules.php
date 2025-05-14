@@ -231,13 +231,14 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
 		}
-		$outputlangs->loadLangs(['main', 'dict', 'companies', 'propal', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator']);
+		$languages = ['main', 'dict', 'companies', 'propal', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator'];
+		$outputlangs->loadLangs($languages);
 
 		$outputlangsbis = null;
 		if (getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE') && $outputlangs->defaultlang != getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE')) {
 			$outputlangsbis = new Translate('', $conf);
 			$outputlangsbis->setDefaultLang(getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE'));
-			$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'propal', 'bills', 'products', 'orders', 'deliveries', 'banks']);
+			$outputlangsbis->loadLangs($languages);
 		}
 
 		// add linked objects to note_public
@@ -433,6 +434,12 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 					foreach ($contacts[strtolower($type) . '_' . $key] as $jdx => $substitution) {
 						if (!empty($substitution['photo'])) {
 							$contacts[strtolower($type) . '_' . $key][$jdx]['picture'] = $conf->{$substitution['element']}->multidir_output[$conf->entity] . '/' . $substitution['id'] . '/photos/' . $substitution['photo'];
+						}
+						if (!empty($substitution['phone'])) {
+							$contacts[strtolower($type) . '_' . $key][$jdx]['phone_formatted'] = dol_print_phone($substitution['phone'], $substitution['country_code'], 0, 0, '', ' ');
+						}
+						if (!empty($substitution['phone_mobile'])) {
+							$contacts[strtolower($type) . '_' . $key][$jdx]['phone_mobile_formatted'] = dol_print_phone($substitution['phone_mobile'], $substitution['country_code'], 0, 0, '', ' ');
 						}
 					}
 				}
