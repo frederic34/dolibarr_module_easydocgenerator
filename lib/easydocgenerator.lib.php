@@ -88,10 +88,10 @@ function easydocgeneratorAdminPrepareHead()
 /**
  * Define array with couple substitution key => substitution value
  *
- * @param   Object		$object    		Dolibarr Object
- * @param   Translate	$outputlangs    Language object for output
- * @param   boolean|int	$recursive    	Want to fetch child array or child object.
- * @param   string      $objectname     Name of object
+ * @param   CommonObject	$object    		Dolibarr Object
+ * @param   Translate		$outputlangs    Language object for output
+ * @param   boolean|int		$recursive    	Want to fetch child array or child object.
+ * @param   string      	$objectname     Name of object
  * @return	array						Array of substitution key->code
  */
 function getEachVarObject($object, $outputlangs, $recursive = 1, $objectname = 'object')
@@ -101,7 +101,7 @@ function getEachVarObject($object, $outputlangs, $recursive = 1, $objectname = '
 	$array_other = [];
 	if (!empty($object)) {
 		foreach ($object as $key => $value) {
-			if (in_array($key, ['db', 'fields', 'lines', 'modelpdf', 'model_pdf', 'api_key', 'pass_indatabase_crypted'])) {		// discard some properties
+			if (in_array($key, ['db', 'fields', 'fieldsforcombobox', 'lines', 'modelpdf', 'model_pdf', 'api_key', 'pass_indatabase_crypted'])) { // discard some properties
 				continue;
 			}
 			if (!empty($value)) {
@@ -109,11 +109,17 @@ function getEachVarObject($object, $outputlangs, $recursive = 1, $objectname = '
 					$toreplace  = ["\r\n", "\n", "\r"];
 					$value = str_replace($toreplace, "<br>", $value);
 					$array_other[$objectname][$key] = str_replace("\n", "<br>", $value);
-				} elseif (is_array($value) && (!$recursive && $key == 'array_options')) {
+				} elseif (is_array($value) && !$recursive  && $key == 'array_options') {
 					$tmparray = getEachVarObject($value, $outputlangs, 0);
 					foreach ($tmparray as $key2 => $value2) {
 						foreach ($value2 as $k => $v) {
-							$array_other[$objectname][$key][$k] = $extrafields->showOutputField(substr($k, 8), $v, '', $object->table_element);
+							$type = substr($k, 8);
+							if ($extrafields->attributes[$object->table_element]['type'][$type] != 'double') {
+								$array_other[$objectname][$key][$k] = $extrafields->showOutputField($type, $v, '', $object->table_element);
+							} else {
+								// NON dolibarr tu ne mets pas une virgule à la place du point
+								$array_other[$objectname][$key][$k] = $v;
+							}
 						}
 					}
 				} elseif (is_array($value) && $recursive) {

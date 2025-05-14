@@ -37,6 +37,7 @@ require_once '../lib/easydocgenerator.lib.php';
 
 $action  = GETPOST('action', 'aZ09');
 $file = GETPOST('file', 'alpha');
+$fullfilenameid = GETPOSTINT('fullfilenameid');
 $now = dol_now();
 $newmask = getDolGlobalString('MAIN_UMASK', '0664');
 
@@ -47,24 +48,61 @@ $langs->loadLangs(['admin', 'companies', 'languages', 'members', 'other', 'produ
 if (!$user->admin) {
 	accessforbidden();
 }
+$constants = [
+	"BOM_ADDON_EASYDOC_TEMPLATES_PATH",
+	"CONTRACT_ADDON_EASYDOC_TEMPLATES_PATH",
+	"EXPEDITION_ADDON_EASYDOC_TEMPLATES_PATH",
+	"EXPENSEREPORT_ADDON_EASYDOC_TEMPLATES_PATH",
+	"INTERVENTION_ADDON_EASYDOC_TEMPLATES_PATH",
+	"ORDER_ADDON_EASYDOC_TEMPLATES_PATH",
+	"SUPPLIER_ORDER_ADDON_EASYDOC_TEMPLATES_PATH",
+	"INVOICE_ADDON_EASYDOC_TEMPLATES_PATH",
+	"PRODUCT_ADDON_EASYDOC_TEMPLATES_PATH",
+	"PROPALE_ADDON_EASYDOC_TEMPLATES_PATH",
+	"SHIPPING_ADDON_EASYDOC_TEMPLATES_PATH",
+	"STOCK_ADDON_EASYDOC_TEMPLATES_PATH",
+	"TICKET_ADDON_EASYDOC_TEMPLATES_PATH",
+];
+$listoffiles = [];
+$arrayselect = [];
+foreach ($constants as $constant) {
+	$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim(getDolGlobalString($constant))));
+	foreach ($listofdir as $key => $tmpdir) {
+		$tmpdir = trim($tmpdir);
+		$tmpdir = preg_replace('/DOL_DATA_ROOT/', DOL_DATA_ROOT, $tmpdir);
+		if (!$tmpdir) {
+			unset($listofdir[$key]);
+			continue;
+		}
+		if (!is_dir($tmpdir)) {
+			setEventMessage($langs->trans("ErrorDirNotFound", $tmpdir), 0);
+		} else {
+			$tmpfiles = dol_dir_list($tmpdir, 'files', 0, '');
+			if (count($tmpfiles)) {
+				$listoffiles = array_merge($listoffiles, $tmpfiles);
+				foreach ($tmpfiles as $item) {
+					$arrayselect[] = $item['fullname'];
+				}
+			}
+		}
+	}
+}
+
 
 // Save file
 if ($action == 'savefile' && empty($cancel)) {
-	$pathoffile = DOL_DATA_ROOT . $file;
-
 	// Save old version
-	if (dol_is_file($pathoffile)) {
-		dol_copy($pathoffile, $pathoffile . '.back', 0, 1, 0, 1);
+	if (dol_is_file($file)) {
+		// dol_copy($file, $file . '.back', 0, 1, 0, 1);
 	}
 
 	$content = GETPOST('editfilecontent', 'none');
-
 	// Save file on disk
 	if ($content) {
-		dol_delete_file($pathoffile, 0, 0, 0, null, false, 1);
-		$result = file_put_contents($pathoffile, $content);
+		dol_delete_file($file, 0, 0, 0, null, false, 1);
+		$result = file_put_contents($file, $content);
 		if ($result) {
-			dolChmod($pathoffile, $newmask);
+			dolChmod($file, $newmask);
 
 			setEventMessages($langs->trans("FileSaved"), null);
 		} else {
@@ -74,6 +112,23 @@ if ($action == 'savefile' && empty($cancel)) {
 		setEventMessages($langs->trans("ContentCantBeEmpty"), null, 'errors');
 		$action = '';
 	}
+}
+if ($action == 'selectfile') {
+	$file = $listoffiles[$fullfilenameid]['name'];
+	$fullpathoffile = $listoffiles[$fullfilenameid]['fullname'];
+} else {
+	if (GETPOST('file', 'alpha')) {
+		$file = GETPOST('file', 'alpha');
+		$fullpathoffile = $listoffiles[$fullfilenameid]['fullname'];
+	} else {
+		$file = $listoffiles[0]['name'];
+		$fullpathoffile = $listoffiles[0]['fullname'];
+	}
+}
+
+$content = '';
+if ($fullpathoffile) {
+	$content = file_get_contents($fullpathoffile);
 }
 
 /*
@@ -94,53 +149,19 @@ $linkback .= $langs->trans("BackToModuleList") . '</a>';
 //print load_fiche_titre($langs->trans('EasydocgeneratorConfig'), $linkback, 'tools');
 
 $head = easydocgeneratorAdminPrepareHead();
-$constants = [
-	"BOM_ADDON_EASYDOC_TEMPLATES_PATH",
-	"CONTRACT_ADDON_EASYDOC_TEMPLATES_PATH",
-	"EXPENSEREPORT_ADDON_EASYDOC_TEMPLATES_PATH",
-	"INTERVENTION_ADDON_EASYDOC_TEMPLATES_PATH",
-	"ORDER_ADDON_EASYDOC_TEMPLATES_PATH",
-	"SUPPLIER_ORDER_ADDON_EASYDOC_TEMPLATES_PATH",
-	"INVOICE_ADDON_EASYDOC_TEMPLATES_PATH",
-	"PRODUCT_ADDON_EASYDOC_TEMPLATES_PATH",
-	"PROPALE_ADDON_EASYDOC_TEMPLATES_PATH",
-	"SHIPPING_ADDON_EASYDOC_TEMPLATES_PATH",
-	"STOCK_ADDON_EASYDOC_TEMPLATES_PATH",
-	"TICKET_ADDON_EASYDOC_TEMPLATES_PATH",
-];
-$listoffiles = [];
-foreach ($constants as $constant) {
-	$listofdir = explode(',', preg_replace('/[\r\n]+/', ',', trim(getDolGlobalString($constant))));
-	foreach ($listofdir as $key => $tmpdir) {
-		$tmpdir = trim($tmpdir);
-		$tmpdir = preg_replace('/DOL_DATA_ROOT/', DOL_DATA_ROOT, $tmpdir);
-		if (!$tmpdir) {
-			unset($listofdir[$key]);
-			continue;
-		}
-		if (!is_dir($tmpdir)) {
-			setEventMessage($langs->trans("ErrorDirNotFound", $tmpdir), 0);
-		} else {
-			$tmpfiles = dol_dir_list($tmpdir, 'files', 0, '');
-			if (count($tmpfiles)) {
-				$listoffiles = array_merge($listoffiles, $tmpfiles);
-			}
-		}
-	}
-}
-
-$file = $listoffiles[0]['name'];
-$fullpathoffile = $listoffiles[0]['fullname'];
-$content = '';
-if ($fullpathoffile) {
-	$content = file_get_contents($fullpathoffile);
-}
+print '<form action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
+print '<input type="hidden" name="token" value="' . newToken() . '">';
+print '<input type="hidden" name="action" value="selectfile">';
+print $form->selectarray('fullfilenameid', $arrayselect, $fullfilenameid);
+print '<input type="submit" class="button buttonforacesave button-save" id="selectfile" name="selectfile" value="' . dol_escape_htmltag($langs->trans("SelectFile")) . '">';
+print '</form>';
 
 // New module
 print '<form action="' . $_SERVER["PHP_SELF"] . '" method="POST">';
 print '<input type="hidden" name="token" value="' . newToken() . '">';
 print '<input type="hidden" name="action" value="savefile">';
-print '<input type="hidden" name="file" value="' . dol_escape_htmltag($file) . '">';
+print '<input type="hidden" name="fullfilenameid" value="'.$fullfilenameid.'">';
+print '<input type="hidden" name="file" value="' . dol_escape_htmltag($fullpathoffile) . '">';
 
 
 print dol_get_fiche_head($head, 'editor', $langs->trans('Settings'), -1, 'technic');
