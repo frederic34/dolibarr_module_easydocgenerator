@@ -543,7 +543,7 @@ class doc_easydoc_order_html extends ModelePDFCommandes
 		}
 		// print $html;
 		$mpdf = new \Mpdf\Mpdf([
-			'tempDir' => DOL_DATA_ROOT . '/esaydocgenerator/temp',
+			'tempDir' => DOL_DATA_ROOT . '/easydocgenerator/temp',
 			'format' => $this->format,
 			'margin_left' => $this->marge_gauche,
 			'margin_right' => getDolGlobalInt('EASYDOC_PDF_MARGIN_RIGHT', 10),

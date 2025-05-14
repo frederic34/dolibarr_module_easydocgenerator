@@ -22,14 +22,14 @@
  */
 
 /**
- *	\file       htdocs/core/modules/propal/doc/doc_easydoc_propal_html.modules.php
- *	\ingroup    propal
- *	\brief      File of class to build PDF documents for propales
+ *	\file       htdocs/core/modules/expedition/doc/doc_easydoc_expedition_html.modules.php
+ *	\ingroup    expedition
+ *	\brief      File of class to build PDF documents for expeditions
  */
 
 use NumberToWords\NumberToWords;
 
-require_once DOL_DOCUMENT_ROOT . '/core/modules/propale/modules_propale.php';
+require_once DOL_DOCUMENT_ROOT . '/core/modules/expedition/modules_expedition.php';
 require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 require_once DOL_DOCUMENT_ROOT . '/categories/class/categorie.class.php';
 require_once DOL_DOCUMENT_ROOT . '/contact/class/contact.class.php';
@@ -44,7 +44,7 @@ dol_include_once('/easydocgenerator/lib/easydocgenerator.lib.php');
 /**
  *	Class to build documents using HTML templates
  */
-class doc_easydoc_propale_html extends ModelePDFPropales
+class doc_easydoc_expedition_html extends ModelePDFExpedition
 {
 	// phpcs:enable
 	/**
@@ -70,7 +70,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		$this->name = "Easydoc templates";
 		$this->description = $langs->trans("DocumentModelEasydocgeneratorTemplate");
 		// Name of constant that is used to save list of directories to scan
-		$this->scandir = 'PROPALE_ADDON_EASYDOC_TEMPLATES_PATH';
+		$this->scandir = 'EXPEDITION_ADDON_EASYDOC_TEMPLATES_PATH';
 		// Save the name of generated file as the main doc when generating a doc with this template
 		$this->update_main_doc_field = 1;
 
@@ -175,9 +175,16 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 			$text .= '<div id="div_' . get_class($this) . '" class="hiddenx">';
 			// Show list of found files
 			foreach ($listoffiles as $file) {
-				$text .= '- ' . $file['name'] . ' <a href="' . DOL_URL_ROOT . '/document.php?modulepart=doctemplates&file=propales/' . urlencode(basename($file['name'])) . '">' . img_picto('', 'listlight') . '</a>';
+				$nametostore = str_replace(DOL_DATA_ROOT, 'DOL_DATA_ROOT', $file['fullname']);
+				$text .= '- ' . $file['name'] . ' <a href="' . DOL_URL_ROOT . '/document.php?modulepart=doctemplates&file=expeditions/' . urlencode(basename($file['name'])) . '">' . img_picto('', 'listlight') . '</a>';
 				$url = $_SERVER["PHP_SELF"] . '?modulepart=doctemplates&keyforuploaddir=' . $this->scandir . '&action=deletefile&token=' . newToken() . '&file=' . urlencode(basename($file['name']));
-				$text .= ' &nbsp; <a class="reposition" href="' . $url . '">' . img_picto('', 'delete') . '</a>';
+				$text .= '&nbsp;<a class="reposition" href="' . $url . '">' . img_picto('', 'delete') . '</a>';
+				$text .= '&nbsp;';
+				if (getDolGlobalString('EXPEDITION_ADDON_PDF') == 'easydoc_expedition_html:' . $nametostore) {
+					$text .= img_picto($langs->trans("Default"), 'on');
+				} else {
+					$text .= '<a class="reposition" href="' . $_SERVER["PHP_SELF"] . '?action=setdoc&token=' . newToken() . '&value=' . urlencode('easydoc_expedition_html:' . $nametostore) . '&scan_dir=' . urlencode('EXPEDITION_ADDON_EASYDOC_TEMPLATES_PATH') . '&label=' . urlencode('Easydoc templates') . '" alt="' . $langs->trans("Default") . '">' . img_picto($langs->trans("SetAsDefault"), 'off') . '</a>';
+				}
 				$text .= '<br>';
 			}
 			$text .= '</div>';
@@ -207,7 +214,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 	/**
 	 *  Function to build a document on disk using the generic odt module.
 	 *
-	 *	@param		Propal  	$object				Object source to build document
+	 *	@param		Expedition  	$object				Object source to build document
 	 *	@param		Translate	$outputlangs		Lang output object
 	 * 	@param		string		$srctemplatepath	Full path of source filename for generator using a template file
 	 *  @param		int			$hidedetails		Do not show line details
@@ -219,26 +226,27 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 	{
 		// phpcs:enable
 		global $action, $conf, $hookmanager, $langs, $mysoc, $user, $outputlangsbis;
-		/** @var Conf $conf */
 
 		if (empty($srctemplatepath)) {
-			dol_syslog("doc_easydoc_propale_html::write_file parameter srctemplatepath empty", LOG_WARNING);
+			dol_syslog("doc_easydoc_expedition_html::write_file parameter srctemplatepath empty", LOG_WARNING);
 			return -1;
 		}
+		// if not already done
+		$srctemplatepath = str_replace('DOL_DATA_ROOT', DOL_DATA_ROOT, $srctemplatepath);
 
 		$object->fetch_thirdparty();
 
 		if (!is_object($outputlangs)) {
 			$outputlangs = $langs;
 		}
-		$languages = ['main', 'dict', 'companies', 'propal', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator'];
+		$languages = ['main', 'dict', 'companies', 'sendings', 'bills', 'products', 'orders', 'deliveries', 'banks', 'easydocgenerator@easydocgenerator'];
 		$outputlangs->loadLangs($languages);
 
 		$outputlangsbis = null;
 		if (getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE') && $outputlangs->defaultlang != getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE')) {
 			$outputlangsbis = new Translate('', $conf);
 			$outputlangsbis->setDefaultLang(getDolGlobalString('PDF_USE_ALSO_LANGUAGE_CODE'));
-			$outputlangsbis->loadLangs($languages);
+			$outputlangsbis->loadLangs(['main', 'dict', 'companies', 'sendings', 'propal', 'bills', 'products', 'orders', 'deliveries', 'banks']);
 		}
 
 		// add linked objects to note_public
@@ -377,7 +385,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		}
 		// Line of free text
 		$newfreetext = '';
-		$paramfreetext = 'PROPOSAL_FREE_TEXT';
+		$paramfreetext = 'EXPEDITION_FREE_TEXT';
 		if (!empty($conf->global->$paramfreetext)) {
 			$newfreetext = make_substitutions(getDolGlobalString($paramfreetext), $substitutionarray);
 		}
@@ -471,7 +479,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 				$subtotal_ht = 0;
 				$subtotal_ttc = 0;
 			}
-			$linearray = getEachVarObject($line, $outputlangs, 0, 'line');
+			$linearray = getEachVarObject($line, $outputlangs, 1, 'line');
 			$linesarray[$key] = $linearray['line'];
 			$linesarray[$key]['linenumber'] = $linenumber;
 			$linesarray[$key]['subtotal_ht'] = $subtotal_ht;
@@ -484,11 +492,11 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 				$linesarray[$key]['photos'] = [];
 				$pdir = array();
 				if (getDolGlobalInt('PRODUCT_USE_OLD_PATH_FOR_PHOTO')) {
-					$pdir[0] = get_exdir($product->id, 2, 0, 0, $product, 'product').$product->id."/photos/";
-					$pdir[1] = get_exdir(0, 0, 0, 0, $product, 'product').dol_sanitizeFileName($product->ref).'/';
+					$pdir[0] = get_exdir($product->id, 2, 0, 0, $product, 'product') . $product->id . "/photos/";
+					$pdir[1] = get_exdir(0, 0, 0, 0, $product, 'product') . dol_sanitizeFileName($product->ref) . '/';
 				} else {
 					$pdir[0] = get_exdir(0, 0, 0, 0, $product, 'product'); // default
-					$pdir[1] = get_exdir($product->id, 2, 0, 0, $product, 'product').$product->id."/photos/"; // alternative
+					$pdir[1] = get_exdir($product->id, 2, 0, 0, $product, 'product') . $product->id . "/photos/"; // alternative
 				}
 				foreach ($pdir as $midir) {
 					if ($conf->entity != $product->entity) {
@@ -504,7 +512,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 						// 		$filename = $obj['photo'];
 						// 	}
 						// } else {
-							$filename = $obj['photo'];
+						$filename = $obj['photo'];
 						// }
 
 						$linesarray[$key]['photos'][] = $dir . $filename;
@@ -570,107 +578,24 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		$mpdf->SetAuthor($outputlangs->convToOutputCharset($user->getFullName($outputlangs)));
 		$mpdf->SetKeyWords($outputlangs->convToOutputCharset($object->ref) . " " . $outputlangs->transnoentities("PdfCommercialProposalTitle") . " " . $outputlangs->convToOutputCharset($object->thirdparty->name));
 		// Watermark
-		$text = getDolGlobalString('PROPALE_DRAFT_WATERMARK');
+		$text = getDolGlobalString('EXPEDITION_DRAFT_WATERMARK');
 		$substitutionarray = pdf_getSubstitutionArray($outputlangs, null, null);
 		complete_substitutions_array($substitutionarray, $outputlangs, null);
 		$text = make_substitutions($text, $substitutionarray, $outputlangs);
 		$mpdf->SetWatermarkText($text);
-		$mpdf->showWatermarkText = ($object->status == Propal::STATUS_DRAFT && getDolGlobalString('PROPALE_DRAFT_WATERMARK'));
+		$mpdf->showWatermarkText = ($object->status == Expedition::STATUS_DRAFT && getDolGlobalString('EXPEDITION_DRAFT_WATERMARK'));
 		$mpdf->watermark_font = 'DejaVuSansCondensed';
 		$mpdf->watermarkTextAlpha = 0.1;
 
 		$mpdf->SetDisplayMode('fullpage');
 
-		$mpdf->Bookmark($outputlangs->trans('PdfCommercialProposalTitle'));
+		$mpdf->Bookmark($outputlangs->trans('Shipment'));
 		$mpdf->WriteHTML($html);
 
-		//If propal merge product PDF is active
-		if (getDolGlobalString('PRODUIT_PDF_MERGE_PROPAL')) {
-			require_once DOL_DOCUMENT_ROOT . '/product/class/propalmergepdfproduct.class.php';
-			$already_merged = [];
-			foreach ($object->lines as $line) {
-				if (!empty($line->fk_product) && !(in_array($line->fk_product, $already_merged))) {
-					// Find the desired PDF
-					$filetomerge = new Propalmergepdfproduct($this->db);
-
-					if (getDolGlobalInt('MAIN_MULTILANGS')) {
-						$filetomerge->fetch_by_product($line->fk_product, $outputlangs->defaultlang);
-					} else {
-						$filetomerge->fetch_by_product($line->fk_product);
-					}
-
-					$already_merged[] = $line->fk_product;
-
-					$product = new Product($this->db);
-					$product->fetch($line->fk_product);
-
-					if ($product->entity != $conf->entity) {
-						$entity_product_file = $product->entity;
-					} else {
-						$entity_product_file = $conf->entity;
-					}
-					// If PDF is selected and file is not empty
-					if (count($filetomerge->lines) > 0) {
-						foreach ($filetomerge->lines as $linefile) {
-							if (!empty($linefile->id) && !empty($linefile->file_name)) {
-								if (getDolGlobalInt('PRODUCT_USE_OLD_PATH_FOR_PHOTO')) {
-									if (isModEnabled("product")) {
-										$filetomerge_dir = $conf->product->multidir_output[$entity_product_file] . '/' . get_exdir($product->id, 2, 0, 0, $product, 'product') . $product->id . "/photos";
-									} elseif (isModEnabled("service")) {
-										$filetomerge_dir = $conf->service->multidir_output[$entity_product_file] . '/' . get_exdir($product->id, 2, 0, 0, $product, 'product') . $product->id . "/photos";
-									}
-								} else {
-									if (isModEnabled("product")) {
-										$filetomerge_dir = $conf->product->multidir_output[$entity_product_file] . '/' . get_exdir(0, 0, 0, 0, $product, 'product');
-									} elseif (isModEnabled("service")) {
-										$filetomerge_dir = $conf->service->multidir_output[$entity_product_file] . '/' . get_exdir(0, 0, 0, 0, $product, 'product');
-									}
-								}
-
-								dol_syslog(get_class($this) . ':: upload_dir=' . $filetomerge_dir, LOG_DEBUG);
-
-								$infile = $filetomerge_dir . $linefile->file_name;
-								if (file_exists($infile) && is_readable($infile)) {
-									try {
-										$pagecount = $mpdf->setSourceFile($infile);
-										// stop adding header on every page
-										$mpdf->SetHeader();
-										$mpdf->Bookmark($linefile->file_name);
-										// This PDF document probably uses a compression technique which is not supported by the free parser shipped with FPDI
-										// Alternatively the document you're trying to import has to be resaved without the use of compressed cross-reference streams
-										// and objects by an external programm (e.g. by lowering the PDF version to 1.4).
-										for ($i = 1; $i <= $pagecount; $i++) {
-											$tplIdx = $mpdf->importPage($i);
-											if ($tplIdx !== false) {
-												$s = $mpdf->getTemplatesize($tplIdx);
-												// array (size=5)
-												//   'width' => float 210.00155555556
-												//   'height' => float 296.99655555556
-												//   0 => float 210.00155555556
-												//   1 => float 296.99655555556
-												//   'orientation' => string 'P' (length=1)
-												$mpdf->AddPage($s['height'] > $s['width'] ? 'P' : 'L');
-												$mpdf->useTemplate($tplIdx);
-											} else {
-												setEventMessages(null, [$infile . ' cannot be added, probably protected PDF'], 'warnings');
-											}
-										}
-									} catch (Exception $e) {
-										setEventMessage($langs->trans('EasydoCantAddPdfToDoc', $linefile->file_name), 'errors');
-										setEventMessage($e->getMessage(), 'errors');
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		$dir = $conf->propal->multidir_output[$object->entity];
+		$dir = $conf->expedition->multidir_output[$object->entity];
 		$objectref = dol_sanitizeFileName($object->ref);
 		if (!preg_match('/specimen/i', $objectref)) {
-			$dir .= "/" . $objectref;
+			$dir .= "/sending/" . $objectref;
 		}
 		$filename = str_replace('.twig', '', basename($srctemplatepath));
 		if (getDolGlobalInt('EASYDOC_ADD_TEMPLATE_SUFFIX_TO_FILENAME')) {
