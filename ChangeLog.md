@@ -1,5 +1,5 @@
 
-## Unreleased (2025-05-14)
+## v1.0.5 (2025-05-14)
 
 #### :bug: Bug Fix
 * [#61](https://github.com/frederic34/dolibarr_module_easydocgenerator/pull/61) fix compat class ([@frederic34](https://github.com/frederic34))
