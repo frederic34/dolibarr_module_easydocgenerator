@@ -14,6 +14,7 @@
     "depends": [],
     "dirs": [
         "/easydocgenerator/temp",
+        "/easydocgenerator/fonts",
         "/ecm/easydocgenerator"
     ],
     "module_parts": {
