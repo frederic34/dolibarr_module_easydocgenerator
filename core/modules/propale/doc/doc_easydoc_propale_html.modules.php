@@ -39,6 +39,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/doc.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
 dol_include_once('/easydocgenerator/lib/easydocgenerator.lib.php');
+dol_include_once('/easydocgenerator/vendor/autoload.php');
 
 // phpcs:disable
 /**
@@ -79,20 +80,20 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		$this->page_largeur = 210;
 		$this->page_hauteur = 297;
 		$this->format = [$this->page_largeur, $this->page_hauteur];
-		$this->marge_gauche = 0;
-		$this->marge_droite = 0;
-		$this->marge_haute = 0;
-		$this->marge_basse = 0;
+		$this->marge_gauche = getDolGlobalInt('EASYDOC_PDF_MARGIN_LEFT', 10);
+		$this->marge_droite = getDolGlobalInt('EASYDOC_PDF_MARGIN_RIGHT', 10);
+		$this->marge_haute = getDolGlobalInt('EASYDOC_PDF_MARGIN_TOP', 48);
+		$this->marge_basse = getDolGlobalInt('EASYDOC_PDF_MARGIN_BOTTOM', 25);
 
-		$this->option_logo = 1; // Display logo
-		$this->option_tva = 0; // Manage the vat option COMMANDE_TVAOPTION
-		$this->option_modereg = 0; // Display payment mode
-		$this->option_condreg = 0; // Display payment terms
-		$this->option_multilang = 1; // Available in several languages
-		$this->option_escompte = 0; // Displays if there has been a discount
-		$this->option_credit_note = 0; // Support credit notes
-		$this->option_freetext = 1; // Support add of a personalised text
-		$this->option_draft_watermark = 0; // Support add of a watermark on drafts
+		$this->option_logo = 1;             // Display logo
+		$this->option_tva = 0;              // Manage the vat option COMMANDE_TVAOPTION
+		$this->option_modereg = 0;          // Display payment mode
+		$this->option_condreg = 0;          // Display payment terms
+		$this->option_multilang = 1;        // Available in several languages
+		$this->option_escompte = 0;         // Displays if there has been a discount
+		$this->option_credit_note = 0;      // Support credit notes
+		$this->option_freetext = 1;         // Support add of a personalised text
+		$this->option_draft_watermark = 0;  // Support add of a watermark on drafts
 
 		// Get source company
 		$this->emetteur = $mysoc;
@@ -269,7 +270,6 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 		];
 		$hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
-		require dol_buildpath('easydocgenerator/vendor/autoload.php');
 		$md5id = md5_file($srctemplatepath);
 		$loader = new \Twig\Loader\FilesystemLoader(dirname($srctemplatepath));
 		$enablecache = getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE') ? false : (DOL_DATA_ROOT . '/easydocgenerator/temp/' . ($md5id ? $md5id : ''));
@@ -553,13 +553,19 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 			return -1;
 		}
 		// print $html;
+		$defaultConfig = (new Mpdf\Config\ConfigVariables())->getDefaults();
+		$fontDirs = $defaultConfig['fontDir'];
+
+		$defaultFontConfig = (new Mpdf\Config\FontVariables())->getDefaults();
+		$fontData = $defaultFontConfig['fontdata'];
 		$mpdf = new \Mpdf\Mpdf([
 			'tempDir' => DOL_DATA_ROOT . '/easydocgenerator/temp',
+			'fontDir' => array_merge($fontDirs, [DOL_DATA_ROOT . '/easydocgenerator/fonts']),
 			'format' => $this->format,
-			'margin_left' => getDolGlobalInt('EASYDOC_PDF_MARGIN_LEFT', 10),
-			'margin_right' => getDolGlobalInt('EASYDOC_PDF_MARGIN_RIGHT', 10),
-			'margin_top' => getDolGlobalInt('EASYDOC_PDF_MARGIN_TOP', 48),
-			'margin_bottom' => getDolGlobalInt('EASYDOC_PDF_MARGIN_BOTTOM', 25),
+			'margin_left' => $this->marge_gauche,
+			'margin_right' => $this->marge_droite,
+			'margin_top' => $this->marge_haute,
+			'margin_bottom' => $this->marge_basse,
 			'margin_header' =>  getDolGlobalInt('EASYDOC_PDF_MARGIN_HEADER', 10),
 			'margin_footer' =>  getDolGlobalInt('EASYDOC_PDF_MARGIN_FOOTER', 10),
 		]);

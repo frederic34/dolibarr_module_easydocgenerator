@@ -446,6 +446,9 @@ class doc_easydoc_expedition_html extends ModelePDFExpedition
 						if (!empty($substitution['phone'])) {
 							$contacts[strtolower($type) . '_' . $key][$jdx]['phone_formatted'] = dol_print_phone($substitution['phone'], $substitution['country_code'], 0, 0, '', ' ');
 						}
+						if (!empty($substitution['phone_perso'])) {
+							$contacts[strtolower($type) . '_' . $key][$jdx]['phone_perso_formatted'] = dol_print_phone($substitution['phone_perso'], $substitution['country_code'], 0, 0, '', ' ');
+						}
 						if (!empty($substitution['phone_mobile'])) {
 							$contacts[strtolower($type) . '_' . $key][$jdx]['phone_mobile_formatted'] = dol_print_phone($substitution['phone_mobile'], $substitution['country_code'], 0, 0, '', ' ');
 						}

@@ -167,6 +167,10 @@ mpdf-->
 <th width="15%">{{ trans('TotalHTShort') }}</th>
 </tr>
 </thead>
+<tfoot>
+{# Empty <tr> to "close" (with a border) the table on page breaks #}
+<tr><td colspan="6"></td></tr>
+</tfoot>
 <tbody>
 <!-- ITEMS HERE -->
 {% if lines is iterable %}
