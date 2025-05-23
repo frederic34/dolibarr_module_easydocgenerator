@@ -493,7 +493,7 @@ class doc_easydoc_expedition_html extends ModelePDFExpedition
 				$cat = new Categorie($this->db);
 				$linesarray[$key]['categories'] = $cat->getListForItem($line->fk_product, 'product');
 				$linesarray[$key]['photos'] = [];
-				$pdir = array();
+				$pdir = []
 				if (getDolGlobalInt('PRODUCT_USE_OLD_PATH_FOR_PHOTO')) {
 					$pdir[0] = get_exdir($product->id, 2, 0, 0, $product, 'product') . $product->id . "/photos/";
 					$pdir[1] = get_exdir(0, 0, 0, 0, $product, 'product') . dol_sanitizeFileName($product->ref) . '/';
