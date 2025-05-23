@@ -482,13 +482,13 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 				$cat = new Categorie($this->db);
 				$linesarray[$key]['categories'] = $cat->getListForItem($line->fk_product, 'product');
 				$linesarray[$key]['photos'] = [];
-				$pdir = array();
+				$pdir = [];
 				if (getDolGlobalInt('PRODUCT_USE_OLD_PATH_FOR_PHOTO')) {
-					$pdir[0] = get_exdir($product->id, 2, 0, 0, $product, 'product').$product->id."/photos/";
-					$pdir[1] = get_exdir(0, 0, 0, 0, $product, 'product').dol_sanitizeFileName($product->ref).'/';
+					$pdir[0] = get_exdir($product->id, 2, 0, 0, $product, 'product') . $product->id . "/photos/";
+					$pdir[1] = get_exdir(0, 0, 0, 0, $product, 'product') . dol_sanitizeFileName($product->ref) . '/';
 				} else {
 					$pdir[0] = get_exdir(0, 0, 0, 0, $product, 'product'); // default
-					$pdir[1] = get_exdir($product->id, 2, 0, 0, $product, 'product').$product->id."/photos/"; // alternative
+					$pdir[1] = get_exdir($product->id, 2, 0, 0, $product, 'product') . $product->id . "/photos/"; // alternative
 				}
 				foreach ($pdir as $midir) {
 					if ($conf->entity != $product->entity) {
@@ -504,7 +504,7 @@ class doc_easydoc_propale_html extends ModelePDFPropales
 						// 		$filename = $obj['photo'];
 						// 	}
 						// } else {
-							$filename = $obj['photo'];
+						$filename = $obj['photo'];
 						// }
 
 						$linesarray[$key]['photos'][] = $dir . $filename;

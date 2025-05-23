@@ -38,6 +38,7 @@ require_once DOL_DOCUMENT_ROOT . '/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/doc.lib.php';
 require_once DOL_DOCUMENT_ROOT . '/core/lib/pdf.lib.php';
 dol_include_once('/easydocgenerator/lib/easydocgenerator.lib.php');
+dol_include_once('/easydocgenerator/vendor/autoload.php');
 
 // phpcs:disable
 /**
@@ -266,7 +267,6 @@ class doc_easydoc_invoice_html extends ModelePDFFactures
 		];
 		$hookmanager->executeHooks('beforePDFCreation', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
 
-		require dol_buildpath('easydocgenerator/vendor/autoload.php');
 		$md5id = md5_file($srctemplatepath);
 		$loader = new \Twig\Loader\FilesystemLoader(dirname($srctemplatepath));
 		$enablecache = getDolGlobalInt('EASYDOCGENERATOR_ENABLE_DEVELOPPER_MODE') ? false : (DOL_DATA_ROOT . '/easydocgenerator/temp/' . ($md5id ? $md5id : ''));
