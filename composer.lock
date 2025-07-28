@@ -376,16 +376,16 @@
         },
         {
             "name": "horstoeko/zugferd",
-            "version": "v1.0.114",
+            "version": "v1.0.115",
             "source": {
                 "type": "git",
                 "url": "https://github.com/horstoeko/zugferd.git",
-                "reference": "e7869f79b28056add87a82d405e9153711af4436"
+                "reference": "9bbf0c06942645001d10e88d6e26ff6d8983da2c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/horstoeko/zugferd/zipball/e7869f79b28056add87a82d405e9153711af4436",
-                "reference": "e7869f79b28056add87a82d405e9153711af4436",
+                "url": "https://api.github.com/repos/horstoeko/zugferd/zipball/9bbf0c06942645001d10e88d6e26ff6d8983da2c",
+                "reference": "9bbf0c06942645001d10e88d6e26ff6d8983da2c",
                 "shasum": ""
             },
             "require": {
@@ -444,9 +444,9 @@
             ],
             "support": {
                 "issues": "https://github.com/horstoeko/zugferd/issues",
-                "source": "https://github.com/horstoeko/zugferd/tree/v1.0.114"
+                "source": "https://github.com/horstoeko/zugferd/tree/v1.0.115"
             },
-            "time": "2025-04-29T15:50:06+00:00"
+            "time": "2025-06-06T08:14:02+00:00"
         },
         {
             "name": "jms/metadata",
@@ -514,16 +514,16 @@
         },
         {
             "name": "jms/serializer",
-            "version": "3.32.4",
+            "version": "3.32.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/schmittjoh/serializer.git",
-                "reference": "f5c6227b2664d1e75fda65f1e6c5686a0c034b31"
+                "reference": "7c88b1b02ff868eecc870eeddbb3b1250e4bd89c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/schmittjoh/serializer/zipball/f5c6227b2664d1e75fda65f1e6c5686a0c034b31",
-                "reference": "f5c6227b2664d1e75fda65f1e6c5686a0c034b31",
+                "url": "https://api.github.com/repos/schmittjoh/serializer/zipball/7c88b1b02ff868eecc870eeddbb3b1250e4bd89c",
+                "reference": "7c88b1b02ff868eecc870eeddbb3b1250e4bd89c",
                 "shasum": ""
             },
             "require": {
@@ -600,7 +600,7 @@
             ],
             "support": {
                 "issues": "https://github.com/schmittjoh/serializer/issues",
-                "source": "https://github.com/schmittjoh/serializer/tree/3.32.4"
+                "source": "https://github.com/schmittjoh/serializer/tree/3.32.5"
             },
             "funding": [
                 {
@@ -612,20 +612,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-04-06T18:42:47+00:00"
+            "time": "2025-05-26T15:55:41+00:00"
         },
         {
             "name": "kwn/number-to-words",
-            "version": "2.11.2",
+            "version": "2.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kwn/number-to-words.git",
-                "reference": "c1fede59c3494c2c99b7d8d9ff7242cf89d36db7"
+                "reference": "c4e0cea84574bc0077121ac6a2331c183d6d1cc0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kwn/number-to-words/zipball/c1fede59c3494c2c99b7d8d9ff7242cf89d36db7",
-                "reference": "c1fede59c3494c2c99b7d8d9ff7242cf89d36db7",
+                "url": "https://api.github.com/repos/kwn/number-to-words/zipball/c4e0cea84574bc0077121ac6a2331c183d6d1cc0",
+                "reference": "c4e0cea84574bc0077121ac6a2331c183d6d1cc0",
                 "shasum": ""
             },
             "require": {
@@ -663,9 +663,9 @@
             ],
             "support": {
                 "issues": "https://github.com/kwn/number-to-words/issues",
-                "source": "https://github.com/kwn/number-to-words/tree/2.11.2"
+                "source": "https://github.com/kwn/number-to-words/tree/2.12.0"
             },
-            "time": "2025-01-07T18:42:09+00:00"
+            "time": "2025-07-01T20:49:04+00:00"
         },
         {
             "name": "mpdf/mpdf",
@@ -910,16 +910,16 @@
         },
         {
             "name": "myclabs/deep-copy",
-            "version": "1.13.1",
+            "version": "1.13.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "1720ddd719e16cf0db4eb1c6eca108031636d46c"
+                "reference": "faed855a7b5f4d4637717c2b3863e277116beb36"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/1720ddd719e16cf0db4eb1c6eca108031636d46c",
-                "reference": "1720ddd719e16cf0db4eb1c6eca108031636d46c",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/faed855a7b5f4d4637717c2b3863e277116beb36",
+                "reference": "faed855a7b5f4d4637717c2b3863e277116beb36",
                 "shasum": ""
             },
             "require": {
@@ -958,7 +958,7 @@
             ],
             "support": {
                 "issues": "https://github.com/myclabs/DeepCopy/issues",
-                "source": "https://github.com/myclabs/DeepCopy/tree/1.13.1"
+                "source": "https://github.com/myclabs/DeepCopy/tree/1.13.3"
             },
             "funding": [
                 {
@@ -966,7 +966,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-04-29T12:36:36+00:00"
+            "time": "2025-07-05T12:25:42+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -1020,16 +1020,16 @@
         },
         {
             "name": "phpstan/phpdoc-parser",
-            "version": "2.1.0",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "9b30d6fd026b2c132b3985ce6b23bec09ab3aa68"
+                "reference": "b9e61a61e39e02dd90944e9115241c7f7e76bfd8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/9b30d6fd026b2c132b3985ce6b23bec09ab3aa68",
-                "reference": "9b30d6fd026b2c132b3985ce6b23bec09ab3aa68",
+                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/b9e61a61e39e02dd90944e9115241c7f7e76bfd8",
+                "reference": "b9e61a61e39e02dd90944e9115241c7f7e76bfd8",
                 "shasum": ""
             },
             "require": {
@@ -1061,9 +1061,9 @@
             "description": "PHPDoc parser with support for nullable, intersection and generic types",
             "support": {
                 "issues": "https://github.com/phpstan/phpdoc-parser/issues",
-                "source": "https://github.com/phpstan/phpdoc-parser/tree/2.1.0"
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/2.2.0"
             },
-            "time": "2025-02-19T13:28:12+00:00"
+            "time": "2025-07-13T07:04:09+00:00"
         },
         {
             "name": "psr/http-message",
