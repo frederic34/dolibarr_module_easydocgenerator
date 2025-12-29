@@ -12,4 +12,4 @@ lfx_crowdfunding: # Replace with a single LFX Crowdfunding project-name e.g., cl
 polar: # Replace with a single Polar username
 buy_me_a_coffee: frederic34
 thanks_dev: # Replace with a single thanks.dev username
-custom: ["bitcoin:bc1qwa6ezqtpkpqtp92e8ngwduvx0tcnq9z6tu90cq?label=easydocgenerator"]
+custom: ["https://www.blockchain.com/btc/address/bc1qwa6ezqtpkpqtp92e8ngwduvx0tcnq9z6tu90cq?label=easydocgenerator"]
