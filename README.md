@@ -1,6 +1,6 @@
 # EASYDOCGENERATOR FOR [DOLIBARR ERP CRM](https://www.dolibarr.org)
 
-[![Donate Bitcoin](https://img.shields.io/badge/Donate-Bitcoin-orange)](bitcoin:bc1qwa6ezqtpkpqtp92e8ngwduvx0tcnq9z6tu90cq)
+[[![Donate Bitcoin](https://img.shields.io/badge/Donate-Bitcoin-orange)](bitcoin:bc1qwa6ezqtpkpqtp92e8ngwduvx0tcnq9z6tu90cq)](https://buymeabitcoffee.vercel.app/btc/bc1qwa6ezqtpkpqtp92e8ngwduvx0tcnq9z6tu90cq?identifier=frederic34)
 
 ## Features
 
