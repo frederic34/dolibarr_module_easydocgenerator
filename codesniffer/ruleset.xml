@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ruleset SYSTEM "ruleset.dtd">
-<ruleset name="Net Logic">
-	<description>Net Logic coding standard.</description>
+<ruleset name="frederic34">
+	<description>frederic34 coding standard.</description>
 	<arg name="tab-width" value="4"/>
 
 	<exclude-pattern type="relative">build</exclude-pattern>
@@ -14,7 +14,7 @@
 		<exclude name="Generic.WhiteSpace.DisallowTabIndent"/>
 		<exclude name="PSR1.Files.SideEffects.FoundWithSymbols" />
 		<exclude name="PSR1.Classes.ClassDeclaration.MissingNamespace" />
-		<exclude name="PSR12.Files.FileHeader.SpacingAfterBlock" />
+		<exclude name="PSR12.Files.FileHeader" />
 		<exclude name="PSR12.Properties.ConstantVisibility.NotFound" />
 	</rule>
 
