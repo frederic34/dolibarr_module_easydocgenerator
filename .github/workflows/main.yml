@@ -45,10 +45,10 @@ jobs:
       - name: Run VarDump Check
         run: var-dump-check --extensions php --tracy --exclude vendor/ .
       - name: Bump version and push tag
-        uses: Net-Logic/github-dolibarr-action@main
+        uses: frederic34/github-dolibarr-action@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO_OWNER: Net-Logic
+          REPO_OWNER: frederic34
           RELEASE_BRANCH: main
           MODULE: easydocgenerator
           CLASSNAME: Easydocgenerator

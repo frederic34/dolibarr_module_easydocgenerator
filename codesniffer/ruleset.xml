@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ruleset SYSTEM "ruleset.dtd">
-<ruleset name="Net Logic">
-	<description>Net Logic coding standard.</description>
+<ruleset name="frederic34">
+	<description>frederic34 coding standard.</description>
 	<arg name="tab-width" value="4"/>
 
 	<exclude-pattern type="relative">build</exclude-pattern>
