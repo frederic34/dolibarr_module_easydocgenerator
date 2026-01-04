@@ -1,5 +1,7 @@
 # EASYDOCGENERATOR FOR [DOLIBARR ERP CRM](https://www.dolibarr.org)
 
+[![buy-me-a-bitcoffee](https://img.shields.io/badge/Buy%20Me%20a%20BitCoffee-f7931a?logo=bitcoin&logoColor=white&color=f7931a&style=flat&label=Donate)](https://buymeabitcoffee.vercel.app/btc/bc1qwa6ezqtpkpqtp92e8ngwduvx0tcnq9z6tu90cq?identifier=frederic34)
+
 ## Features
 
 Description of the module...
