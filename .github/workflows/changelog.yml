@@ -1,41 +1,41 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CHANGELOG
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  release:
     runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'Bump version')"
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
         with:
-         fetch-depth: '0'
+          fetch-depth: '0'
+
       - name: Setup PHP
         id: setup-php
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: '8.2'
           tools: php-parallel-lint/php-var-dump-check, parallel-lint, cs2pr, phpcs
-      # - uses: actions/setup-node@v3
-      #   with:
-      #     node-version: 14.x
-      #     registry-url: 'https://registry.npmjs.org'
-      - name: Print PHP version
-        run: echo ${{ steps.setup-php.outputs.php-version }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Run PHPCS
+        run: phpcs -q --report=checkstyle --standard=codesniffer/ruleset.xml --extensions=php --ignore=*/tx/*,*/vendor/* . | cs2pr --graceful-warnings
+
+      - name: Run Parallel Lint
+        run: parallel-lint --exclude vendor/ .
+
+      - name: Run VarDump Check
+        run: var-dump-check --extensions php --tracy --exclude vendor/ .
+
       - name: Run autotranslator
         run: |
           php ./.tx/autotranslator.php fr_FR it_IT ${{ secrets.GOOGLE_API_TRANSLATE }}
@@ -44,10 +44,12 @@ jobs:
           php ./.tx/autotranslator.php fr_FR de_DE ${{ secrets.GOOGLE_API_TRANSLATE }}
           php ./.tx/autotranslator.php fr_FR pt_PT ${{ secrets.GOOGLE_API_TRANSLATE }}
           php ./.tx/autotranslator.php fr_FR pl_PL ${{ secrets.GOOGLE_API_TRANSLATE }}
+
       - name: Run changelog
         run: npx lerna-changelog --from=v0.0.0 > ChangeLog.md
         env:
           GITHUB_AUTH: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Bump version and push tag
         uses: frederic34/github-dolibarr-action@main
         env:
@@ -60,17 +62,19 @@ jobs:
           DEFAULT_BUMP: none
           INITIAL_VERSION: v0.0.0
           VERBOSE: true
+
       - name: Zip Folder
         run: |
           composer update --no-dev
-          ls -al
-          mkdir build/easydocgenerator
+          mkdir -p build/easydocgenerator
           rsync -arv --exclude='.git/' --exclude='.github/' --exclude='.gitignore' --exclude='.tx/' --exclude='build/' --exclude='codesniffer/' . ./build/easydocgenerator
-      - name: Switch to Release Folder
+
+      - name: Create release zip
         run: |
           cd build
-          rm module_easydocgenerator-${{ env.module_version }}.zip 2> /dev/null || true
+          rm -f module_easydocgenerator-${{ env.module_version }}.zip
           zip -r module_easydocgenerator-${{ env.module_version }}.zip easydocgenerator
-      - uses: stefanzweifel/git-auto-commit-action@v4
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Bump version #none
