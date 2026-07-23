@@ -1,6 +1,5 @@
 # EASYDOCGENERATOR FOR [DOLIBARR ERP CRM](https://www.dolibarr.org)
 
-[![buy-me-a-bitcoffee](https://img.shields.io/badge/Buy%20Me%20a%20BitCoffee-f7931a?logo=bitcoin&logoColor=white&color=f7931a&style=flat&label=Donate)](https://buymeabitcoffee.vercel.app/btc/bc1qwa6ezqtpkpqtp92e8ngwduvx0tcnq9z6tu90cq?identifier=easydocgenerator)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 **Easydocgenerator** is a Dolibarr module that lets you design fully custom PDF documents using [Twig](https://twig.symfony.com/) HTML templates rendered to PDF by [mPDF](https://mpdf.github.io/). Write plain HTML/CSS with Twig syntax, and the module injects all your Dolibarr business data — your company, customers, lines, contacts, photos — without any PHP code.
